@@ -68,6 +68,7 @@ var draw = function() {
 };
 
 void keyPressed() {
+  console.log("pressed: " + keyCode);
   if(keyCode === LEFT)   arrows[ARROWLEFT] = true;
   if(keyCode === RIGHT)  arrows[ARROWRIGHT] = true;
   if(keyCode === UP)     arrows[ARROWUP] = true;
@@ -75,6 +76,7 @@ void keyPressed() {
 }
 
 void keyReleased() {
+  console.log("released: " + keyCode);
   if(keyCode === LEFT)   arrows[ARROWLEFT] = false;
   if(keyCode === RIGHT)  arrows[ARROWRIGHT] = false;
   if(keyCode === UP)     arrows[ARROWUP] = false;

@@ -81,6 +81,6 @@ var keyReleased = function() {
   if(keyCode === DOWN)   arrows[ARROWDOWN] = false;
 }
 
-void draw() {
-  
-}
+void draw() {}
+void keyPressed() {}
+void keyReleased() {}

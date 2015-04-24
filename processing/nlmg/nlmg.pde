@@ -68,6 +68,7 @@ var draw = function() {
       fill(0);
       textFont(messageFont);
       text("Loading...", width/2, height/2);
+      return;
     }
     
     // draw background
@@ -79,7 +80,14 @@ var draw = function() {
     
     // draw character
     imageMode(CENTER);
-    image(me.pic, width/2, height/2, characterSize, characterSize);
+    if(me.pic !== null) {
+      image(me.pic, width/2, height/2, characterSize, characterSize);
+    } else {
+      fill(255);
+      textFont(messageFont, 144);
+      text("☻\nloading", width/2, height/2);
+    }
+    
     
     // draw name
     fill(255);

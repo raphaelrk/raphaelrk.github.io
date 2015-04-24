@@ -1,7 +1,7 @@
 /* @pjs preload="processing/nlmg/data/cottages.jpg,processing/nlmg/data/kathy_transparent.png,processing/nlmg/data/tommy_transparent.png,processing/nlmg/data/ruth_transparent.png,processing/nlmg/data/daniel_radcliffe_transparent.png,processing/nlmg/data/emma_watson_transparent.png,processing/nlmg/data/rupert_grint_transparent.png"; */
 
 var bg, kathy, tommy, ruth, harry, hermione, ron;
-var randPics = [harry, hermione, ron];
+var characterPics = [kathy, tommy, ruth, harry, hermione, ron];
 
 var nameFont = createFont("arial black", 20);
 var messageFont = createFont("Verdana", 24);
@@ -48,9 +48,15 @@ var Person = function(name, x, y) {
       this.pic = tommy;
     } else if(lname.indexOf("ruth") !== -1) {
       this.pic = ruth;
+    } else if(lname.indexOf("ron") !== -1 || lname.indexOf("rupert1 || lname.indexOf("grint") !== -1) {
+      this.pic = ruth;
+    } else if(lname.indexOf("hermion") !== -1 || lname.indexOf("emma") !== -1 || lname.indexOf("watson") !== -1) {
+      this.pic = ruth;
+    } else if(lname.indexOf("harry") !== -1 || lname.indexOf("daniel") !== -1 || lname.indexOf("radcliffe") !== -1) {
+      this.pic = ruth;
     } else {
-      var picIndex = floor(random(0, randPics.length));
-      this.pic = randPics[picIndex];
+      var picIndex = floor(random(0, characterPics.length));
+      this.pic = characterPics[picIndex];
     }
   }
   
@@ -84,8 +90,8 @@ var draw = function() {
       image(me.pic, width/2, height/2, characterSize, characterSize);
     } else {
       fill(255);
-      textFont(messageFont, 144);
-      text("☻\nloading", width/2, height/2);
+      textFont(messageFont, 36);
+      text("☻\nname\nyourself", width/2, height/2);
     }
     
     

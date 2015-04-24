@@ -67,14 +67,14 @@ var draw = function() {
     }*/
 };
 
-var keyPressed = function() {
+void keyPressed() {
   if(keyCode === LEFT)   arrows[ARROWLEFT] = true;
   if(keyCode === RIGHT)  arrows[ARROWRIGHT] = true;
   if(keyCode === UP)     arrows[ARROWUP] = true;
   if(keyCode === DOWN)   arrows[ARROWDOWN] = true;
 }
 
-var keyReleased = function() {
+void keyReleased() {
   if(keyCode === LEFT)   arrows[ARROWLEFT] = false;
   if(keyCode === RIGHT)  arrows[ARROWRIGHT] = false;
   if(keyCode === UP)     arrows[ARROWUP] = false;
@@ -82,5 +82,3 @@ var keyReleased = function() {
 }
 
 void draw() {}
-void keyPressed() {}
-void keyReleased() {}

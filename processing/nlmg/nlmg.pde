@@ -3,8 +3,7 @@
 var bg, kathy, tommy, ruth, harry, hermione, ron;
 var randPics = [harry, hermione, ron];
 
-var ARROWUP = 0, ARROWDOWN = 1, ARROWLEFT = 2, ARROWRIGHT = 3;
-var arrows = [false, false, false, false];
+var arrowUp = false, arrowDown = false, arrowLeft = false, arrowRight = false;
 
 var me;
 
@@ -58,29 +57,29 @@ var draw = function() {
     
     imageMode(CENTER);
     image(me.pic, width/2, height/2);
-    /*
+    
     if(keyPressed) {
-      if(arrows[ARROWLEFT])   me.x -= me.speed;
-      if(arrows[ARROWRIGHT])  me.x += me.speed;
-      if(arrows[ARROWUP])     me.y -= me.speed;
-      if(arrows[ARROWDOWN])   me.y += me.speed;
-    }*/
+      if(arrowLeft)   me.x -= me.speed;
+      if(arrowRight)  me.x += me.speed;
+      if(arrowUp)     me.y -= me.speed;
+      if(arrowDown)   me.y += me.speed;
+    }
 };
 
 void keyPressed() {
   console.log("pressed: " + keyCode);
-  if(keyCode === LEFT)   arrows[ARROWLEFT] = true;
-  if(keyCode === RIGHT)  arrows[ARROWRIGHT] = true;
-  if(keyCode === UP)     arrows[ARROWUP] = true;
-  if(keyCode === DOWN)   arrows[ARROWDOWN] = true;
+  if(keyCode === LEFT)   arrowLeft = true;
+  if(keyCode === RIGHT)  arrowRight = true;
+  if(keyCode === UP)     arrowUp = true;
+  if(keyCode === DOWN)   arrowDown = true;
 }
 
 void keyReleased() {
   console.log("released: " + keyCode);
-  if(keyCode === LEFT)   arrows[ARROWLEFT] = false;
-  if(keyCode === RIGHT)  arrows[ARROWRIGHT] = false;
-  if(keyCode === UP)     arrows[ARROWUP] = false;
-  if(keyCode === DOWN)   arrows[ARROWDOWN] = false;
+  if(keyCode === LEFT)   arrowLeft = false;
+  if(keyCode === RIGHT)  arrowRight = false;
+  if(keyCode === UP)     arrowUp = false;
+  if(keyCode === DOWN)   arrowDown = false;
 }
 
 void draw() {}

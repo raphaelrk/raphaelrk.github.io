@@ -3,6 +3,9 @@
 var bg, kathy, tommy, ruth, harry, hermione, ron;
 var randPics = [harry, hermione, ron];
 
+var nameFont = createFont("arial black", 20);
+var messageFont = createFont("Verdana", 24");
+
 var arrowUp = false, arrowDown = false, arrowLeft = false, arrowRight = false;
 var characterSize = 80;
 var me;
@@ -15,6 +18,7 @@ void setup() {
   
   fill(0);
   textAlign(CENTER);
+  textFont(messageFont);
   text("Loading...", width/2, height/2);
   
   bg = requestImage("processing/nlmg/data/cottages.jpg");
@@ -58,6 +62,13 @@ var draw = function() {
     background(frameCount%255, 255, 255);
     colorMode(RGB);
     
+    // if background hasn't loaded yet, say so
+    if(bg === null) {
+      fill(0);
+      textFont(messageFont);
+      text("Loading...", width/2, height/2);
+    }
+    
     // draw background
     // functions: imageX(playerX), imageY(plyerY)
     // imageX(0) = width/2, imageX(bg.width) = -bg.width+width/2
@@ -93,7 +104,6 @@ var draw = function() {
 };
 
 void keyPressed() {
-  console.log("pressed: " + keyCode);
   if(keyCode === LEFT)   arrowLeft = true;
   if(keyCode === RIGHT)  arrowRight = true;
   if(keyCode === UP)     arrowUp = true;
@@ -101,7 +111,6 @@ void keyPressed() {
 }
 
 void keyReleased() {
-  console.log("released: " + keyCode);
   if(keyCode === LEFT)   arrowLeft = false;
   if(keyCode === RIGHT)  arrowRight = false;
   if(keyCode === UP)     arrowUp = false;

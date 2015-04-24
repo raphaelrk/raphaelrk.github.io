@@ -36,7 +36,7 @@ var Person = function(name) {
   } else if(lname.indexOf("ruth") !== -1) {
     this.pic = ruth;
   } else {
-    var picIndex = floor(random(0, randPics.length);
+    var picIndex = floor(random(0, randPics.length));
     this.pic = randPics[picIndex];
   }
 }

@@ -4,7 +4,7 @@ var bg, kathy, tommy, ruth, harry, hermione, ron;
 var randPics = [harry, hermione, ron];
 
 var nameFont = createFont("arial black", 20);
-var messageFont = createFont("Verdana", 24");
+var messageFont = createFont("Verdana", 24);
 
 var arrowUp = false, arrowDown = false, arrowLeft = false, arrowRight = false;
 var characterSize = 80;

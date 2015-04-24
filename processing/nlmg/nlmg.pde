@@ -1,6 +1,6 @@
-/* @pjs preload="cottages.jpg,kathy_transparent.png,tommy_transparent.png,ruth_transparent.png,daniel_radcliffe_transparent.png,emma_watson_transparent.png,rupert_grint_transparent.png"; */
+/* @pjs preload="processing/nlmg/data/cottages.jpg,processing/nlmg/data/kathy_transparent.png,processing/nlmg/data/tommy_transparent.png,processing/nlmg/data/ruth_transparent.png,processing/nlmg/data/daniel_radcliffe_transparent.png,processing/nlmg/data/emma_watson_transparent.png,processing/nlmg/data/rupert_grint_transparent.png"; */
 
-PImage bg, kathy, tommy, ruth, harry, hermione, ron;
+var bg, kathy, tommy, ruth, harry, hermione, ron;
 
 void setup() {
     size(400, 400);
@@ -12,13 +12,13 @@ void setup() {
     textAlign(CENTER);
     text("Loading...", width/2, height/2);
 
-    PImage bg = loadImage("cottages.jpg");
-    PImage kathy = requestImage("kathy_transparent.png");
-    PImage tommy = requestImage("tommy_transparent.png");
-    PImage ruth = requestImage("ruth_transparent.png");
-    PImage harry = requestImage("daniel_radcliffe_transparent.png");
-    PImage hermione = requestImage("emma_watson_transparent.png");
-    PImage ron = requestImage("rupert_grint_transparent.png");
+    bg = loadImage("processing/nlmg/data/cottages.jpg");
+    kathy = requestImage("processing/nlmg/data/kathy_transparent.png");
+    tommy = requestImage("processing/nlmg/data/tommy_transparent.png");
+    ruth = requestImage("processing/nlmg/data/ruth_transparent.png");
+    harry = requestImage("processing/nlmg/data/daniel_radcliffe_transparent.png");
+    hermione = requestImage("processing/nlmg/data/emma_watson_transparent.png");
+    ron = requestImage("processing/nlmg/data/rupert_grint_transparent.png");
 }
 
 var draw= function() {

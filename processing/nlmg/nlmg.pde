@@ -34,7 +34,7 @@ var Person = function(name, x, y) {
   this.speed = 10;
   this.name = name;
   this.pic = kathy;
-  updatePic();
+  this.updatePic();
   
   this.updatePic = function() {
     var lname = name.toLowerCase();

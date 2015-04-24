@@ -2,6 +2,7 @@
 
 var bg, kathy, tommy, ruth, harry, hermione, ron;
 var randPics = [harry, hermione, ron];
+var me;
 
 void setup() {
   size(400, 400);
@@ -20,6 +21,8 @@ void setup() {
   harry = requestImage("processing/nlmg/data/daniel_radcliffe_transparent.png");
   hermione = requestImage("processing/nlmg/data/emma_watson_transparent.png");
   ron = requestImage("processing/nlmg/data/rupert_grint_transparent.png");
+  
+  me = new Person("tommy");
 }
 
 var Person = function(name) {
@@ -49,8 +52,6 @@ var drawRandomEllipses = function(opacity) {
     }
   }
 }
-
-var me = new Person("tommy");
 
 var draw = function() {
     // functions: imageX(playerX), imageY(plyerY)

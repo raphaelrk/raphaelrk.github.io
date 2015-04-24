@@ -66,7 +66,7 @@ var draw = function() {
       if(arrows[ARROWDOWN])   me.y += me.speed;
     }*/
 };
-/*
+
 var keyPressed = function() {
   if(keyCode === LEFT)   arrows[ARROWLEFT] = true;
   if(keyCode === RIGHT)  arrows[ARROWRIGHT] = true;
@@ -79,7 +79,7 @@ var keyReleased = function() {
   if(keyCode === RIGHT)  arrows[ARROWRIGHT] = false;
   if(keyCode === UP)     arrows[ARROWUP] = false;
   if(keyCode === DOWN)   arrows[ARROWDOWN] = false;
-}*/
+}
 
 void draw() {
   

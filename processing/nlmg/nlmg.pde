@@ -41,7 +41,7 @@ var Person = function(name, x, y) {
   this.pic = kathy;
   
   this.updatePic = function() {
-    var lname = name.toLowerCase();
+    var lname = this.name.toLowerCase();
     if(lname.indexOf("kathy") !== -1) {
       this.pic = kathy;
     } else if(lname.indexOf("tommy") !== -1) {

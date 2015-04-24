@@ -9,12 +9,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <link rel="stylesheet" href="css/main.css">
+    
+    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
   </head>
   <body>
     <div id="wrap" class="center_horizontally">
       <h1>Cottages Simulator 2015</h1>
       <p>Welcome to the Cottages. Heating not provided.</p>
       
+      <!-- temporary - firebase tut -->
+      <input type='text' id='nameInput' placeholder='Name'>
+      <input type='text' id='messageInput' placeholder='Message'>
+      
+      <!-- Firebase stuff -->
+      <script>
+        var myDataRef = new Firebase('https://jn55997fvlv.firebaseio-demo.com/');
+        $('#messageInput').keypress(function (e) {
+          if (e.keyCode == 13) {
+            var name = $('#nameInput').val();
+            var text = $('#messageInput').val();
+            myDataRef.push({name: name, text: text});
+            $('#messageInput').val('');
+          }
+        });
+        myDataRef.on('child_added', function(snapshot) {
+          var message = snapshot.val();
+          displayChatMessage(message.name, message.text);
+        });
+        function displayChatMessage(name, text) {
+          $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+          $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+        };
+        
+        $(document).ready(function() {
+          
+        });
+      </script>
+      
+      <!-- Get processing.js, create sketch from nlmg.pde -->
       <script src="http://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script>
       <canvas id="sketch" class="processingcanvas" data-processing-sources="processing/nlmg.pde" tabindex="0" width="400" height="400"></canvasid>
     </div>

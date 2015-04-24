@@ -63,7 +63,7 @@ var draw = function() {
     imageMode(CENTER);
     image(me.pic, width/2, height/2);
     
-    if(keyIsPressed) {
+    if(keyPressed) {
       if(keyCode === LEFT) me.x--;
       if(keyCode === RIGHT) me.x++;
       if(keyCode === UP) me.y--;

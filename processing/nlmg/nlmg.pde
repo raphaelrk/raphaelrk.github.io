@@ -48,7 +48,7 @@ var Person = function(name, x, y) {
       this.pic = tommy;
     } else if(lname.indexOf("ruth") !== -1) {
       this.pic = ruth;
-    } else if(lname.indexOf("ron") !== -1 || lname.indexOf("rupert1 || lname.indexOf("grint") !== -1) {
+    } else if(lname.indexOf("ron") !== -1 || lname.indexOf("rupert1") !== -1 || lname.indexOf("grint") !== -1) {
       this.pic = ruth;
     } else if(lname.indexOf("hermion") !== -1 || lname.indexOf("emma") !== -1 || lname.indexOf("watson") !== -1) {
       this.pic = ruth;

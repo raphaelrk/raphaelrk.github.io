@@ -84,7 +84,7 @@ var draw = function() {
     // draw name
     fill(255);
     textFont(nameFont);
-    text(me.name, width/2, height/2 + characterSize/2 + (textAscent() + textDescent())*2);
+    text(me.name, width/2, height/2 + characterSize/2 + (textAscent() + textDescent())*1.2);
     
     // draw message
     textFont(messageFont);

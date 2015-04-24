@@ -36,7 +36,8 @@ var Person = function(name, x, y) {
   this.x = x ? x : bg.width/2.0;
   this.y = y ? y : bg.height/2.0;
   this.speed = 10;
-  this.name = name;
+  this.name = name ? name : document.getElementById("nameInput").value;
+  this.message = document.getElementById("messageInput").value;
   this.pic = kathy;
   
   this.updatePic = function() {
@@ -79,8 +80,13 @@ var draw = function() {
     // draw character
     imageMode(CENTER);
     image(me.pic, width/2, height/2, characterSize, characterSize);
+    
+    // draw name
     fill(255);
-    text(me.name, width/2, height/2 + characterSize + 10);
+    text(me.name, width/2, height/2 + characterSize/2 + (textAscent() + textDescent())*2);
+    
+    // draw message
+    text(me.message, width/2, height/2 - characterSize/2 - (textAscent() - textDescent())*2);
     
     // move
     if(keyPressed) {
@@ -100,6 +106,12 @@ var draw = function() {
     if(nameInput != me.name) {
       me.name = nameInput;
       me.updatePic();
+    }
+    
+    // detect message change
+    var messageInput = document.getElementById("messageInput").value;
+    if(messageInput != me.message) {
+      me.message = messageInput;
     }
 };
 

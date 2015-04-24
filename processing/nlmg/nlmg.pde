@@ -49,6 +49,12 @@ var Person = function(name) {
 }
 
 var draw = function() {
+    // draw empty background
+    colorMode(HSB);
+    background(frameCount, 255, 255);
+    colorMode(RGB);
+    
+    // draw background
     // functions: imageX(playerX), imageY(plyerY)
     // imageX(0) = width/2, imageX(bg.width) = -bg.width+width/2
     // imageY(0) = height/2, imageY(bg.height) = -bg.height+height/2
@@ -63,6 +69,11 @@ var draw = function() {
       if(arrowRight)  me.x += me.speed;
       if(arrowUp)     me.y -= me.speed;
       if(arrowDown)   me.y += me.speed;
+      
+      if(me.x < 0) me.x = 0;
+      if(me.x >= bg.width) me.x = bg.width - 1;
+      if(me.y < 0) me.y = 0;
+      if(me.y >= bg.height) me.y = bg.height - 1;
     }
 };
 

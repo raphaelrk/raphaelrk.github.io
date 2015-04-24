@@ -58,15 +58,15 @@ var draw = function() {
     
     imageMode(CENTER);
     image(me.pic, width/2, height/2);
-    
+    /*
     if(keyPressed) {
       if(arrows[ARROWLEFT])   me.x -= me.speed;
       if(arrows[ARROWRIGHT])  me.x += me.speed;
       if(arrows[ARROWUP])     me.y -= me.speed;
       if(arrows[ARROWDOWN])   me.y += me.speed;
-    }
+    }*/
 };
-
+/*
 var keyPressed = function() {
   if(keyCode === LEFT)   arrows[ARROWLEFT] = true;
   if(keyCode === RIGHT)  arrows[ARROWRIGHT] = true;
@@ -79,7 +79,7 @@ var keyReleased = function() {
   if(keyCode === RIGHT)  arrows[ARROWRIGHT] = false;
   if(keyCode === UP)     arrows[ARROWUP] = false;
   if(keyCode === DOWN)   arrows[ARROWDOWN] = false;
-}
+}*/
 
 void draw() {
   

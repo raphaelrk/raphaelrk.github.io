@@ -7,7 +7,7 @@ void setup() {
 
 var draw = function() {
   background(random(150, 210), random(150, 210), random(200, 255);
-}
+};
 
 void draw() {
 

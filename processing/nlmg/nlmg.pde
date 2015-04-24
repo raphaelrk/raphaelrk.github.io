@@ -4,7 +4,7 @@ var bg, kathy, tommy, ruth, harry, hermione, ron;
 var randPics = [harry, hermione, ron];
 
 var arrowUp = false, arrowDown = false, arrowLeft = false, arrowRight = false;
-
+var characterSize = 80;
 var me;
 
 void setup() {
@@ -17,7 +17,7 @@ void setup() {
   textAlign(CENTER);
   text("Loading...", width/2, height/2);
   
-  bg = loadImage("processing/nlmg/data/cottages.jpg");
+  bg = requestImage("processing/nlmg/data/cottages.jpg");
   kathy = requestImage("processing/nlmg/data/kathy_transparent.png");
   tommy = requestImage("processing/nlmg/data/tommy_transparent.png");
   ruth = requestImage("processing/nlmg/data/ruth_transparent.png");
@@ -25,33 +25,36 @@ void setup() {
   hermione = requestImage("processing/nlmg/data/emma_watson_transparent.png");
   ron = requestImage("processing/nlmg/data/rupert_grint_transparent.png");
   
-  me = new Person("tommy");
+  me = new Person("kathy");
 }
 
-var Person = function(name) {
-  this.x = bg.width/2.0;
-  this.y = bg.height/2.0;
+var Person = function(name, x, y) {
+  this.x = x ? x : bg.width/2.0;
+  this.y = y ? y : bg.height/2.0;
   this.speed = 10;
   this.name = name;
-  this.pic = ron;
+  this.pic = kathy;
+  updatePic();
   
-  var lname = name.toLowerCase();
-  if(lname.indexOf("kathy") !== -1) {
-    this.pic = kathy;
-  } else if(lname.indexOf("tommy") !== -1) {
-    this.pic = tommy;
-  } else if(lname.indexOf("ruth") !== -1) {
-    this.pic = ruth;
-  } else {
-    var picIndex = floor(random(0, randPics.length));
-    this.pic = randPics[picIndex];
+  this.updatePic = function() {
+    var lname = name.toLowerCase();
+    if(lname.indexOf("kathy") !== -1) {
+      this.pic = kathy;
+    } else if(lname.indexOf("tommy") !== -1) {
+      this.pic = tommy;
+    } else if(lname.indexOf("ruth") !== -1) {
+      this.pic = ruth;
+    } else {
+      var picIndex = floor(random(0, randPics.length));
+      this.pic = randPics[picIndex];
+    }
   }
 }
 
 var draw = function() {
     // draw empty background
     colorMode(HSB);
-    background(frameCount, 255, 255);
+    background(frameCount%255, 255, 255);
     colorMode(RGB);
     
     // draw background
@@ -61,9 +64,13 @@ var draw = function() {
     imageMode(CORNER);
     image(bg, width/2 - me.x, height/2 - me.y);
     
+    // draw character
     imageMode(CENTER);
-    image(me.pic, width/2, height/2);
+    image(me.pic, width/2, height/2, characterSize, characterSize);
+    fill(255);
+    text(me.name, width/2, height/2 + characterSize + 10);
     
+    // move
     if(keyPressed) {
       if(arrowLeft)   me.x -= me.speed;
       if(arrowRight)  me.x += me.speed;
@@ -74,6 +81,13 @@ var draw = function() {
       if(me.x >= bg.width) me.x = bg.width - 1;
       if(me.y < 0) me.y = 0;
       if(me.y >= bg.height) me.y = bg.height - 1;
+    }
+    
+    // detect name change
+    var nameInput = document.getElementById("nameInput").value;
+    if(nameInput != me.name) {
+      me.name = nameInput;
+      me.updatePic();
     }
 };
 

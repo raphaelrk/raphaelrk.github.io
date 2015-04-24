@@ -2,6 +2,10 @@
 
 var bg, kathy, tommy, ruth, harry, hermione, ron;
 var randPics = [harry, hermione, ron];
+
+var ARROWUP = 0, ARROWDOWN = 1, ARROWLEFT = 2, ARROWRIGHT = 3;
+var arrows = [false, false, false, false];
+
 var me;
 
 void setup() {
@@ -28,6 +32,7 @@ void setup() {
 var Person = function(name) {
   this.x = bg.width/2.0;
   this.y = bg.height/2.0;
+  this.speed = 10;
   this.name = name;
   this.pic = ron;
   
@@ -44,15 +49,6 @@ var Person = function(name) {
   }
 }
 
-var drawRandomEllipses = function(opacity) {
-  for(var x=10; x<400;x+=20){
-    for (var y=10; y<400;y+=20){
-      fill(random(0,255),random(0,195), random(0,50), opacity);
-      ellipse(x,y,20,20);
-    }
-  }
-}
-
 var draw = function() {
     // functions: imageX(playerX), imageY(plyerY)
     // imageX(0) = width/2, imageX(bg.width) = -bg.width+width/2
@@ -64,14 +60,26 @@ var draw = function() {
     image(me.pic, width/2, height/2);
     
     if(keyPressed) {
-      if(keyCode === LEFT) me.x--;
-      if(keyCode === RIGHT) me.x++;
-      if(keyCode === UP) me.y--;
-      if(keyCode === DOWN) me.y++;
+      if(arrows[ARROWLEFT]) me.x -= me.speed;
+      if(karrows[ARROWRIGHT]) me.x += me.speed;
+      if(arrows[ARROWUP]) me.y -= me.speed;
+      if(arrows[ARROWDOWN]) me.y += me.speed;
     }
-    
-    drawRandomEllipses(100); // to make sure loop is running
 };
+
+var keyPressed = function() {
+  if(keyCode === LEFT) arrows[ARROWLEFT] = true;
+  if(keyCode === RIGHT) arrows[ARROWRIGHT] = true;
+  if(keyCode === UP) arrows[ARROWUP] = true;
+  if(keyCode === DOWN) arrows[ARROWDOWN] = true;
+}
+
+var keyReleased = function() {
+  if(keyCode === LEFT) arrows[ARROWLEFT] = false;
+  if(keyCode === RIGHT) arrows[ARROWRIGHT] = false;
+  if(keyCode === UP) arrows[ARROWUP] = false;
+  if(keyCode === DOWN) arrows[ARROWDOWN] = false;
+}
 
 void draw() {
   

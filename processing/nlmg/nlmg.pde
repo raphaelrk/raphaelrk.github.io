@@ -34,7 +34,6 @@ var Person = function(name, x, y) {
   this.speed = 10;
   this.name = name;
   this.pic = kathy;
-  this.updatePic();
   
   this.updatePic = function() {
     var lname = name.toLowerCase();
@@ -49,6 +48,8 @@ var Person = function(name, x, y) {
       this.pic = randPics[picIndex];
     }
   }
+  
+  this.updatePic();
 }
 
 var draw = function() {

@@ -49,12 +49,12 @@ var Person = function(name, x, y) {
       this.pic = tommy;
     } else if(lname.indexOf("ruth") !== -1) {
       this.pic = ruth;
-    } else if(lname.indexOf("ron") !== -1 || lname.indexOf("rupert1") !== -1 || lname.indexOf("grint") !== -1) {
-      this.pic = ruth;
-    } else if(lname.indexOf("hermion") !== -1 || lname.indexOf("emma") !== -1 || lname.indexOf("watson") !== -1) {
-      this.pic = ruth;
-    } else if(lname.indexOf("harry") !== -1 || lname.indexOf("daniel") !== -1 || lname.indexOf("radcliffe") !== -1) {
-      this.pic = ruth;
+    } else if(lname.indexOf("ron") !== -1 || lname.indexOf("weasley") !== -1 || lname.indexOf("rupert1") !== -1 || lname.indexOf("grint") !== -1) {
+      this.pic = ron;
+    } else if(lname.indexOf("hermione") !== -1 || lname.indexOf("grainger") !== -1 || lname.indexOf("emma") !== -1 || lname.indexOf("watson") !== -1) {
+      this.pic = hermione;
+    } else if(lname.indexOf("harry") !== -1 || lname.indexOf("potter") !== -1 || lname.indexOf("daniel") !== -1 || lname.indexOf("radcliffe") !== -1) {
+      this.pic = harry;
     } else {
       var picIndex = floor(random(0, characterPics.length));
       this.pic = characterPics[picIndex];

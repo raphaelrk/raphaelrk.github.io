@@ -1,7 +1,7 @@
 /* @pjs preload="processing/nlmg/data/cottages.jpg,processing/nlmg/data/kathy_transparent.png,processing/nlmg/data/tommy_transparent.png,processing/nlmg/data/ruth_transparent.png,processing/nlmg/data/daniel_radcliffe_transparent.png,processing/nlmg/data/emma_watson_transparent.png,processing/nlmg/data/rupert_grint_transparent.png"; */
 
 var bg, kathy, tommy, ruth, harry, hermione, ron;
-var characterPics = [kathy, tommy, ruth, harry, hermione, ron];
+var characterPics = [];
 
 var nameFont = createFont("arial black", 20);
 var messageFont = createFont("Verdana", 24);
@@ -28,6 +28,7 @@ void setup() {
   harry = requestImage("processing/nlmg/data/daniel_radcliffe_transparent.png");
   hermione = requestImage("processing/nlmg/data/emma_watson_transparent.png");
   ron = requestImage("processing/nlmg/data/rupert_grint_transparent.png");
+  characterPics = [kathy, tommy, ruth, harry, hermione, ron];
   
   me = new Person("kathy");
 }

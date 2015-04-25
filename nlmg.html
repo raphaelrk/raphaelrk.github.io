@@ -34,7 +34,7 @@
       
       <!-- Firebase stuff -->
       <script>
-        var myDataRef = new Firebase('https://jn55997fvlv.firebaseio-demo.com/');
+        var myDataRef = new Firebase('https://vivid-heat-9897.firebaseio.com/');
         $('#messageInput').keypress(function (e) {
           if (e.keyCode == 13) {
             var name = $('#nameInput').val();
@@ -48,7 +48,8 @@
           displayChatMessage(message.name, message.text);
         });
         function displayChatMessage(name, text) {
-          $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+          document.getElementById("wrap").innerHTML += '<p><em>' + name + ': </em>' + text + '</p>';
+          // $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
         };
         
         $(document).ready(function() {

@@ -76,6 +76,7 @@ var draw = function() {
       fill(0);
       textFont(messageFont);
       text("Loading...", width/2, height/2);
+      console.log("still loading bg");
       return;
     }
     

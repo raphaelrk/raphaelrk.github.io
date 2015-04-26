@@ -65,6 +65,7 @@ var Person = function(name, x, y) {
 }
 
 var draw = function() {
+    console.log("frame: " + frameCount);
     // draw empty background
     colorMode(HSB);
     background(frameCount%255, 255, 255);
@@ -95,6 +96,7 @@ var draw = function() {
       text("☻\nname\nyourself", width/2, height/2);
     }
     
+    console.log("  mid: " + frameCount);
     
     // draw name
     fill(255);
@@ -130,6 +132,7 @@ var draw = function() {
     if(messageInput != me.message) {
       me.message = messageInput;
     }
+    console.log("  end: " + frameCount);
 };
 
 void keyPressed() {

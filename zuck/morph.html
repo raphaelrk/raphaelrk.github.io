@@ -1,0 +1,304 @@
+<html>
+
+<title>Automated Facial Morphing</title>
+
+<center><b>
+<font size=+3>Automated Facial Morphing</font>
+<p><font size=+2>CS175: Final Project</font></b>
+<p>Andrew McCollum
+[<font size=-1><a href='mccollum@fas.harvard.edu'>mccollum@fas.harvard.edu</a></font>]
+<br>Mark Zuckerberg
+[<font size=-1><a href='mzuckerb@fas.harvard.edu'>mzuckerb@fas.harvard.edu</a></font>]
+</center>
+
+<p><table cellspacing=0 cellpadding=10 border=0 width=95%>
+<tr><td><b><font size=+2>I.</td><td><b><font size=+2>Abstract</td></tr>
+<tr><td></td><td>
+
+A new technique is presented for the automatic morphing of two digital images of
+faces.  The approach accurately renders a combination of the two faces by identifying
+a set of key points in each face and then morphing the two together using the defined
+points.  The method effectively eliminates the need for human input by using
+the algorithm we propose to pick out the same points and features a human
+animator would.  Comparisons with other techniques are drawn, and the advantages of
+each are drawn.  Some examples are given with images.
+
+</td></tr><tr><td><b><font size=+2>II.</td><td><b><font size=+2>Introduction</td></tr>
+<tr><td></td><td>
+
+Morphing two images together is a common visual effect, frequently used in films
+and other forms of entertainment.  One of the most prevalent uses of this
+technology is in morphing two faces together, often to create a set of frames that
+transition from one of the images to the other over a set period of time.  While
+conventional morphing algorithms are generally computationally intensive and
+sometimes require on the order of minutes to produce an animation of as few as ten
+images, the aspect of the process that requires by far the most time and human power
+is inputting the lines around which the image will morph.
+
+<p>This is the motivation for developing an algorithm to automatically identify the
+key points of a face and construct the appropriate set of lines from these points.
+Once we have these lines, the morph can be computed easily using the distort and
+dissolve method described in Beier and Neely's algorithm, which we will also 
+outline below.
+
+<p>The complete process of going from two distinct images to a single morphed
+image automatically includes three main steps.  The first and most important to
+this paper is using generalized methods in color theory to find key points in the
+faces.  From these points, we then construct the corresponding set of lines with
+which we can <i>distort</i> the two images so the important features in each match
+up with each other.  Finally, we can <i>dissolve</i> the two images together by
+taking a weighted average of each pixel in the distorted images.
+
+<p>The general term "morphing" is used to denote the distorting and dissolving
+steps.  In some senses, morphing implies a progression from one image to another,
+as in a video clip beginning with one image and ending with the other for example.
+In this paper and the algorithm we outline, however, we will only produce a single
+image when we morph two images together.  We allow this simplification since it is
+sufficiently easy to produce any desired animation from a series of single images,
+all of which can be produced by the algorithm.
+
+<p>We will now introduce our method for facial feature identification using color
+theory and facial geometry.
+
+</td></tr><tr><td><b><font size=+2>III.</td><td><b><font size=+2>Facial
+Identification</td></tr>
+<tr><td></td><td>
+
+The recognition and identification of facial features can be broken up into two
+components: the recognition of important features within the face, and the
+recognition of the structure of the face within the image.
+
+<p><font size=+1><b>Facial Feature Identification</b></font>
+
+<p>In order to find the important features within the face, we first construct
+a new image which is easier to work with.  The new image is black and white, with
+the shade of each image equal to the difference in intensity between the
+corresponding pixel in the original image and all of its surrounding pixels, where
+we define the shade of a pixel to be its RGB value such that the values for all
+three colors are equal (this is what makes it black and white) and we define
+the intensity of a pixel to be the average of its red, green and blue values.  We
+compute the new image, which is the difference in intensity of all surrounding
+pixels by first constructing an image only considering the difference in intensity
+of each pixel and the pixel to its left, and then constructing an image considering
+the difference in intensity of each pixel and the pixel above it, and then
+constructing a third image whose with pixel intensities equal to the sum of the
+pixel intensities in the first two images we produced.
+
+<p><center><table cellspacing=0 cellpadding=10 border=0>
+<tr><td><img src='img5.jpg'></td><td><img src='5bw.jpg'></td></tr>
+<tr><td width=300><center>A sample image.</td>
+<td width=300>The color intensity difference image for
+the sample image.</td></tr></table></center>
+
+<p>Once we have this image, we need to search for sizeable blocks of intensity,
+which denote significant changes in color in the original image.  These blocks
+correspond to the important facial features, since these features are always
+characterized either by drastic changes in color, as are the case with the eyes
+and mouth, or by a perimeter shadow, as is the case with the nose.
+
+<p>We locate the most significant blocks in the image using a process we call
+"growing".   The process entails considering each intensely colored pixel and then
+looking at the pixels surrounding that pixel.  If any of those pixels meet a
+certain threshold of intensity, we paint those pixels the same color as the current
+pixel we are considering.  We then recursively paint the neighboring pixels'
+neighbors and so on, until no more pixels can be painted and we have grown our
+block of pixels to be as large as it can be.
+
+<p>In order to make this process more accurate, we implemented a few enhancements.
+First, in order to reduce error, we darken all pixels in the image by an amount
+proportional to their distance from the center of the image.  This is done based
+on the assumption that facial features will fall towards the center of the image.
+By reducing the intensity of pixels farther from the center, we effectively reduce
+the chance of growing blocks on erroneous features, like cheeks or even the side of
+the face.  Since these blocks would interfere with the blocks we are actually
+trying to locate, and since we are not interested in these features for morphing,
+removing them earlier is a good simplification of the problem.  We have also found
+that darkening pixels more in the horizontal direction than the vertical direction
+is more effective, since there is greater variance in the vertical distribution of
+important features than there is in the horizontal distribution.
+
+<p>Another enhancement we implemented was to intensify pixels that are surrounded
+on all sides by intensely colored pixels, regardless of their intensity.  This
+increases the uniformity of blocks and allows us to see that those pixels do in
+fact belong in the blocks and that their lack of intensity is just error.  The
+darkness, or lack of intensity, is due to the fact that changes of intensity in the
+original image often take a few pixels in a direction to fully propgate, and as the
+change comes to its completion, the gradient of color will become less sharp, and
+so the corresponding pixel in the new image will lack intensity.  It still is,
+however, part of the change, so including it in the block is not an error.
+
+<p>Once we have identified all of the blocks, we choose which are most likely to
+match up to each to the major features -- eyes, nose and mouth -- by checking for
+overall size and shape of the blocks.  In general, the larger blocks represent more
+prominent features, so we will assume that the largest blocks correspond to the
+important features we're looking for.  Sometimes shape can give away that a block
+is erroneous if, for example, it is taller than it is wide.  Since all facial
+features, including the nose, which is just identified as its tip, are wider than
+they are tall, it seems relatively safe to throw away excessively tall blocks.
+
+<p>From the blocks we identify as the facial features, we locate the left-most,
+right-most, top-most and bottom-most points of the block and connect them to form
+a perimeter around the features.  We then pass these lines to the morpher as part
+of the facial data.
+
+<p><b><font size=+1>Facial Perimeter Identification</font></b>
+
+<p>The second aspect of facial recognition involves finding the region of the image
+that is occupied by the face.  We do this by first locating the center of the face
+by taking the average of its left-most and right-most points (usually its ears).
+We identify where the background of the image ends and the ears begin by again
+checking for color intensities in the images.  We find the background intensity by
+looking in the upper corners, and then we scan over from the side of the image
+until the intensity of the pixel we are on is no longer in the range of the
+background.  At this point, we know we have reached the face,
+
+<p>After we have the center of the face, we cast lines out from this point at
+different angles, starting from 0 degrees and going all the way to 360 degrees at
+intervals of <i>n</i> degrees.  For each angle, we move along the line out from
+the center of the face, looking at the intensity of the pixel we are on for each
+step along the way.  When we reach a pixel whose intensity matches the background
+intensity, we know we have just transitioned from the face to the background, so
+we can set the pixel as a border pixel of the face.  If we repeat this process for
+each interval of <i>n</i> degrees, we end up with 360 / <i>n</i> border points,
+which we can connect together to form 360 / <i>n</i> lines, or a complete outline
+of the face.
+
+<p>In order to increase the accuracy of the outline, we recommend a value of <i>n</i>
+around 15 degrees.  We also experimented with limiting the range at which we cast
+out lines from the center, and concluded that casting out lines between the angles
+of -45 degrees and 225 degrees generally do not produce any border points since
+those lines just follow a path through the neck and into the clothing, and then
+reach the boundary of the image before every coming into contact with its
+background.  In most experimental data, this process produced about 20 border
+points, which was seemingly enough to accurately model the shape of the face for
+morphing. 
+
+</td></tr><tr><td><font size=+2><b>IV.</td><td><font size=+2><b>Distortion and
+Dissolving</td></tr>
+<tr><td></td><td>
+
+Once we acquire and import the data from the facial identification algorithm,
+we can proceed with any morphing algorithm to produce the combination of the two
+images.  The algorithm that seemed to be most accurate and intuitive was Beier and
+Neely's <i>Feature-Based Image Metamorphosis</i> algorithm, which uses
+mathematical field morphing to distort the two images to the point where they are
+the same shape and can be dissolved together quite simply.
+
+<p><center><table cellspacing=0 cellpadding=10 border=0>
+<tr><td><img width=150 src='mark.jpg'></td><td>--></td><td><img width=150 src='mark_distorted.jpg'></td></tr>
+<tr><td><img width=150 src='other.jpg'></td><td>--></td><td><img width=150 src='other_distorted.jpg'></td></tr>
+<tr><td><center>Normal images</td><td></td><td><center>Distorted images</td></tr></table></center>
+
+<p>This algorithm works by finding the appropriate pixel in the source image to sample
+for each pixel in the destination image.  It does this by distorting the field
+around each line in the morphing set so that points around those lines in the
+original images move towards the corresponding lines from the other image in the
+new image.
+
+<p>The extent to which this behavior is exhibited depends on three
+constants that need to be defined for the algorithm.  The first, <i>a</i>, is a
+number greater than zero which represents how rigidly points on the lines in one
+images will move to points on the line in the other image.  The closer to zero that
+<i>a</i> gets, the more rigid the motion will be.  Since our morphing sets contain
+many lines, we do not necessarily want pixels on any of the lines to move exactly
+with the lines lest we will produce more of a shattered glass effect than the
+intended result, so we choose a large number for <i>a</i>.  The next constant is
+<i>b</i>, which controls how much pixels are influenced by lines closer to them
+as opposed to those farther away.  It is traditional to keep <i>b</i> in the range
+of 0.5 to 2.0, but we wanted to make sure that pixels were most influenced by
+nearby lines, so we set <i>b</i> = 2.0.  The final constant is <i>p</i>, which
+controls whether longer lines have more influence over the image than shorter ones.
+Since the length of lines will be arbitrary in our morphing sets since they were
+constructed to outline facial features uniformly, we do not want longer lines to
+have any more weight than shorter ones, so we set <i>p</i> = 0.
+
+<p>Using these three constants, the Beier-Neely algorithm will distort the two
+images so that they become the same shape, and then we can simply go through pixel
+by pixel and take the average color of each and construct a new image based on
+these values.  Once we have this image, we are done with the morph, and we have
+effectively gone from two facial images to a morphed combination of the two of them,
+without any user input.
+
+</td></tr><tr><td><font size=+2><b>V.</td><td><font size=+2><b>Data and
+Conclusions</td></tr>
+<tr><td></td><td>
+
+Our experimentation showed relatively good results for the images we tested it with,
+although some definitely worked better than others.  Consider these, for example:
+
+<p><center><table cellspacing=0 cellpadding=10 border=0>
+<tr><td><b>(1)</b></td>
+<td><img width=150 src='img6.jpg'></td><td>+</td>
+<td><img width=150 src='img7.jpg'></td><td>=</td>
+<td><img width=150 src='img67.jpg'></td></tr>
+
+<tr><td><b>(2)</b></td>
+<td><img width=150 src='img4.jpg'></td><td>+</td>
+<td><img width=150 src='mark.jpg'></td><td>=</td>
+<td><img width=150 src='img4m.jpg'></td></tr>
+
+<tr><td><b>(3)</b></td>
+<td><img width=150 src='img8.jpg'></td><td>+</td>
+<td><img width=150 src='img10.jpg'></td><td>=</td>
+<td><img width=150 src='img810.jpg'></td></tr>
+</table></center>
+
+<p>As can easily be seen, all features were accurately identified in all six of
+the source images, and they all seem to be mapped and combined with relatively
+little facial error.  Note that the shoulders and shirt do not necessarily match
+up, but we do not mind this because we did not try to match them up in the first
+place.
+
+<p>Several examples did trip up the algorithm though.  Images of people
+with glasses often had unrecognizable eyes, and dark-skinned people sometimes
+noses and mouths that were difficult to pick out.  All in all, the algorithm
+identified all four facial features correctly on about two thirds of all trials,
+and it accurately found a facial border for ever trial.  The problem is that
+whenever it failed to recognize a feature, it not only does not find the right
+feature, but it also mislabels some other feature as that features.  There have
+been images for which the left eyebrow is identified as the left eye, which left
+the left eye to be the nose and then the nose to be the mouth.  This set the
+morpher up for failure since it was fed incorrect map points, and never produced
+good results.
+
+<p>All in all, this algorithm shows promise for being developed into something
+that does automatic facial morphing with greater accuracy in the future.  Although
+we have already developed many enhancements to optimze the algorithm, there is still
+much more that can be done, and much more to be tweaked in our code, so there is
+definitely room to make this even better than it is now.  In the current state,
+this seems to be a good algorithm for use, and our implementation seems to be
+relatively effective given the amount of time we had to work on it.
+
+</td></tr><tr><td><font size=+2><b>VI.</td><td><font size=+2><b>Program
+Execution</td></tr>
+<tr><td></td><td>
+
+We developed two separate applications for this project: one to identify the
+facial features and map them into lines, and one to compute the morph from the morph
+lines.  The code for the former can be found in ffr.c, and the code for the latter
+in morph.c.  You can execute the programs as follows:
+
+<p>./ffr <i>image1</i>.ppm <i>image2</i>.ppm
+
+<p>./morph <i>image1</i>.ppm <i>image2</i>.ppm <i>outfile</i>.ppm <i>[weight]</i>
+
+<p>Further, the output from ffr is to stdout, and the input to morph is through
+stdin, so they work best when the output from ffr is piped directly into morph.
+
+<p>The code has been compiled under both Windows and Linux, but it is only stable
+under Linux at this time.  The executables we provide have been compiled under
+Linux.  We have not provided a makefile, so to compile, use:
+
+<p>gcc -o [ffr/morph] -lm ppmio.c [ffr/morph].c
+
+<p>Links to code:
+<font size=-1>
+<br>&nbsp;&nbsp;&#8226;&nbsp;<a href='morph.c'>morph.c</a>
+<br>&nbsp;&nbsp;&#8226;&nbsp;<a href='ffr.c'>ffr.c</a>
+
+</td></tr></table>
+<hr>
+
+
+
+

@@ -1,0 +1,47 @@
+var boxW = width/8;
+var boxH = height/8;
+
+var colors = [
+    [0x33, 0x22, 0x33], // black
+    [0x33, 0x22, 0xcc], // blue
+    [0x33, 0xbb, 0x33], // green
+    [0x33, 0xbb, 0xcc], // cyan
+    [0xaa, 0x22, 0x33], // red
+    [0xaa, 0x22, 0xcc], // magenta
+    [0xaa, 0xbb, 0x33], // yellow
+    [0xaa, 0xbb, 0xcc], // white
+];
+
+var fillFromRC = function(r,c) {
+    // if (r===0||c===0) {
+    //     var i = r+c;
+    //     fill(
+    //         colors[i][0],
+    //         colors[i][1],
+    //         colors[i][2]
+    //     );
+    //     return;
+    // }
+    var R = (frameCount*0.01*colors[r][0] + frameCount*0.01*colors[c][0])%0xff;
+    var G = (frameCount*0.01*colors[r][1] + frameCount*0.01*colors[c][1])%0xff;
+    var B = (frameCount*0.01*colors[r][2] + frameCount*0.01*colors[c][2])%0xff;
+    fill(R,G,B);
+};
+
+var draw = function() {
+    background(240, 240, 240);
+    stroke(0, 0, 0);
+    noStroke();
+    for (var i=0;i<8;i++) {
+        fillFromRC(i,0);
+        rect(i*boxW,0,boxW,boxH);
+        rect(0,i*boxH,boxW,boxH);
+    }
+    
+    for (var r=1;r<8;r++) {
+        for (var c=1; c<8; c++) {
+            fillFromRC(r,c);
+            rect(c*boxW,r*boxH,boxW,boxH);
+        }
+    }
+};

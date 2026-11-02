@@ -1,0 +1,126 @@
+angleMode = "degrees";
+
+var maxD = dist(0, 0, width/2, height/2);
+
+var px = 150;
+var py = 100;
+var mx = -6;
+var my = 1;
+var vx = mx*mx;
+var vy = my*my;
+
+var mx = 0;
+var my = 0;
+var vx = mx*mx;
+var vy = my*my;
+
+frameRate(30);
+var alph = 5;
+var beta1 = 0.9;
+var beta2 = 0.99;
+
+// L = ((x-200)^2 + (y-200)^2)^0.5
+// dL/dX = 0.5 * (((x-200)^2 + (y-200)^2) ^ -0.5) * 2 * (x-200)
+//       = (x - 200) / sqrt((x-200)^2 + (y-200)^2)
+//       = (x - 200) / dist(x, y, 200, 200)
+// dL/dY = (y - 200) / dist(x, y, 200, 200)
+function getLoss(x, y) {
+    return dist(x, y, width/2, height/2);
+}
+function getdLdX(L, x, y) {
+    return (x - width/2) / L;
+}
+function getdLdY(L, x, y) {
+    return (y - height/2) / L;
+}
+
+// L = dist(x, y, width/2, height/2) + sin(uy)*v
+// dL/dY = (x-w/2) / dist(x, y, w/2, h/2)
+// dL/dX = (y-h/2) / dist(x, y, w/2, h/2) + ucos(uy)*v
+function getLoss(x, y) {
+    return dist(x, y, width/2, height/2) + cos(y)*0.5;
+}
+function getdLdX(L, x, y) {
+    return (L < 0.1 ? 0 : (x - width/2) / L);
+}
+function getdLdY(L, x, y) {
+    return L < 0.1 ? 0 : (y - height/2) / L - sin(y)*0.5;
+}
+
+function drawBG() {
+    for (var y=0; y<=height; y += 20) {
+        for (var x=0; x<=width; x += 20) {
+            // var d = dist(x, y, width/2, height/2);
+            // stroke(map(d, 0, maxD, 225, 0));
+            stroke(80);
+            strokeWeight(2);
+            point(x, y);
+            
+            var L = getLoss(x, y);
+            if (L > 0.1) {
+                strokeWeight(0.5);
+                var extra = 9;
+                var dLdX = getdLdX(L, x, y);
+                var dLdY = getdLdY(L, x, y);
+                line(x, y, x - dLdX * extra, y - dLdY * extra);
+                var theta = atan2(-dLdY, -dLdX);
+                
+                var _mag = dist(0, 0, dLdX*extra, dLdY*extra);
+                line(
+                    x - dLdX*extra,
+                    y - dLdY*extra,
+                    x + cos(theta+30) * _mag * 0.8,
+                    y + sin(theta+30) * _mag * 0.8
+                );
+                line(
+                    x - dLdX*extra,
+                    y - dLdY*extra,
+                    x + cos(theta-30) * _mag * 0.8,
+                    y + sin(theta-30) * _mag * 0.8
+                );
+            }
+        }
+    }
+}
+drawBG();
+
+var draw = function() {
+    // background(255, 255, 255);
+    
+    var L = getLoss(px, py);
+    var dLdX = getdLdX(L, px, py);
+    var dLdY = getdLdY(L, px, py);
+
+    strokeWeight(0.5);
+    fill(255, 0, 0);
+    ellipse(px, py, 4, 4);
+    strokeWeight(1);
+    stroke(35, 176, 84);
+    line(px, py, px-mx*15, py-my*15);
+    stroke(62, 36, 255);
+    line(px, py, px-dLdX*15, py-dLdY*15);
+    
+    // stroke(0, 0, 0);
+    // line(px, py, px-vx*3, py-vy*3);
+
+    // m ← β1m + (1 − β1)∇θJminibatch(θ)
+    // θ ← θ − αm
+    // mx = beta1 * mx + (1-beta1) * dLdX;
+    // my = beta1 * my + (1-beta1) * dLdY;
+    // px = px - alph * mx;
+    // py = py - alph * my;
+    
+    // m ← β1m + (1 − β1)∇θJminibatch(θ)
+    // v ← β2v + (1 − β2)(∇θ Jminibatch(θ) • ∇θ Jminibatch(θ))
+    // θ ← θ − α • m/ √ v
+    mx = beta1 * mx + (1-beta1) * dLdX;
+    my = beta1 * my + (1-beta1) * dLdY;
+    vx = beta2 * vx + (1-beta2) * dLdX * dLdX;
+    vy = beta2 * vy + (1-beta2) * dLdY * dLdY;
+    px = px - alph * mx / sqrt(vx);
+    py = py - alph * my / sqrt(vy);
+
+    // if (dist(px, py, width/2, height/2) < 1) {
+    //     noLoop();
+    // }
+};

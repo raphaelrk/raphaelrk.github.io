@@ -1,0 +1,19 @@
+// for DLP Apr 8
+// by raphy kats
+// cool student work: https://www.khanacademy.org/computer-programming/olympic-rings/4282692753
+
+var x = -8;
+var y = 73;
+var diameter = 50;
+
+// the car body
+fill(255, 0, 0);
+rect(x + 150, y + 100, 200, 100);
+
+// the car's wheels
+fill(0, 0, 0);
+ellipse(x + 200, y + 200, diameter, diameter);
+ellipse(x + 300, y + 200, diameter, diameter);
+
+image(getImage("creatures/Winston"), x + 245, y + 38);
+

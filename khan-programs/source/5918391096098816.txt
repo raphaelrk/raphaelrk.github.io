@@ -1,0 +1,141 @@
+/**
+ * Wip (2023)
+ * Based on A box of chocolates (2014)
+ * by Raphael Rouvinov-Kats
+ * */
+
+// go as fast as possible
+frameRate(0);
+
+// canvas width and height but with three letter var names :)
+var wid = width;
+var hgt = height;
+
+// coordinates of center
+var cx = wid/2;
+var cy = hgt/2;
+
+var draw = function() {
+    // load canvas pixel data
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    // coordinates of pixel being updated
+    var px=-1, py=0;
+
+    // mouse dist from center
+    var mxc = mouseX - cx;
+    var myc = mouseY - cy;
+    // var md2 = mxc*mxc * myc*myc;
+    // var md = sqrt(md2);
+
+    // loop over all pixels
+    while(py <= hgt) {
+        px++;
+        if (px >= wid) {
+            px = 0;
+            py++;
+        }
+
+        // pixel dist from center
+        var pxc = px - cx;
+        var pyc = py - cy;
+        // var pd2 = (pxc*pxc + pyc*pyc);
+        // var pd = sqrt(pyd2); // switch to fast sqrt?
+        
+        // bitwise-or of mouse/pixel x/y from center
+        var x_or = mxc|pxc;
+        var y_or = myc|pyc;
+
+        // get the "distance"
+        var d = sqrt(x_or*x_or + y_or*y_or);
+        
+        // get the 'time'
+        var t = (d * frameCount)%360;
+        
+        // http://jsperf.com/native-sin-vs-approx-fast-sin
+        // this is var s = 255 * sin(t)
+        var s = 255* (0.02222222*t - 0.00012345679 * t * t);
+        
+        // switch off showing red vs green vs blue
+        var willShowR = frameCount % 3 === 0;
+        var willShowG = frameCount % 3 === 1;
+        var willShowB = frameCount % 3 === 2;
+
+        // inertia
+        var a = 0.8;
+
+        // set red, green, and blue image data
+        var row_offset = (25*py<<6);
+        var col_offset = (px<<2);
+        var pix_offset = row_offset + col_offset;
+        if(willShowR) {
+            pix[pix_offset+0] *= a;
+            pix[pix_offset+0] += s*(1-a);
+        }
+        if(willShowG) {
+            pix[pix_offset+1] *= a;
+            pix[pix_offset+1] += s*(1-a);
+        }
+        if(willShowB) {
+            pix[pix_offset+2] *= a;
+            pix[pix_offset+2] += s*(1-a);
+        }
+    }
+    
+    // draw a grid of red dots
+    // for (var x=0;x<=wid;x+=20) {
+    //     for (var y=0;y<=hgt;y+=20) {
+    //         pix[(25*y<<6) + (x<<2) + 0] = 255;
+    //         pix[(25*y<<6) + (x<<2) + 1] = 0;
+    //         pix[(25*y<<6) + (x<<2) + 2] = 0;
+    //     }
+    // }
+    
+    // trigger pixel update based on values in pix
+    // (ie in this.imageData.data)
+    this.updatePixels();
+
+    // show how many frames have gone by
+    // text(frameCount, 30, 30);
+    
+    // show mouseX and mouseY
+    // text("mx: " + mouseX, 30, 45);
+    // text("my: " + mouseY, 30, 60);
+
+    // show mouse x/y from center
+    text("mcx: " + mxc, 30, 75);
+    text("mcy: " + myc, 30, 90);
+
+    // show x/y axes
+    line(cx, 0, cx, hgt);
+    line(0, cy, wid, cy);
+
+    // apply filters
+    // var r = random(0, 1);
+    // if(r < 0.125) {
+    //    filter(THRESHOLD);
+    // }
+    // else if(r < 0.25) {
+    //     filter(GRAY);
+    // }
+    // else if(r < 0.375) {
+        
+    // }
+    // else if(r < 0.5) {
+    //     filter(POSTERIZE, 5);
+    // }
+    // else if(r < 0.675) {
+    //     filter(BLUR);
+    // }
+    // else if(r < 0.75) {
+    //     filter(OPAQUE);
+    // }
+    // else if(r < 0.875) {
+    //     filter(ERODE);
+    // }
+    // else {
+    //     filter(DILATE);
+    // }
+};

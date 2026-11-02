@@ -1,0 +1,25 @@
+/**
+ * Mouse followers
+ * By Raphael Rouvinov-Kats
+ * Based on the famous commodore 64 one-line "10 PRINT CHR$(205.5+RND(1)); : GOTO 10"
+ * */
+
+stroke(255, 255, 255);
+strokeWeight(5);
+
+var s = 20;
+
+frameRate(0);
+var draw = function() {
+    background(141, 187, 240);
+    for(var y = 0; y < 400; y += s) {
+        for(var x = 0; x < 400; x+= s) {
+            var a2 = atan2(mouseX - x - s/2, mouseY - y - s/2);
+            if((a2 < 90 && a2 > 0) || a2 < -90) {
+                line(x, y, x + s, y + s);
+            } else {
+                line(x + s, y, x, y + s);
+            }
+        }
+    }
+};

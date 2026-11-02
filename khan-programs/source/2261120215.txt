@@ -1,0 +1,38 @@
+var origX = 200;
+var origY = 200;
+frameRate(0);
+
+var count = 0;
+
+var draw = function() {
+    
+    background(0, 0, 0);
+    fill(255, 0,0);
+    arc(origX, origY, 
+        sin(count)*100 + 300, cos(count)*100 + 300,
+        0, 360);
+    fill(0, 255,0);
+    arc(origX, origY, 
+        cos(count)*100 + 300, sin(count)*100 + 300,
+        0, 360);
+    fill(0, 0, sin(count)*sin(count)*255);
+    arc(origX, origY, 
+        200, 200, 
+        0, 360);  
+    fill(255, 255,0);
+    arc(origX, origY, 
+        150 + 50*sin(count)*sin(count), 
+        200 - 100*sin(count)*sin(count), 
+        0, 360);  
+    fill(cos(count)*100 + 150, sin(count)*100 + 150,255);
+    arc(origX, origY, 
+        100, 100, 
+        0, 360);  
+    fill(255, 0,255);
+    arc(origX, origY, 
+        75 + 25*(sin(count)+cos(count))/1.414, 
+        75 - 25*(sin(count)+cos(count))/1.414, 
+        0, 360);
+    
+    count++;
+};

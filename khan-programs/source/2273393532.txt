@@ -1,0 +1,23 @@
+var speed = 0.1;
+
+background(245, 8, 245);
+var im = getImage("creatures/OhNoes");
+var x = 0;
+var y = 0;
+for (var i=0; i<360; i+=1) {
+    x = 10+40*log(i);
+    y = 150-60*sin(i);
+    image(im,x,y);
+}
+textSize(60);
+text("Oh noes!",50,80);
+text("I'm a worm!", 50, 370);
+
+var mouseMoved = function() {
+    x += (mouseX - im.width/2 - x) * speed;
+    y += (mouseY - im.height/2 - y) * speed;
+    image(im, x, y);
+    textSize(60);
+    text("Oh noes!",50,80);
+    text("I'm a worm!", 50, 370);
+};

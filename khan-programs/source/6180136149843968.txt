@@ -1,0 +1,208 @@
+/**
+ * Life
+ * By Raphael Rouvinov-Kats
+ * 
+ * Dots reproduce every once in a while.
+ * If dots touch other dots, they die.
+ * If the dots are too far from another dot, they die
+ * The dots' actions can include moving, reproducing or dying
+ * The actions change with a reproduction
+ * 
+ * Post-making writing this I realized it's very similar to Conway's Game of Life,
+ * so I named it after that.
+ * 
+ * If it has an error just press Restart and it should go away
+ * 
+ * Hold your mouse down to put your own stream of dots on!
+ * */
+ 
+frameRate(0);
+
+var startingFishAmount = 100;
+
+var fishArr = [];
+
+var fish = function(x, y, actions) {
+    this.x = x;
+    this.y = y;
+    var r = 5;
+    this.actions = actions;
+    var actionsIndex = 0;
+    
+    if(actions === null || actions.length === 0) {
+        actions = [];
+        for(var a = 0; a < random(30, 40); a++) {
+            actions.push(floor(random(0, 12)));
+        }
+    }
+    
+    this.draw = function() {
+        noStroke();
+        fill(0, 0, 0);
+        ellipse(x, y, r, r);
+    };
+    
+    this.die = function() {
+        // find your index
+        var index = 0;
+        while(fishArr[index] !== this && index < fishArr.length) {
+            index++;
+        }
+        
+        // splice
+        fishArr.splice(index, 1);
+    };
+    
+    this.reproduce = function() {
+        //println("reproduced! " + frameCount);
+        var fish1actions = [];
+        var fish2actions = [];
+        for(var a = 0; a < actions.length; a++) {
+            fish1actions.push(min(11, max(0, actions[a] + floor(random(0, 12)))));
+            fish2actions.push(min(11, max(0, actions[a] + floor(random(0, 12)))));
+        }
+        
+        var rand = random(0, 1);
+        if(rand < 0.25 && fish1actions.length > 5) {
+            fish1actions.pop();
+            fish2actions.pop();
+        } else if(rand < 0.5) {
+            fish1actions.push(floor(random(0, 12)));
+            fish2actions.push(floor(random(0, 12)));
+        }
+        
+        fishArr.push(new fish(x + random(-10, 10), y + random(-20, 20), fish1actions));
+        fishArr.push(new fish(x + random(-10, 10), y + random(-20, 20), fish2actions));
+        this.die();
+    };
+    
+    
+    this.swim = function() {
+        var action = actions[actionsIndex];
+        actionsIndex = (actionsIndex + 1) % actions.length;
+        if(action === 0) {
+            x += 1;
+        } else if(action === 1) {
+            x -= 1;
+        } else if(action === 2) {
+            y += 1;
+        } else if(action === 3) {
+            y -= 1;
+        } else if(action === 4) {
+            x -= 2;
+        } else if(action === 5) {
+            x += 2;
+        } else if(action === 6) {
+            y += 2;
+        } else if(action === 7) {
+            y -= 2;
+        } else if(action === 8) {
+            this.die();
+        } else if(action === 9) {
+            this.reproduce();
+        } else if(action === 10) {
+            // determine closest dot
+            var minDotIndex = 0;
+            var minDotDistance = 400;
+            for(var i = 0; i < fishArr.length; i++) {
+                var d = dist(x, y, fishArr[i].getX(), fishArr[i].getY());
+                if(d !== 0 && d < minDotDistance) {
+                    minDotIndex = i;
+                    minDotDistance = d;
+                }
+            }
+            
+            var closestFish = fishArr[minDotIndex];
+            
+            // approach it
+            x += 0.01*(closestFish.getX() - x);
+            y += 0.01*(closestFish.getY() - y);
+        } else if(action === 11) {
+            // determine closest dot
+            var minDotIndex = 0;
+            var minDotDistance = 400;
+            for(var i = 0; i < fishArr.length; i++) {
+                var d = dist(x, y, fishArr[i].getX(), fishArr[i].getY());
+                if(d !== 0 && d < minDotDistance) {
+                    minDotIndex = i;
+                    minDotDistance = d;
+                }
+            }
+            
+            var closestFish = fishArr[minDotIndex];
+            
+            // avoid it
+            x -= 0.01*(closestFish.getX() - x);
+            y -= 0.01*(closestFish.getY() - y);
+        }
+        
+        if(x < 0 || x >= 400) {
+            x = 400 - x;
+        }
+        if(y < 0 || y >= 400) {
+            y = 400 - y;
+        }
+        
+        var somethingClose = false;
+        
+        // collision/being close to things
+        for(var f = 0; f < fishArr.length; f++) {
+            
+            
+            // make sure you don't check whether you collide with yourself
+            var thisIndex = 0;
+            while(fishArr[thisIndex] !== this && thisIndex < fishArr.length) {
+                thisIndex++;
+            }
+            if(f === thisIndex) {
+                continue;
+            }
+            
+            var distance = dist(x, y, fishArr[f].getX(), fishArr[f].getY());
+            
+            if(distance < r) {
+                fishArr[f].die();
+                this.die();
+            }
+            
+            if(distance < 5 * r) {
+                somethingClose = true;
+            }
+        }
+        
+        if(!somethingClose) {
+            this.die();
+        }
+    };
+    
+    this.getX = function() {
+        return x;
+    };
+    this.getY = function() {
+        return y;
+    };
+};
+
+for(var i = 0; i < startingFishAmount; i++) {
+    fishArr.push(new fish(random(0, 400), random(0, 400), []));
+}
+
+var draw = function() {
+    background(56, 115, 143);
+    for(var f = 0; f < fishArr.length; f++) {
+        var fishy = fishArr[f];
+        fishy.swim();
+        fishy.draw();
+    }
+    text(fishArr.length, 10, 10);
+    
+    if(mouseIsPressed) {
+        fishArr.push(new fish(mouseX + random(-5, 5), mouseY + random(-5, 5), []));
+    }
+    
+    if(fishArr.length === 0) {
+        for(var i = 0; i < startingFishAmount; i++) {
+            fishArr.push(new fish(random(0, 400), random(0, 400), []));
+        }
+    }
+};

@@ -1,0 +1,53 @@
+frameRate(60);
+
+var points = [];
+points.push({ xPos: 20,  yCoord: 20,  r: 226, g: 99,  b: 48 });
+points.push({ xPos: 160, yCoord: 317, r: 42,  g: 20,  b: 176 });
+points.push({ xPos: 360, yCoord: 120, r: 109, g: 198, b: 19 });
+
+var draw = function() {
+    
+    points.push({ xPos: mouseX, yCoord: mouseY, r: 255, g: 255, b: 0 });
+    
+    var numColumns = 30;
+    var numRows = 30;
+    for (var row=0; row < numRows; row++) {
+        for (var col=0; col < numColumns; col++) {
+            var xPos = width/numColumns * col;
+            var yPos = height/numRows * row;
+            
+            var closestPoint = null;
+            var distanceToClosestPoint = 10000;
+            for (var i = 0; i < points.length; i++) {
+                var point = points[i];
+                var distanceToPoint = dist(xPos, yPos, point.xPos, point.yCoord);
+                if (distanceToPoint < distanceToClosestPoint) {
+                    closestPoint = point;
+                    distanceToClosestPoint = distanceToPoint;
+                }
+            }
+            
+            if (closestPoint) {
+                stroke(closestPoint.r, closestPoint.g, closestPoint.b);
+                fill(closestPoint.r, closestPoint.g, closestPoint.b);
+            }
+            
+            rect(xPos, yPos, width/numColumns, height/numRows);
+        }
+    }
+    
+    // draw my mouse
+    // stroke(255, 0, 0);
+    // fill(255, 0, 0);
+    // ellipse(mouseX, mouseY, 20, 20);
+    
+    // draw points
+    stroke(9, 0, 255);
+    for (var i = 0; i < points.length; i++) {
+        var point = points[i];
+        fill(point.r, point.g, point.b);
+        ellipse(point.xPos, point.yCoord, 20, 20);
+    }
+    
+    points.pop();
+};

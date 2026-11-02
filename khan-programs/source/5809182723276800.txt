@@ -1,0 +1,5 @@
+var getThis = function() {
+    return this;
+};
+
+debug(getThis());

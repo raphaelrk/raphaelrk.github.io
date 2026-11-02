@@ -1,0 +1,38 @@
+/**
+ * Distance
+ * By Raphael Rouvinov-Kats
+ * 
+ * Made in like 2016/2017 but accidentally pressed save Feb 19 2021
+ * */
+
+frameRate(0);
+
+var heat = function(posX, posY) {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var l = 401 * 401;
+    while(l--) {
+        var x = l % 401;
+        var y = (l-x)/401;
+        
+        var dx = posX - x;
+        var dy = posY - y;
+        var d = sqrt(dx*dx + dy*dy);
+        d = map(d, 0, sqrt(width*width+height*height), 0, 255);
+        
+        var ind = (x + y * 400) << 2;
+        pix[ind]   = 255-d;
+        pix[ind+1] = 64-d/4;
+        pix[ind+2] = 64-d/4;
+    }
+    
+    this.updatePixels();
+};
+
+var mouseDragged = function() {
+    heat(mouseX, mouseY);
+};
+
+heat(width/2, height/2);

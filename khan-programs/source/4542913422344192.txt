@@ -1,0 +1,35 @@
+// need to add
+//  top notch sparkles
+//  like a disco
+//  
+
+colorMode(RGB);
+var bg = color(11, 10, 23);
+background(bg);
+stroke(bg);
+
+var draw = function() {
+    var f = frameCount;
+
+    fill(bg, 1);
+    rect(0, 0, width, height);
+
+    colorMode(HSB);
+    var cn = 20 + sin(frameCount) * 10;
+    var cd = 27;
+    var c1 = color(59, 41, 55, 10);
+    var c2 = color(255, 102, 0, 10);
+    for (var i = 1; i <= cn; i++) {
+        //fill(lerpColor(c1, c2, i/10));
+        fill(156 + sin(f)*50, 205, 100);
+        ellipse(width/2, height/2, cn*cd - cd*i, cn*cd - cd*i);
+    }
+    colorMode(RGB);
+
+    fill(255, 102, 0, 10);
+    ellipse(43, 48, 40 + sin(f*5)*20, 40);
+
+    fill(255, 102, 0, 10);
+    ellipse(91, 87, 50 + cos(f*12)*10, 40);
+    
+};

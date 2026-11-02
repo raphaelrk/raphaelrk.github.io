@@ -1,0 +1,30 @@
+//changes:
+//rect to ellipse
+//fill()
+//x values
+
+noStroke();
+var x=0;
+fill(69, 0, 0);
+rect(0,0,400,400);
+var draw = function() {
+    var i = 1;
+    var n = 39;
+    var f = 4; //color
+    while(i < n) {
+        if(i % 2 === 1) {
+            fill(150-f*i, 150-f*i, 100);
+        }
+        if(i % 2 === 0) {
+            fill(128+f*i, 255-f*i, 0);
+        }
+        ellipse(200, 200, 10*(n-i)+2*x,10*(n-i)+2*x); 
+        i++;
+    }
+    if(x<9) {
+        x++;
+    }
+    else {
+        x=0;
+    }
+};

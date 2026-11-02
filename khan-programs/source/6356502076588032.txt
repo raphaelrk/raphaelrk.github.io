@@ -1,0 +1,18 @@
+// STATISTICS
+// informal proof that a random variable's CDF is the uniform distribution
+
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var sum = 0;
+    
+    for(var i=0; i<pix.length; i++) {
+        var j = random(0, 255);
+        sum += j;
+        pix[i] = sum/i;
+    }
+    
+    this.updatePixels();
+};

@@ -1,0 +1,55 @@
+/**
+ * Sparkles
+ * By Raphael Rouvinov-Kats
+ * */
+
+var X=0, Y=1, DX=2, DY=3, SIZE=4;
+var sparkles = [];
+
+var draw = function() {
+    background(0, 0, 0);
+    
+    for(var i = 0; i < sparkles.length; i++) {
+        stroke(random(185, 255), random(175, 245), random(0, 20));
+        strokeWeight(sparkles[i][SIZE]);
+        line(sparkles[i][X], sparkles[i][Y], sparkles[i][X] + sparkles[i][DX], sparkles[i][Y] + sparkles[i][DY]);
+    }
+    
+    for(var i = 0; i < (mouseIsPressed ? 20 : 2); i++) {
+        sparkles.push([mouseX, mouseY, random(-10, 10), random(-15, 10), random(1, 4)]);
+    }
+    
+    
+    var i = 0;
+    while(i < sparkles.length) {
+      if(sparkles[i][SIZE] < 0.1) {
+         sparkles.slice(i, i+1);
+         //continue;
+      }
+      
+      i++;
+    }
+    
+    var len = sparkles.length;
+    for(var i = 0; i < len; i++) {
+        var s = sparkles[i];
+        if(s[SIZE] >= 1 && random(0, 1) < 0.5) {
+            var nx = s[X] + s[DX] * random(0.1, 2.0);
+            var ny = s[Y] + s[DY] * random(0.1, 2.0);
+            var ndx = s[DX] * random(0.5, 0.9);
+            var ndy = s[DY] * random(0.5, 0.9);
+            var ns = s[SIZE] * random(0.2, 0.9);
+            sparkles.push([nx, ny, ndx, ndy, ns]);
+        }
+        
+        sparkles[i][SIZE] *= 0.9;
+        sparkles[i][X] += sparkles[i][DX];
+        sparkles[i][Y] += sparkles[i][DY];
+        sparkles[i][DY] += 1;
+    }
+    
+    
+    while(sparkles.length > 2000) {
+      sparkles.shift();  
+    }
+};

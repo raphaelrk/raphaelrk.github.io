@@ -1,0 +1,67 @@
+
+var p1x = random(10,390), p1y = random(10,390);
+var p2x = random(10,390), p2y = random(10,390);
+var p3x = random(10,390), p3y = random(10,390);
+var points = [[p1x,p1y],[p2x,p2y],[p3x,p3y]];
+var pl = points.length;
+
+var pnorm = function(p, x1, y1, x2, y2) {
+    return pow(pow(abs(x2-x1), p) + pow(abs(y2-y1),p), 1.0/p);
+};
+
+var draw = function() {
+    // bg clearing
+    noStroke();
+    fill(255, 255, 255, 100);
+    rect(0,0,width,height);
+    
+    // points
+    strokeWeight(7);
+    stroke(0, 0, 0);
+    for (var p = 0; p < pl; p++) {
+        point(points[p][0], points[p][1]);
+    }
+    strokeWeight(1);
+    
+    // rgb bg
+    for (var p = 0; p < pl; p++) {
+        for (var x = 0; x < width; x += random(1,5)) {
+            for (var y = 0; y < height; y += random(1,5)) {
+                var d1 = pnorm(1, x,y,
+                                  points[p][0],points[p][1]);
+                var d2 = pnorm(1, x,y,
+                                  points[(p+1)%pl][0],points[(p+1)%pl][1]);
+                var d3 = pnorm(1, points[p][0],points[p][1],
+                                  points[(p+1)%pl][0],points[(p+1)%pl][1]);
+                
+                if (d1 < d3 && d2 < d3) {
+                    stroke(p === 0 ? 255 : 0, 
+                           p === 1 ? 255 : 0, 
+                           p === 2 ? 255 : 0);
+                    point(x, y);
+                }
+            }
+        }
+    }
+    
+    var d1 = pnorm(1, points[0][0],points[0][1], points[1][0],points[1][1]);
+    var d2 = pnorm(1, points[1][0],points[1][1], points[2][0],points[2][1]);
+    var d3 = pnorm(1, points[2][0],points[2][1], points[0][0],points[0][1]);
+    
+    stroke(255, 255, 255);
+    strokeWeight(4);
+    if (d1 < d2 && d3 < d2) {
+        point(points[0][0], points[0][1]);
+    }
+    if (d1 < d3 && d2 < d3) {
+        point(points[1][0], points[1][1]);
+    }
+    if (d2 < d1 && d3 < d1) {
+        point(points[2][0], points[2][1]);
+    }
+    
+    fill(0, 0, 0);
+    text("1", points[0][0]+5, points[0][1]-5);
+    text("2", points[1][0]+5, points[1][1]-5);
+    text("3", points[2][0]+5, points[2][1]-5);
+};

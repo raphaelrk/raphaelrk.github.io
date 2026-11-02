@@ -1,0 +1,57 @@
+/**
+ * Chaikin's Algorithm
+ * By Raphael Rouvinov-Kats
+ * 
+ * Implements Chaikin's Algorithm
+ * http://graphics.cs.ucdavis.edu/education/CAGDNotes/Chaikins-Algorithm/Chaikins-Algorithm.html
+ * */
+
+var depth = 3;
+var point_r = 2;
+var control_points = [];
+
+var draw = function() {
+    background(255, 255, 255);
+    // draw raw lines
+    stroke(0, 0, 0);
+    strokeWeight(0.5);
+    for (var i = 0; i < control_points.length - 1; i++) {
+        line(control_points[i][0], control_points[i][1],
+             control_points[i+1][0], control_points[i+1][1]);
+    }
+    
+    // draw points
+    strokeWeight(0);
+    fill(0, 0, 0);
+    for (var i = 0; i < control_points.length; i++) {
+        ellipse(control_points[i][0], control_points[i][1], point_r*2, point_r*2);
+    }
+    
+    // calculate points of curve
+    var old_points = control_points;
+    var new_points;
+    for (var i = 0; i < depth; i++) {
+        new_points = [];
+        for (var j = 0; j < old_points.length-1; j++) {
+            var x1 = old_points[j][0];
+            var y1 = old_points[j][1];
+            var x2 = old_points[j+1][0];
+            var y2 = old_points[j+1][1];
+            new_points.push([x1*0.75 + x2*0.25, y1*0.75 + y2*0.25]);
+            new_points.push([x1*0.25 + x2*0.75, y1*0.25 + y2*0.75]);
+        }
+        old_points = new_points;
+    }
+    
+    strokeWeight(0.5);
+    stroke(255, 0, 0);
+    for (var i = 0; i < new_points.length - 1; i++) {
+        line(new_points[i][0], new_points[i][1],
+             new_points[i+1][0], new_points[i+1][1]);
+    }
+    strokeWeight(1);
+};
+
+var mouseClicked = function() {
+    control_points.push([mouseX, mouseY]);
+};

@@ -1,0 +1,100 @@
+/*
+Metaballs (in 2D) are areas defined by where the
+value of a function exceeds a threshold value.
+
+In this case, we take the sum of radius^2 / distance^2 for 
+a bunch of bouncing circles and if that exceeds SUM_THRESHOLD
+then we draw in that cell.
+
+The color of the cell is the color assigned to the circle
+whose center is closest the current point.
+
+http://en.wikipedia.org/wiki/Metaballs
+*/
+frameRate(0);
+var PX_SIZE = 5;
+var SUM_THRESHOLD = 0;
+var NUM_CIRCLES = 5;    
+
+var circles = [];
+
+for (var i = 0; i < NUM_CIRCLES; i++) {
+    circles.push({
+        x: random(0, width),
+        y: random(0, height),
+        r: random(40, 80),
+        vx: random(-20, 20),
+        vy: random(-20, 20),
+        red: random(50, 255),
+        green: random(50, 255),
+        blue: random(50, 255)
+    });
+}
+
+var draw = function() {
+    background(0, 0, 0);
+    for (var i = 0; i < circles.length; i++) {
+        var c = circles[i];
+
+        c.x += c.vx;
+        c.y += c.vy;
+        
+        if (c.x - c.r < 0) {
+            c.vx = +abs(c.vx);
+        }
+        if (c.x + c.r > width) {
+            c.vx = -abs(c.vx);
+        }
+        if (c.y - c.r < 0) {
+            c.vy = +abs(c.vy);
+        }
+        if (c.y + c.r > height) {
+            c.vy = -abs(c.vy);
+        }
+    }
+
+    for (var x = 0; x < width; x += PX_SIZE) {
+        for (var y = 0; y < width; y += PX_SIZE) {
+            var sum = 0;
+            var closestD2 = Infinity;
+            var closestColor = null;
+            for (var i = 0; i < circles.length; i++) {
+                var c = circles[i];
+                var dx = x - c.x;
+                var dy = y - c.y;
+                var d2 = dx * dx + dy * dy;
+                sum += c.r * c.r / d2;
+                
+                if (d2 < closestD2) {
+                    closestD2 = d2;
+                    closestColor = [c.red, c.green, c.blue];
+                }
+            }
+            if (sum > SUM_THRESHOLD) {
+                noStroke();
+                fill(closestColor[0], closestColor[1], closestColor[2]);
+                rect(x, y, PX_SIZE, PX_SIZE);
+            }
+        }
+    }
+    
+    for(var i = 0; i < circles.length; i++) {
+        var ix = circles[i].x;
+        var iy = circles[i].y;
+        
+        
+        for(var j = i+1; j < circles.length; j++) {
+            var jx = circles[j].x;
+            var jy = circles[j].y;
+            stroke(255, 255, 255);
+            strokeWeight(1);
+            line(ix, iy, jx, jy);
+            
+            stroke(0, 0, 0);
+            strokeWeight(4);
+            point(jx, jy);
+        }
+        
+        point(ix, iy);
+    }
+};

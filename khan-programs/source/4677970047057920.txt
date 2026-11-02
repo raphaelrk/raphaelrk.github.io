@@ -1,0 +1,186 @@
+/**
+ * dpi (2023)
+ * by Raphael Rouvinov-Kats
+ * wait like 20 seconds (at ~60fps)
+ * cool thing shows up
+ * */
+
+// go as fast as possible
+frameRate(0);
+
+// canvas width and height but with three letter var names :)
+var wid = width;
+var hgt = height;
+
+// coordinates of center
+var cx = wid/2;
+var cy = hgt/2;
+
+// initialize mouseX/mouseY
+// (maybe not desired when pressing restart?)
+mouseX = cx + 1;
+mouseY = cy + 1;
+
+var draw = function() {
+    // load canvas pixel data
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    // coordinates of pixel being updated
+    var px=-1, py=0;
+
+    // mouse x/y from center
+    var mxc = (mouseX - cx);
+    var myc = (mouseY - cy);
+    
+    // could also offset/scale it eg
+    // var mxc = 512 + (mouseX - cx) * 4;
+    // var myc = 512 + (mouseY - cy) * 4;
+    // var mxc = (mouseX - cx) / (wid/2) * 2;
+    // var myc = (mouseY - cy) / (hgt/2) * 2;
+
+    // shift mxc / myc around in a circular pattern
+    var my_shift = 50 * sin(frameCount);
+    var mx_shift = 50 * cos(frameCount);
+
+    // mouse dist from center
+    // var md2 = mxc*mxc * myc*myc;
+    // var md = sqrt(md2);
+
+    // loop over all pixels
+    while(py <= hgt) {
+        px++;
+        if (px >= wid) {
+            px = 0;
+            py++;
+        }
+
+        // pixel dist from center
+        var pxc = px - cx;
+        var pyc = py - cy;
+        var pd2 = (pxc*pxc + pyc*pyc);
+        var pd = sqrt(pd2); // switch to fast sqrt?
+        
+        // pixel-mouse dist from center
+        var mxc_pxc = mx_shift + mxc + pxc;
+        var myc_pxc = my_shift + myc + pyc;
+        var mx_pc_d2 = mxc_pxc*mxc_pxc + myc_pxc*myc_pxc;
+        var mx_pc_d = sqrt(mx_pc_d2);
+
+        // bitwise-or of mouse/pixel x/y from center
+        var x_or = mxc|pxc;
+        var y_or = myc|pyc;
+
+        // get the "distance"
+        // var d = sqrt(x_or*x_or + y_or*y_or);
+        // var d = (x_or*x_or + y_or*y_or) + pd;
+        // var d = pd;
+        // note the scales can be made negative too
+        var d = (
+            -0.017 * mx_pc_d +
+            0.0004 * mx_pc_d2 +
+            // 0.1 * pd
+            // 0.001 * pd2
+            0.005 * (x_or*x_or + y_or*y_or)
+            // 0.01 * sqrt(x_or*x_or + y_or*y_or)
+        );
+        
+        // get the 'time' and 255 * sin(time)
+        // var t = (d * frameCount);
+        // var s = 255 * sin(t);
+        
+        // var t = (d * frameCount);
+        // var s = 255 * tan(t);
+
+        // faster sin
+        // http://jsperf.com/native-sin-vs-approx-fast-sin
+        // this is var s = 255 * sin(t)
+        var t = (d * frameCount)%360;
+        var s = 255* (0.02222222*t - 0.00012345679 * t * t);
+
+        // switch off showing red vs green vs blue
+        var willShowR = frameCount % 3 === 0;
+        var willShowG = frameCount % 3 === 1;
+        var willShowB = frameCount % 3 === 2;
+
+        // inertia (note: can go beyond 0-1)
+        var a = 0.7;
+
+        // set red, green, and blue image data
+        var row_offset = (25*py<<6);
+        var col_offset = (px<<2);
+        var pix_offset = row_offset + col_offset;
+        if(willShowR) {
+            pix[pix_offset+0] *= a;
+            pix[pix_offset+0] += s*(1-a);
+            // pix[pix_offset+0] = ((pix[pix_offset/2]) ^ s) * 2;
+        }
+        if(willShowG) {
+            pix[pix_offset+1] *= a;
+            pix[pix_offset+1] += s*(1-a);
+            // pix[pix_offset+1] = (pix[pix_offset+1]) & s;
+        }
+        if(willShowB) {
+            pix[pix_offset+2] *= a;
+            pix[pix_offset+2] += s*(1-a);
+            // pix[pix_offset+2] = (pix[pix_offset+2]) | s;
+        }
+    }
+    
+    // draw a grid of red dots
+    // for (var x=0;x<=wid;x+=20) {
+    //     for (var y=0;y<=hgt;y+=20) {
+    //         pix[(25*y<<6) + (x<<2) + 0] = 255;
+    //         pix[(25*y<<6) + (x<<2) + 1] = 0;
+    //         pix[(25*y<<6) + (x<<2) + 2] = 0;
+    //     }
+    // }
+    
+    // trigger pixel update based on values in pix
+    // (ie in this.imageData.data)
+    this.updatePixels();
+
+    // show how many frames have gone by
+    // text(frameCount, 30, 15);
+    
+    // show mouseX and mouseY
+    // text("mx: " + mouseX, 30, 30);
+    // text("my: " + mouseY, 30, 45);
+
+    // show mouse x/y from center
+    text("mxc: " + mxc, 30, 30);
+    text("myc: " + myc, 30, 45);
+
+    // show x/y axes
+    // stroke(0, 0, 0, 127);
+    // line(cx, 0, cx, hgt);
+    // line(0, cy, wid, cy);
+
+    // apply filters
+    // var r = random(0, 1);
+    // if(r < 0.125) {
+    //    filter(THRESHOLD);
+    // }
+    // else if(r < 0.25) {
+    //     filter(GRAY);
+    // }
+    // else if(r < 0.375) {
+        
+    // }
+    // else if(r < 0.5) {
+    //     filter(POSTERIZE, 5);
+    // }
+    // else if(r < 0.675) {
+    //     filter(BLUR);
+    // }
+    // else if(r < 0.75) {
+    //     filter(OPAQUE);
+    // }
+    // else if(r < 0.875) {
+    //     filter(ERODE);
+    // }
+    // else {
+    //     filter(DILATE);
+    // }
+};

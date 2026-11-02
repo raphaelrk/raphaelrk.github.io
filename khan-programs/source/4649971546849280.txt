@@ -1,0 +1,126 @@
+/**
+ * Newton's third law
+ * by Raphael Rouvinov-Kats
+ * 
+ * Equal and opposite reactions
+ * */
+ 
+var Ball = function(x, y, dx, dy, r, mass) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    this.r = r;
+    this.mass = mass;
+};
+
+Ball.prototype.collidesWith = function(otherBall) {
+    // test current collision
+    var d = dist(this.x, this.y, otherBall.x, otherBall.y);
+    if(d < this.r + otherBall.r) {
+        return true;
+    }
+    
+    // if I ever want to add fast speeds, I'd modifiy the collision here to test
+    // fractions of the future positions - percents of future dx and dy are tested
+    
+    // test future collision
+    var d = dist(this.x + this.dx, this.y + this.dy, 
+                 otherBall.x + otherBall.dx, otherBall.y + otherBall.dy);
+    if(d < this.r + otherBall.r) {
+        return true;
+    }
+    
+    return false;
+};
+
+Ball.prototype.handleCollisionWith = function(otherBall) {
+    var this_x_momentum = this.mass * this.dx;
+    var other_x_momentum = otherBall.mass * otherBall.dx;
+    var total_x_momentum = this_x_momentum + other_x_momentum;
+    
+    // I just divide momentum by two for their new momentums
+    // it's simple and effective enough
+    var new_x_momentum = total_x_momentum / 2;
+    
+    this.dx = new_x_momentum / this.mass;
+    otherBall.dx = new_x_momentum / otherBall.mass;
+    
+    var this_y_momentum = this.mass * this.dy;
+    var other_y_momentum = otherBall.mass * otherBall.dy;
+    var total_y_momentum = this_y_momentum + other_y_momentum;
+    
+    var new_y_momentum = total_y_momentum / 2;
+    
+    this.dy = new_y_momentum / this.mass;
+    otherBall.dy = new_y_momentum / otherBall.mass;
+};
+
+Ball.prototype.draw = function() {
+    colorMode(HSB);
+    fill(this.r/13 * 255, 255, this.r/13 * 255);
+    ellipse(this.x, this.y, this.r*2, this.r*2);
+    colorMode(RGB);
+};
+
+Ball.prototype.move = function() {
+    this.x += this.dx;
+    this.y += this.dy;
+    
+    if(this.x >= 400 - this.r) {
+        this.dx = -abs(this.dx);
+        this.x = 400 - this.r;
+    }
+    if(this.x < this.r) {
+        this.dx = abs(this.dx);
+        this.x = this.r;
+    }
+    
+    if(this.y >= 400 - this.r) {
+        this.dy = -abs(this.dy);
+        this.y = 400 - this.r;
+    }
+    if(this.y < this.r) {
+        this.dy = abs(this.dy);
+        this.y = this.r;
+    }
+};
+
+var balls = [];
+//balls.push(new Ball(100, 200, 1, 0, 20, 10));
+//balls.push(new Ball(300, 200, -1, 0, 20, 20));
+
+for(var i = 0; i < 20; i++) {
+    var bx = random(50, 350);
+    var by = random(50, 350);
+    var bdx = random(-10, 10);
+    var bdy = random(-10, 10);
+    var bm = random(25, 16*16);
+    var br = sqrt(bm / PI);
+    var ball = new Ball(bx, by, bdx, bdy, br, bm);
+    balls.push(ball);
+}
+
+var draw = function() {
+    background(250, 250, 250);
+    for(var i = 0; i < balls.length; i++) {
+        stroke(0, 0, 0);
+        balls[i].draw();
+    }
+    
+    for(var i = 0; i < balls.length; i++) {
+        stroke(0, 0, 0);
+        var ball = balls[i];
+        ball.move();
+        
+        for(var j = 0; j < balls.length; j++) {
+            if(i === j) { continue; }
+            
+            var ball2 = balls[j];
+            
+            if(ball.collidesWith(ball2)) {
+                ball.handleCollisionWith(ball2);
+            }
+        }
+    }
+};

@@ -1,0 +1,50 @@
+var block_col_amt = 15;
+var block_row_amt = 10;
+var blocks = [];
+for(var r = 0; r < block_row_amt; r++) {
+    blocks[r] = [];
+    for(var c = 0; c < block_col_amt; c++) {
+        var rand = Math.random();
+        blocks[r][c] = 0;
+        if(rand > 0.5) {
+            blocks[r][c] = 1;
+        }
+    }
+}
+
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    // change blocks
+    for(var r = 0; r < block_row_amt; r++) {
+        blocks[r] = [];
+        for(var c = 0; c < block_col_amt; c++) {
+            var rand = Math.random();
+            blocks[r][c] = 0;
+            if(rand > 0.5) {
+                blocks[r][c] = 1;
+            }
+        }
+    }
+    
+    for(var i=0; i<pix.length; i+=4) {
+        var x = (i>>2) % width;
+        var y = Math.floor(((i>>2) - x)/width);
+        var row = Math.floor(y / height * block_row_amt);
+        var col = Math.floor(x / width * block_col_amt);
+        
+        if(blocks[row][col] === 0) {
+            pix[i] = 0;
+            pix[i+1] = 0;
+            pix[i+2] = 0;
+        } else {
+            pix[i] = 255;
+            pix[i+1] = 255;
+            pix[i+2] = 255;
+        }
+    }
+    
+    this.updatePixels();
+};

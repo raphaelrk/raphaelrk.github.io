@@ -1,0 +1,131 @@
+/**
+ * Drawing Matcher
+ * By Raphael Rouvinov-Kats
+ * 
+ * Instructions: 
+ * Try to draw similar pictures
+ * Draw green with left mouse button and red with right
+ * Click the button that says "matching off" and it'll try to line up the pictures
+ * 
+ * 
+ * */
+
+var X=0, Y=1; // constants
+var drawing1 = [];
+var drawing2 = [];
+
+var matchingIsOn = false;
+
+var calculateDistance = function(arr1, arr2, dx, dy) {
+    var d = 0;
+    for(var i = 0; i < arr1.length; i++) {
+        for(var j = 0; j < arr2.length; j++) {
+            var diffX = arr1[i][X] + dx - arr2[j][X];
+            var diffY = arr1[i][Y] + dy - arr2[j][Y];
+            d += diffX*diffX + diffY*diffY;
+        }
+    }
+    
+    return d; // sqrt(d); // should use sqrt if actually need distance, but I don't
+};
+
+// takes two arrays of fevtors and moves each vector to minimize distance, pretty naively
+var move = function(arr1, arr2) {
+    if(arr1.length === 0 || arr2.length === 0) { return; }
+    
+    var minDist = 1e100;
+    var minDistDx = 0;
+    var minDistDy = 0;
+    
+    /*
+    // was thinking about a version where points move, not the whole drawing
+    for(var i = 0; i < arr1.length; i++) {
+        for(var dx = -1; dx <= 1; dx++) {
+            for(var dy = -1; dy <= 1; dy++) {
+                
+            }
+        }
+    }*/
+    
+    for(var dx = -1; dx <= 1; dx++) {
+        for(var dy = -1; dy <= 1; dy++) {
+            var d = calculateDistance(arr1, arr2, dx, dy);
+            
+            if(d < minDist) {
+                minDist = d;
+                minDistDx = dx;
+                minDistDy = dy;
+            }
+        }
+    }
+    
+    for(var i = 0; i < arr1.length; i++) {
+        arr1[i][X] += minDistDx/2;
+        arr1[i][Y] += minDistDy/2;
+    }
+    
+    for(var i = 0; i < arr2.length; i++) {
+        arr2[i][X] -= minDistDx/2;
+        arr2[i][Y] -= minDistDy/2;
+    }
+    
+};
+
+var draw = function() {
+    background(10, 10, 10);
+    
+    strokeWeight(4);
+    stroke(0, 255, 43, 200);
+    for(var i = 0; i < drawing1.length; i++) {
+        point(drawing1[i][X], drawing1[i][Y]);
+    }
+    
+    stroke(255, 0, 0, 200);
+    for(var i = 0; i < drawing2.length; i++) {
+        point(drawing2[i][X], drawing2[i][Y]);
+    }
+    
+    // draw matching is on button
+    noStroke();
+    fill(135, 161, 255);
+    var xOver = mouseX > 310 && mouseX < 310 + 80;
+    var yOver = mouseY > 370 && mouseY < 370 + 25;
+    if(xOver && yOver) {
+        strokeWeight(1);
+        stroke(255, 255, 255);
+        if(mouseIsPressed) {
+            fill(0, 26, 255);
+        }
+    }
+    rect(310, 370, 80, 25);
+    fill(0, 0, 0);
+    text("matching " + (matchingIsOn ? "on" : "off") , 310+7, 370+25-7);
+    
+    if(matchingIsOn) {
+        move(drawing1, drawing2);
+    }
+    
+    if(matchingIsOn && !mouseIsPressed) {
+        frameRate(0);
+    } else {
+        frameRate(30);
+    }
+    
+    // add points to drawings
+    if(mouseIsPressed && !(xOver && yOver)) {
+        if(mouseButton === LEFT) {
+            drawing1.push([mouseX, mouseY]);
+        }
+        if(mouseButton === RIGHT) {
+            drawing2.push([mouseX, mouseY]);
+        }
+    }
+};
+
+var mouseReleased = function() {
+    var xOver = mouseX > 310 && mouseX < 310 + 80;
+    var yOver = mouseY > 370 && mouseY < 370 + 25;
+    if(xOver && yOver) {
+       matchingIsOn = !matchingIsOn; 
+    }
+};

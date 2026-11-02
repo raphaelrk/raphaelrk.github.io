@@ -1,0 +1,143 @@
+/**
+ * Word Search Solver
+ * By Raphael Rouvinov-Kats
+ * October 30. 2014
+ * 
+ * Created to finish my "Foods and Nutrition" homework
+ * in the least efficient way possible: copying every letter off the page
+ * and developing a program that would solve the puzzle
+ * 
+ * press restart if the program says it didn't find some words
+ * */
+
+// variable that stores the word search
+// rows separated by newlines
+// capitalization doesn't matter
+var wordsearch = "ABVWUZYPCEXOJLBITCXSHAZERQD" + '\n' +
+                 "ADSMHILZTPNIALECROPLPTKUSOC" + '\n' +
+                 "LBREIJKOPQACDOPOQNTCWVSBUZO" + '\n' +
+                 "UPEFGCOOLERBBNNOMVSLOGFEKVO" + '\n' +
+                 "MQVONMRSRPSREOKKLEDOXUONVVK" + '\n' +
+                 "IROMNSUOTQAZFIJBICAROUSELRI" + '\n' +
+                 "NSTTLUWVWXYDGTHOSTDPADBFCDN" + '\n' +
+                 "UTFKJOTAMAKNLALOCILKIHEIVNG" + '\n' +
+                 "MXEAIIAZNLVMPROKNOMKJWFTGPT" + '\n' +
+                 "UPLASTICSNOEKBOPQNNRKSETRRI" + '\n' +
+                 "VWYZHIIQQDRSOINKOEDSCCZXUEM" + '\n' +
+                 "EAUGLRLNUTMOJVKKFJHIUSARVPE" + '\n' +
+                 "RBCMXTWVIAQBUGEMSGWJAMBXWAN" + '\n' +
+                 "AFDUGUYDGZDCGHLNRVKFEPEQWRR" + '\n' +
+                 "WEDEFNOITANIBMOCELEOEARRSAF" + '\n' +
+                 "KITCHENTUWDGSQREMTNLAGCRTTW" + '\n' +
+                 "OBCPHQRSVAIEVFCVYCBUZXVFUIS" + '\n' +
+                 "ONADIYXEWVCETBCHGAAWCFXWTOG" + '\n' +
+                 "CMLKJKMOLECULESDIRECTIONSNN" + '\n' +
+                 "LMNREZAEKPJTAZDREFDEFROSTSF" + '\n' +
+                 "QPOEBDUDEAIEXYAHOTSPOTSPQRI" + '\n' +
+                 "RSTTUCMBVTVNEVFJISKMBNNMGKH" + '\n' +
+                 "UTANVGWHGTUSWNGHZJDKPOONLJL" + '\n' +
+                 "VWEUUNXIFEEIAAEZWUSORQIIHSA" + '\n' +
+                 "YXHOTIYJCRDLTPYRYVTXOGFGEFN" + '\n' +
+                 "ZAECSTZBGNLSSWPXGEBABFWGXYO" + '\n' +
+                 "EBRQRPANKSMRQVYLVYTCHVNAZXI" + '\n' +
+                 "CZPPOAILPONPMBUYIDJAEAUXBCT" + '\n' +
+                 "LGIMNDOPLQROUZGTSAGFRSTHEDN" + '\n' +
+                 "FHISLANQUASMILKLRJNHRTQPNOE" + '\n' +
+                 "EKJELLMRVTWNDDEFAQPCKLEMGIV" + '\n' +
+                 "DCIDKLTSWVYZECJGISXOEMJNHFN" + '\n' +
+                 "BHFEJCUZXVXAMBIHXJSYNLKIEEO" + '\n' +
+                 "SAGHIBAFXWSTANDINGTIMEHIDPC";
+
+// words to look for in the word search
+// capitalization doesn't matter
+var words = ["microwave oven", "wave patterns", "hot spots", "cooking time", "standing time", "shie", "convection", "combination", "energy", "nutritious", "penetrate", "molecules", "vibration", "kitchen", "cooler", "fullsize", "variable", "consumer", "wall", "counter", "defrost", "plastics", "glass", "porcelain", "utensils", "aluminum", "leftovers", "carousel", "safety", "preparation", "conventional", "ranges", "adapting", "baked", "foods", "cookbook", "directions", "cookware", "appliance", "preheat", "benefit", "medium"];
+
+var foundword = [];
+for(var i = 0; i < words.length; i++) {
+    foundword[i] = false;
+}
+
+// change everything to upper case
+wordsearch = wordsearch.toUpperCase();
+for(var i = 0; i < words.length; i++) {
+    words[i] = words[i].toUpperCase();
+    words[i] = words[i].split(" ").join('');
+}
+
+var wordArray = wordsearch.split('\n');
+var cols = wordArray[0].length;
+var rows = wordArray.length;
+var rowSize = 400/rows;
+var colSize = 400/cols;
+
+// draw word search
+colorMode(HSB);
+background(0, 0, 255);
+fill(0, 0, 0);
+for(var r = 0; r < rows; r++) {
+    for(var c = 0; c < cols; c++) {
+        var x = map(c, 0, cols, 0, 400);
+        var y = map(r, 0, rows, rowSize, 400 + rowSize);
+        
+        text(wordArray[r][c], x, y);
+    }
+}
+
+var doWordSearch = function(str, r, c) {
+    if(wordArray[r][c] === str[0]) {
+        for(var dr = -1; dr <= 1; dr++) {
+            for(var dc = -1; dc <= 1; dc++) {
+                if(dr === 0 && dc === 0) {
+                    continue;
+                }
+                
+                var correct = true;
+                for(var i = 0; i < str.length; i++) {
+                    var r2 = r + dr*i;
+                    var c2 = c + dc*i;
+                    
+                    if(r2 < 0 || r2 >= rows || c2 < 0 || c2 >= cols) {
+                        correct = false;
+                        continue;
+                    }
+                    
+                    if(wordArray[r2][c2] !== str[i]) {
+                        correct = false;
+                    }
+                }
+                
+                if(correct) {
+                    var x1 = map(c, 0, cols, 0, 400);
+                    var y1 = map(r, 0, rows, rowSize, 400 + rowSize);
+                    var x2 = map(c + dc*(str.length-1), 0, cols, 0, 400);
+                    var y2 = map(r + dr*(str.length-1), 0, rows, rowSize, 400 + rowSize);
+                    line(x1 + colSize/4, y1 - rowSize/2, x2 + colSize/4, y2 - rowSize/2);
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+};
+
+var draw = function() {
+    if(frameCount >= words.length) {
+        for(var i = 0; i < words.length; i++) {
+            if(!foundword[i]) {
+                println("not found: " + words[i]);
+            }
+        }
+        noLoop();
+    } else {
+        strokeWeight(5);
+        for(var r = 0; r < rows; r++) {
+            for(var c = 0; c < cols; c++) {
+                stroke(random(0, 255), 255, 255, 100);
+                if(doWordSearch(words[frameCount], r, c)) {
+                    foundword[frameCount] = true;
+                    break;
+                }
+            }
+        }
+    }
+};

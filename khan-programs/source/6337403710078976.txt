@@ -1,0 +1,101 @@
+/**
+ * Fonts2
+ * By Raphael Rouvinov-Kats
+ * */
+
+// just trying some other fonts
+
+var windowsFonts = ["Papyrus", "Ravie", "Rockwell", "Stencil", "Terminal", "Roman", "Jokerman", "Hobo Std", "Goudy Stout", "Gigi", "Forte", "Consolas", "Blackadder ITC", "abeatbykai", "Agency FB", "Broadway", "Cooper Std", "Mathematica1", "Mathematica2", "Mathematica3", "Mathematica4", "Mathematica5", "Mathematica6", "Mathematica7", "Old English Text MT", "Parchment", "Script"];
+
+var fonts = windowsFonts;
+
+var fontColor = color(0, 0, 0);
+var fontSize = 36;
+var scrollSpeed = 10;
+
+// scroll box variables
+var boxX = 350;
+var boxW = 40;
+var boxH = 40;
+var upBoxY = 20;
+var downBoxY = 80;
+var upBoxColor = color(0, 100, 0, 100);
+var upBoxHoverColor = color(0, 100, 0, 150);
+var upBoxPressedColor = color(0, 100, 0, 200);
+var downBoxColor = color(100, 0, 0, 100);
+var downBoxHoverColor = color(100, 0, 0, 150);
+var downBoxPressedColor = color(100, 0, 0, 200);
+var arrowColor = color(0, 0, 0, 200);
+
+var yOffset = 0;
+var overUpArrow = false;
+var overDownArrow = false;
+
+var drawText = function(font, x, y) {
+    var f = createFont(font);
+    textFont(f, fontSize);
+    text(font, x, y);
+};
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    // draw fonts
+    fill(fontColor);
+    for(var font = 0; font < fonts.length; font++) {
+        var fontName = fonts[font];
+        drawText(fontName, 10, 30 + font * fontSize + yOffset);
+    }
+    
+    // check if you're over the up/down arrows
+    overUpArrow = false;
+    overDownArrow = false;
+    if(mouseX>=boxX && mouseX<=boxX+boxW && mouseY>=upBoxY && mouseY<=downBoxY+boxH) {
+        if(mouseY <= upBoxY + boxH) {
+            overUpArrow = true;
+        } else if(mouseY >= downBoxY) {
+            overDownArrow = true;
+        }
+    }
+    
+    // draw up arrow
+    noStroke();
+    fill(upBoxColor);
+    if(overUpArrow) {
+        fill(upBoxHoverColor);
+        if(mouseIsPressed) {
+            fill(upBoxPressedColor);
+        }
+    }
+    rect(boxX, upBoxY, boxW, boxH); // box
+    fill(arrowColor);
+    rect(boxX + boxW*3/8, upBoxY+boxH/2, boxW/4, boxH*3/8); // arrow base
+    triangle(boxX + boxW/8,   upBoxY + boxH/2, // arrow head
+             boxX + boxW*7/8, upBoxY + boxH/2, 
+             boxX + boxW/2,   upBoxY + boxH/8);
+    
+    // draw down arrow
+    noStroke();
+    fill(downBoxColor);
+    if(overDownArrow) {
+        fill(downBoxHoverColor);
+        if(mouseIsPressed) {
+            fill(downBoxPressedColor);
+        }
+    }
+    rect(boxX, downBoxY, boxW, boxH); // box
+    fill(arrowColor);
+    rect(boxX + boxW*3/8, downBoxY + boxH/2-15, boxW/4, boxH*3/8); // arrow base
+    triangle(boxX + boxW/8,   downBoxY + boxH/2, // arrow head
+             boxX + boxW*7/8, downBoxY + boxH/2, 
+             boxX + boxW/2,   downBoxY + boxH*7/8);
+   
+    // scroll
+    if(mouseIsPressed) {
+        if(overUpArrow) {
+            yOffset += scrollSpeed;
+        } else if(overDownArrow) {
+            yOffset -= scrollSpeed;
+        }
+    }
+};

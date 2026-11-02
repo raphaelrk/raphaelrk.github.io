@@ -1,0 +1,22 @@
+
+
+var draw = function() {
+    var f = frameCount;
+    background(0, 0, 0);
+
+    var cn = 20 + sin(frameCount) * 10;
+    var cd = 10;
+    var c1 = color(59, 41, 55);
+    var c2 = color(255, 102, 0);
+    for (var i = 0; i < cn; i++) {
+        fill(lerpColor(c1, c2, i/10));
+        ellipse(width/2, height/2, cn*cd - cd*i, cn*cd - cd*i);
+    }
+
+    fill(255, 102, 0);
+    ellipse(43, 48, 40 + sin(f)*20, 40);
+
+    fill(255, 102, 0);
+    ellipse(91, 87, 50 + cos(f)*10, 40);
+    
+};

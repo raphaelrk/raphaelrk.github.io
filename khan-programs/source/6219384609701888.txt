@@ -1,0 +1,71 @@
+/**
+ * Circle movement into waves
+ * By Raphael Rouvinov-Kats
+ * 
+ * Try with "?width=1000" at the end of the URL!
+ * */
+
+var points = [];
+var circles = [[0, 70, floor(random(2, 5))]];
+var circleCount = 4;
+
+var ANGLE = 0, RAD = 1, SPEED = 2;
+for(var i = 1; i < circleCount; i++) {
+    // [angle, radius, speed]
+    circles.push([random(0, 360), circles[i-1][RAD]*random(0.4, 0.6), floor(circles[i-1][SPEED]*random(1, 2))]);//floor(random(-10, 10))]);
+    // circles.push([0, circles[i-1][RAD]*0.5, 5]);
+}
+
+var barrierX = 75+140;
+var wave = [];
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    // draw circles
+    noFill();
+    pushMatrix();
+    translate(75, height/2);
+    for(var i = 0; i < circles.length; i++) {
+        // draw ellipse
+        stroke(0, 0, 0);
+        ellipse(0, 0, circles[i][RAD]*2, circles[i][RAD]*2);
+        
+        // draw line
+        rotate(circles[i][ANGLE]);
+        stroke(255, 0, 0);
+        line(0, 0, 0, circles[i][RAD]);
+        
+        translate(0, circles[i][RAD]);
+        
+        if(i === circles.length - 1) {
+            point(0, 0);
+        }
+    }
+    popMatrix();
+    
+    // get wave coordinates
+    var angSum = 90;
+    var x = 0;
+    var y = 0;
+    for(var i = 0; i < circles.length; i++) {
+        angSum += circles[i][ANGLE];
+        y += sin(angSum) * circles[i][RAD];
+        x += cos(angSum) * circles[i][RAD];
+    }
+    
+    wave.push([x, y]);
+    if(wave.length > width - barrierX) {
+        wave.shift();
+    }
+    
+    line(75+x, height/2+y, width-(wave.length), height/2+y);
+    
+    for(var i = 0; i < wave.length-1; i++) {
+        line(width-i, height/2+wave[i][1], width-(i+1), height/2+wave[i+1][1]);
+    }
+    
+    for(var i = 0; i < circles.length; i++) {
+        circles[i][ANGLE] += circles[i][SPEED];
+    }
+};

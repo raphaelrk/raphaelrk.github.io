@@ -1,0 +1,119 @@
+/**
+ * Voronoi. white dots are supposed to be along ths edges. does not work
+ * @author Raphael Rouvinov-Kats
+ * */
+ 
+var points = [];
+for(var i = 0; i < 4; i++) {
+    var c = color(random(0, 255), random(0, 255), random(0, 255), 50);
+    points.push([random(0, 400), random(0, 400), c]);
+}
+
+//rotate(90); // to flip axis
+//translate(0, -400);
+
+var pts = [];
+for(var i = 0 ; i < 400*400; i++) {
+    pts.push(0);
+}
+
+var voronoi = [];
+
+background(17, 0, 255);
+var draw = function() {
+    //background(255, 253, 243);
+    for(var i = 0; i < points.length; i++) {
+        //stroke(points[i][2]);
+        stroke(0, 0, 0);
+        strokeWeight(4);
+        point(points[i][0], points[i][1]);
+    }
+    
+    var sx = frameCount % 400;
+    stroke(255, 0, 0, 100);
+    strokeWeight(0.5);
+    line(sx, 0, sx, 400);
+    
+    for(var i = 0 ; i < 400*400; i++) {
+        pts[i] = 0;
+    }
+    
+    stroke(23, 209, 57);
+    //stroke(0, 0, 0);
+    strokeWeight(0.5); // thin lines draw faster
+    for(var i = 0; i < points.length; i++) {
+        var fx = points[i][0];
+        if(fx < sx) {
+        var fy = points[i][1];
+        //line((fx + sx)/2, fy-1, (fx + sx)/2, fy+1); // fills in gap at vertex
+        var opx = null;
+        var opy = null;
+        
+        if(fy > 200) { // I use this if else to make sure I only draw half of the
+                      // parabola since it's the same on both sides
+            for(var y = 0; y < fy; y += 2) { // since it 
+                var x = (fx*fx + fy*fy - 2*y*fy + y*y - sx*sx)/(2*(fx-sx));
+                
+                //points[i][3] = [];
+                //points[i][3].push([x, y, 2*fy - y]);
+                
+                pts[floor(x) + floor(y) * 400]++;
+                if(opx !== null) {
+                    //line(opx, opy, x, y);
+                    //line(opx, 2*fy - opy, x, 2*fy - y);
+                }
+                opx = x;
+                opy = y;
+            }
+        } else {
+            for(var y = 400; y > fy; y -= 2) { // since it 
+                var x = (fx*fx + fy*fy - 2*y*fy + y*y - sx*sx)/(2*(fx-sx));
+                if(opx !== null) {
+                    //line(opx, opy, x, y);
+                    //line(opx, -opy + 2*fy, x, -y + 2*fy);
+                }
+                opx = x;
+                opy = y;
+            }
+        }
+        }
+    }
+    
+    //for(var i = 0; i < points.length; i++) { // check every point's parabala 4 intersect
+    //    for(var j = i + 1; j < points.length; j++) {
+    //        
+    //    }
+    //}
+    
+    for(var x = 0; x < 400; x += random(5, 50)) {
+        for(var y = 0; y < 400; y += random(5, 50)) {
+            var c = points[0][2];
+            var mindist = dist(x, y, points[0][0], points[0][1]);
+            for(var i = 1; i < points.length; i++) {
+                var distn = dist(x, y, points[i][0], points[i][1]);
+                if(distn < mindist) {
+                    mindist = distn;
+                    c = points[i][2];
+                }
+            }
+            stroke(c);
+            strokeWeight(30);
+            point(x, y);
+        }
+    }
+    
+    stroke(255, 255, 255);
+    strokeWeight(4);
+    for(var y = 0; y < 400; y++) {
+        for(var x = 0; x < 400; x ++) {
+            if(pts[x + y * 400] > 1) {
+                point(x, y);
+            }
+        }
+    }
+};
+
+var mousePressed = function() {
+    var c = color(random(0, 255), random(0, 255), random(0, 255), 50);
+    points.push([mouseX, mouseY, c]);
+};

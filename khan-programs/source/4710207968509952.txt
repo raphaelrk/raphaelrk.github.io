@@ -1,0 +1,297 @@
+/*
+    This is to simulate basic evolution of 'organisms'.
+    
+    Known issues:
+    If you get the "string is not a function" error, just hit the restart button.
+    There is a rare instance where all organisms freeze. I do not know what causes it.
+    
+    When two organisms collide, the bigger one can either kill the smaller one, or mate.     When they mate, they create a new organism that inhereits similar traits as their       parents. Organisms die after a certain life span, which is also varied based on         their evolution.
+    
+    This is just an experiment and something interesting to watch, and has no scientific
+    value what so ever, although that doesn't mean it doesn't have some mathematical and
+    programming value!
+    
+    Future ideas:
+    Genes: AA Aa Ab AB BB Ba Bb BA form
+ */
+var organisms = []; //List of all organisms on the screen
+
+/*Genes in order: 
+  Color (does nothing for now), 
+  size
+  speed
+  lifefactor (lifespan as small number)
+  refractory (period after making a child where another can't be made)
+  hostility (probability that an organism kills another instead of mates with it)
+  attractiveness (strength of "gravity field" that attracts them to another particle)
+*/
+var geneDominance = [false,true,true,true,false,true,true]; //Whether traits are dominate (true) or recessive (false)
+
+var tick = 0; //keeps track of time; default rate is 30 ticks per second
+
+var showStats = false;
+var statsText = "";
+
+//Returns best stats of organisms traits
+var getStats = function() {
+    var size = 0, speed = 0, lifefactor = 0, refractory = 1000, hostility = 0, attractiveness = 0;
+    for(var i = 0; i < organisms.length; i++){
+        var o = organisms[i];
+        if(o.size > size){size = o.size;}
+        if(o.speed > speed){speed = o.speed;}
+        if(o.lifefactor > lifefactor){lifefactor = o.lifefactor;}
+        if(o.refractory < refractory){refractory = o.refractory;}
+        if(o.hostility > hostility){hostility = o.hostility;}
+        if(o.attractiveness > attractiveness){attractiveness = o.attractiveness;}
+    }
+    return [size, speed, lifefactor, refractory, hostility, attractiveness, organisms.length];
+};
+
+//Updates the stats
+var updateStatsText = function(){
+    var stats = getStats();
+    statsText = "Size: "+stats[0]+"\nSpeed: "+stats[1]+"\nLifeFactor: "+stats[2]+"\nRefractory: "+stats[3]+"\nHostility: "+stats[4]+"\nAttractiveness: "+stats[5]+"\nOrganisms: "+stats[6];
+};
+
+//Individual organism as an object "class"
+var organism = function(size,color,speed,lifefactor,refractory,hostility,attractiveness) {
+    this.x = 0;
+    this.y = 0;
+    this.size = size;
+    this.color = color;
+    this.speed = speed;
+    //Direction (xMotion & yMotion) is the only truely random non-inherited trait
+    this.xMotionFinal = random(1,this.speed)*(random() < 0.5 ? -1 : 1);
+    this.yMotionFinal = random(1,this.speed)*(random() < 0.5 ? -1 : 1);
+    this.xMotionBegin = 0;
+    this.yMotionBegin = 0;
+    this.xMotion = this.xMotionFinal; 
+    this.yMotion = this.yMotionFinal;
+    this.start = tick;
+    this.birth = tick;
+    this.refractory = refractory;
+    this.refractoryTime = 0;
+    this.lifefactor = lifefactor;
+    this.lifespan = random(this.lifefactor*90,this.lifefactor*110);
+    this.hostility = hostility;
+    this.attractiveness = attractiveness;
+    
+    //Genes: Color-merge [add,subtract], size-merge [add,subtract], speed [add,subtract], lifefactor [add,subtract], Refractory-period [add, subtract], Hostile probablity(?)
+    this.genes = [];
+    
+    this.move = function() { //Called every frame, handles all aspects of movement
+        //If statements for wall collision detection
+        if(this.size/2+this.x+this.xMotion>width||this.x-this.size/2+this.xMotion<0){
+            this.xMotion *= -1;
+        }
+        if(this.size/2+this.y+this.yMotion>height||this.y-this.size/2+this.yMotion<0){
+            this.yMotion *= -1;
+        }
+        //Increment position by delta x and y
+        this.x += this.xMotion;
+        this.y += this.yMotion;
+    };
+    this.draw = function() { //Called every frame, handles drawing and var updates
+        if(this.birth+this.lifespan<tick){
+            this.destroy(); //If the organism is too old, kill it
+        }
+        if(this.refractoryTime > 0){ //Handle refractory time
+            if(this.refractoryTime < this.refractory){
+                this.refractoryTime++;
+            }else{
+                this.refractoryTime = 0;
+            }
+        }
+        
+        //Draw the organism
+        fill(this.color);
+        ellipse(this.x,this.y,this.size,this.size);
+    };
+    
+    //Returns true if this organism and another collide; uses distance formula
+    this.collidesWith = function(organism1) {
+        var distance = sqrt(pow(organism1.x-this.x,2)+pow(organism1.y-this.y,2));
+        if(distance <= this.size/2 + organism1.size/2){
+            return true;
+        }
+        return false;
+    };
+    
+    //Returns true if this organism and another collide; uses distance formula
+    this.isAttractedTo = function(organism1) {
+        var distance = sqrt(pow(organism1.x-this.x,2)+pow(organism1.y-this.y,2));
+        if(distance <= this.size/2 + organism1.size/2+(this.attractiveness+organism1.attractiveness)){
+            this.xMotionBegin = this.xMotion;
+            this.yMotionBegin = this.yMotion;
+            this.start = tick;
+            return true;
+        }
+        //var a = pow(-2,0.2*(tick-this.start)-15)-(1/abs(this.xMotionFinal));
+        //var b = pow(-2,0.2*(tick-this.start)-15)-(1/abs(this.yMotionFinal));
+        //var MotionX = (1/(pow(2,-15+(tick-this.start)*0.001)+0.3))+abs(this.xMotionFinal);
+        //var MotionY = (1/(pow(2,-15+(tick-this.start)*0.001)+0.3))+abs(this.yMotionFinal);
+        if(this.xMotion > 0){this.xMotion = abs(this.xMotionFinal);}else{this.xMotion = -1*abs(this.xMotionFinal);}
+        if(this.yMotion > 0){this.yMotion = abs(this.yMotionFinal);}else{this.yMotion = -1*abs(this.yMotionFinal);}
+        return false;
+    };
+    
+    //Returns true if this organism and another collide; uses distance formula
+    this.Attract = function(organism1) {
+        var distance = sqrt(pow(organism1.x-this.x,2)+pow(organism1.y-this.y,2));
+        var attracted = (this.attractiveness+organism1.attractiveness)/2;
+        if(this.x < organism1.x && this.y < organism1.y){
+            this.xMotion += attracted/distance/2;
+            this.yMotion += attracted/distance/2;
+        }else if(this.x > organism1.x && this.y < organism1.y){
+            this.xMotion -= attracted/distance/2;
+            this.yMotion += attracted/distance/2;
+        }else if(this.x < organism1.x && this.y > organism1.y){
+            this.xMotion += attracted/distance/2;
+            this.yMotion -= attracted/distance/2;
+        }else{
+            this.xMotion -= attracted/distance/2;
+            this.yMotion -= attracted/distance/2;
+        }
+    };
+    
+    //Mates this organism with another organism, creating a new organism with traits similar to the parents
+    this.mateWith = function(organism1) {
+        if(this.refractoryTime === 0){
+            //calulate child's size
+            var size = this.inheritGene(1,this.genes,organism1.genes,this.size,organism1.size,25);
+            //Calculate child's color; not working for now
+            var randColor = this.color;
+            //Calculate child's speed
+            var speed = this.inheritGene(2,this.genes,organism1.genes,this.speed,organism1.speed,15);
+            //Calculate child's lifefactor (length of life)
+            var life = this.inheritGene(3,this.genes,organism1.genes,this.lifefactor,organism1.lifefactor,15);
+            var refractory = this.inheritGene(4,this.genes,organism1.genes,this.refractory,organism1.refractory,30);
+            //Calculate child's hostility (probablity of "killing" another organism)
+            var hostile = this.inheritGene(5,this.genes,organism1.genes,this.hostility,organism1.hostility,25);
+            var attractive = this.inheritGene(5,this.genes,organism1.genes,this.attractiveness,organism1.attractiveness,35);
+            //Create new organism using calculated properties
+            organisms[organisms.length] = new organism(size,randColor,speed,life,refractory,hostile,attractive);
+            //Make position similar to parents
+            organisms[organisms.length-1].x = (this.x+organism1.x)/2;
+            organisms[organisms.length-1].y = (this.y+organism1.y)/2;
+            
+            //Make genes similar to parents, with respect to demoninant genes
+            for(var k = 0; k < geneDominance.length; k++) {
+                organisms[organisms.length-1].genes[k] = this.genes[k] === true || organism1.genes[k] === true; 
+            }
+            
+            //Prevent organisms from spamming more until the collision is over, also known as refractory time between mating
+            organisms[organisms.length-1].refractoryTime++;
+            this.refractoryTime++;
+            organism1.refractoryTime++;
+            
+            updateStatsText();
+        }
+    };
+    
+    //Calculates the value for a trait given the gene and the two parent organisms
+    this.inheritGene = function(gene,genes1,genes2,value1,value2,increment) {
+        var average = (value1+value2)/2;
+        var amount = (value1+value2)/increment;
+        if(geneDominance[gene]){
+            return (genes1[gene] === true || genes2[gene] === true) ? average+amount : average-amount;
+        }else{
+            return genes1[gene] === false && genes2[gene] === false ? average+amount : average-amount;
+        }
+    };
+    
+    //Handles when two organisms collide; decides whether hostile or "friendly"
+    this.encounter = function(organism1) {
+        if(random(0,100) < this.hostility && this.size > organism1.size && this.refractory === 0){
+            organism1.destroy();
+        }else{
+            this.mateWith(organism1);
+        }
+    };
+    
+    //Destroys or kills the organism by removing it from organisms array
+    this.destroy = function() {
+        var index = -1; //In the off chance this organism doesn't exist when this is fired, -1 prevents any damage to the array
+        for(var k = 0; k < organisms.length; k++){
+            if(organisms[k] === this){
+                index = k;
+            }
+        }
+        organisms.splice(index, 1);
+        updateStatsText();
+    };
+};
+
+// Creates four random parent organisms with random traits and genes
+var init = function() {
+    organisms = [];
+    for(var i = 0; i < 4; i++){ 
+        var size = random(7,12);
+        var randColor = color(random(0,255),random(0,255),random(0,255));
+        var speed = random(1,5);
+        var life = random(4,8);
+        var refractory = random(50,80);
+        var hostile = random(0,25);
+        var attractiveness = random(5,250);
+        organisms[i] = new organism(size,randColor,speed,life,refractory,hostile,attractiveness);
+        organisms[i].x = random(organisms[i].size,400-organisms[i].size);
+        organisms[i].y = random(organisms[i].size,400-organisms[i].size);
+        for(var k = 0; k < geneDominance.length; k++){
+            organisms[i].genes[k] = random() < 0.5 ? true : false;   
+        }
+    }
+    updateStatsText();
+};
+/*
+var init = function(){
+    var randColor = color(random(0,255),random(0,255),random(0,255));
+    organisms[0] = new organism(20,randColor,8,12,1000000000,0,40);
+    organisms[0].x = 100;
+    organisms[0].y = 200;
+    organisms[1] = new organism(20,randColor,8,12,1000000000,0,40);
+    organisms[1].x = 200;
+    organisms[1].y = 200;
+};
+*/
+//randomSeed(0);
+init();
+
+//Checks collisions between a given organism against all other organisms
+var checkCollisions = function(organism) {
+    for(var j = 0; j < organisms.length; j++){
+        if(organisms[j] !== organism && organism.collidesWith(organisms[j])){
+            organism.encounter(organisms[j]);
+        }
+        if(organisms[j] !== organism && organism.isAttractedTo(organisms[j])){
+            organism.Attract(organisms[j]);
+        }
+    }
+    return false;
+};
+
+//framteRate(30);
+//Draws and updates the organisms; called 30 times per second
+var draw = function() {
+    background(255, 255, 255);
+    //Update organisms
+    for(var i = 0; i < organisms.length; i++){
+        checkCollisions(organisms[i]);
+    }
+    for(var i = 0; i < organisms.length; i++){
+        organisms[i].move();
+        organisms[i].draw();
+    }
+    tick++; //Update time
+    
+    if(showStats){
+        fill(0, 0, 0);
+        textSize(14);
+        text(statsText,20,40);
+    }
+    
+    //Check if population is too small to continue or too large
+    if(organisms.length > 200 || organisms.length === 1){
+        //Restart simulation to four parent organisms
+        init();
+    }
+};

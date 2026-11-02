@@ -1,0 +1,73 @@
+var bgColor = color(255, 247, 247);
+var lineColor = color(255, 0, 0);
+var intersectColor = color(125, 87, 201, 150);
+var intersectDiam = 10;
+
+var l1 = [100, 120, 240, 210]; // line 1, static
+var l2 = [320, 120, 140, 310]; // line 2, dynamic
+
+var draw = function() {
+    noStroke();
+    fill(bgColor);
+    rect(0, 0, 400, 400);
+    
+    l2[2] = mouseX;
+    l2[3] = mouseY;
+    
+    // line equations
+    // y - l1[1] = (l1[1]-l1[3])/(l1[0]-l1[2])*(x-l1[0]) first line eq
+    // y - l2[1] = (l2[1]-l2[3])/(l2[0]-l2[2])*(x-l2[0]) second line eq
+    //
+    // x1 = l1[0], y1 = l1[1], x2 = l2[0], y2 = l2[1]
+    // (lN[1]-lN[3])/(lN[0]-lN[2]) = mN
+    // y - y1 = m1*(x-x1) first line eq
+    // y - y2 = m2*(x-x2) second line eq
+    //
+    // intersection
+    // y1 + m1*(x-x1) = y2 + m2*(x-x2)
+    // y1 + m1*x-m1*x1 = y2 + m2*x-m2*x2
+    // x(m1-m2) = y2 - y1 + m1*x1 - m2*x2
+    // x = (y2 - y1 + m1*x1 - m2*x2)/(m1-m2)
+    // y = y1 + m1*(intX-x1)
+    
+    // calculate intersection
+    var x1 = l1[0], y1 = l1[1], // first line first coordinate
+        x2 = l2[0], y2 = l2[1]; // second line first coordinate
+    var m1 = (l1[1]-l1[3])/(l1[0]-l1[2]), // first line slope
+        m2 = (l2[1]-l2[3])/(l2[0]-l2[2]); // second line slope
+        
+    var intersectInBound = true;
+    
+    var intX = 0, intY = 0;
+    if(m1 === m2)  {
+        println("watch those parallels");
+        intersectInBound = false;
+    } else {
+        // intersection coordinate!
+        intX = (y2 - y1 + m1*x1 - m2*x2)/(m1-m2);
+        intY = y1 + m1*(intX-x1);
+        
+        // determine if intersection is in line bounds
+        // simply makes sure the point isn't out of the x or y scopes of either lines
+        if(((intX < x1 && intX < l1[2]) || (intX > x1 && intX > l1[2])) && // line1x
+           ((intY < y1 && intY < l1[3]) || (intY > y1 && intY > l1[3]))){ // line1y
+            intersectInBound = false;
+        } else
+        if(((intX < x2 && intX < l2[2]) || (intX > x2 && intX > l2[2])) && // line2x
+           ((intY < y2 && intY < l2[3]) || (intY > y2 && intY > l2[3]))){ // line2y
+            intersectInBound = false;
+        }
+    }
+    
+    // draw lines
+    stroke(lineColor);
+    line(l1[0], l1[1], l1[2], l1[3]);
+    line(l2[0], l2[1], l2[2], l2[3]);
+    
+    // draw intersection
+    if(intersectInBound) {
+        noStroke();
+        fill(intersectColor);
+        ellipse(intX, intY, intersectDiam, intersectDiam);
+    }
+};

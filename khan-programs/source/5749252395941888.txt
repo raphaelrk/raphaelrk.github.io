@@ -1,0 +1,32 @@
+/**
+ * Orbiters
+ * Code by Raphael Rouvinov-Kats
+ * 
+ * my attempt at http://beesandbombs.tumblr.com/post/45513650541/orbiters
+ * 
+ * ?width=800
+ * */
+
+var N = 20;
+frameRate(60);
+fill(23, 23, 23);
+var draw = function() {
+    background(28, 94, 56);
+    for(var r = -1; r <= N; r ++) {
+        for(var c = -1; c <= N; c++) {
+            var x = width/N * (c + 0.5);
+            var y = height/N * (r + 0.5);
+            pushMatrix();
+                stroke((x+y)/2-100+sin(frameCount)*50, 89, 89);
+                stroke(255, 255, 255);
+                translate(x, y);
+                strokeWeight(1);
+                ellipse(0, 0, width/N, height/N);
+            
+                rotate(frameCount*5 + (x + y)*1.1);
+                strokeWeight(6);
+                point(0, 700/N/2);
+            popMatrix();
+        }
+    }
+};

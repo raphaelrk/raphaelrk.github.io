@@ -1,0 +1,36 @@
+/**
+ * Pixel Pattern
+ * By Raphael Rouvinov-Kats
+ * */
+
+frameRate(0);
+
+var pattern = function(posX, posY) {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var l = 401 * 401;
+    while(l--) {
+        var x = l % 401;
+        var y = (l-x)/401;
+        
+        var dx = posX - x;
+        var dy = posY - y;
+        var d = sqrt(dx*dx + dy*dy);
+        
+        // the line where the magic happens
+        var diag = (x+y) % 16 < 8;
+        
+        var ind = (x + y * 400) << 2;
+        pix[ind]   = diag ? d : 255;
+        pix[ind+1] = diag ? 0 : 255;
+        pix[ind+2] = diag ? 0 : 255;
+    }
+    
+    this.updatePixels();
+};
+
+var mousePressed = function() {
+    pattern(mouseX, mouseY);
+};

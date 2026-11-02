@@ -1,0 +1,71 @@
+/**
+ * Rainbow road
+ * by Raphael Rouvinov-Kats
+ * */
+frameRate(0);
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var l = 201 * 201;
+    while(l--) {
+        // coords
+        var x = l % 201;
+        var y = (l-x)/201;
+        
+        // dist from center
+        var x2 = 200 - x;
+        var y2 = 200 - y;
+        var d = sqrt(x2*x2+y2*y2);
+        
+        // 'time'
+        var t = (d * pow(sin(frameCount*15), frameCount))%360;
+        
+        // http://jsperf.com/native-sin-vs-approx-fast-sin
+        // this is var s = 255 * sin(t)
+        var s = 255* (0.02222222*t - 0.00012345679 * t * t);
+        
+        var xr = 400 - x; // x-right
+        var yb = 400 - y; // y-bottom
+        
+        var willShowR = frameCount % 3 === 0;
+        var willShowG = frameCount % 4 === 0;
+        var willShowB = frameCount % 5 === 0;
+        
+        // top-left
+        if(willShowR) {
+            pix[(25*y<<6)+(x<<2)] += s;
+            pix[(25*y<<6)+(xr<<2)] += s;
+            pix[(25*yb<<6)+(x<<2)] += s;
+            pix[(25*yb<<6)+(xr<<2)] += s;
+            pix[(25*y<<6)+(x<<2)] /= 2;
+            pix[(25*y<<6)+(xr<<2)] /= 2;
+            pix[(25*yb<<6)+(x<<2)] /= 2;
+            pix[(25*yb<<6)+(xr<<2)] /= 2;
+        }
+        if(willShowG) {
+            pix[(25*y<<6)+(x<<2)+1] += s;
+            pix[(25*y<<6)+(xr<<2)+1] += s;
+            pix[(25*yb<<6)+(x<<2)+1] += s;
+            pix[(25*yb<<6)+(xr<<2)+1] += s;
+            pix[(25*y<<6)+(x<<2)+1] /= 2;
+            pix[(25*y<<6)+(xr<<2)+1] /= 2;
+            pix[(25*yb<<6)+(x<<2)+1] /= 2;
+            pix[(25*yb<<6)+(xr<<2)+1] /= 2;
+        }
+        if(willShowB) {
+            pix[(25*y<<6)+(x<<2)+2] += s;
+            pix[(25*y<<6)+(xr<<2)+2] += s;
+            pix[(25*yb<<6)+(x<<2)+2] += s;
+            pix[(25*yb<<6)+(xr<<2)+2] += s;
+            pix[(25*y<<6)+(x<<2)+2] /= 2;
+            pix[(25*y<<6)+(xr<<2)+2] /= 2;
+            pix[(25*yb<<6)+(x<<2)+2] /= 2;
+            pix[(25*yb<<6)+(xr<<2)+2] /= 2;
+        }
+    }
+    
+    debug(this.__frameRate);
+    this.updatePixels();
+};

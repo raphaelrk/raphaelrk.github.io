@@ -1,0 +1,129 @@
+// just ignore this abomination of a program
+colorMode(HSB, 400);
+var rainblockHeight = 20;
+var pixwidth = 5;
+
+var PlayerPaddle = function() {
+    var x = mouseX;
+    var y = 400 - 10;
+    var height = 5;
+    var width = 60;
+    
+    this.draw = function() {
+        fill(0, 0, 0);
+        noStroke();
+        rect(x, y, width, height);
+        
+        fill(120, 350, 300);
+        rect(x+width/4, y+height/20, width*1/2, height*9/10);
+    };
+    
+    this.update = function() {
+        x = mouseX - width / 2;
+        if(x >= 400-width) {
+            x = 400-width;
+        }
+        if(x <= 0) {
+            x = 0;
+        }
+    };
+    
+    this.getX = function() { return x; };
+    this.getY = function() { return y; };
+    this.getW = function() { return width; };
+    this.getH = function() { return height; };
+};
+ 
+var Pixel = function(x, y, c) {
+    this.x = x;
+    this.y = y;
+    this.c = c;
+    var dx = random(-10, 10);
+    var dy = random(-10, -5);
+    var radius = pixwidth;
+    
+    this.draw = function() {
+        fill(0, 100, 100);
+        noStroke();
+        ellipse(x, y, radius, radius);
+        
+        fill(c);
+        ellipse(x, y, radius*2/3, radius*2/3);
+    };
+    
+    this.update = function(p, e) {
+        x += dx;
+        y += dy;
+        // bounce off sides
+        if(x >= 400 - radius) {dx = -abs(dx);}
+        if(x < radius) {dx = abs(dx);}
+        
+        var moe = radius / 2; // margin of error
+        
+        // bounce or escape on bottom
+        if(y > radius + p.getY() + p.getH()) {
+            if(p.getX() - moe < x && 
+               p.getX() + p.getW() + moe > x) { // bounce
+                   dy = -abs(dy);
+                   dx = (x - p.getX() - p.getW()/2)/
+                        p.getW()*20;
+            } else if (y < radius) { // escape
+                this.newBall(-1);
+                //score[1]++;
+            }
+        }
+        // bounce on top side
+        else if(y <= radius) {
+           dx = -random(-10, 10);
+           dy = abs(dy);
+        }
+    };
+    
+    this.getY = function() { return y; };
+};
+
+var Rainblock = function() {
+    var heights = [];
+    
+    for(var i = 0; i < 400; i+=pixwidth) {
+        heights.push(rainblockHeight);
+    }
+    
+    this.draw = function() {
+        for(var i = 0; i < heights.length; i++) {
+            var x = i * pixwidth;
+            var h = heights[i];
+            noStroke();
+            fill(x, 400, 400);
+            rect(x, 0, pixwidth, h);
+        }
+    };
+    
+    this.collision = function(x, y, r) {
+        if(y - r < heights[x]) {
+            return true;
+        }
+        return false;
+    };
+};
+
+var pixArray = [];
+var ball = new Pixel(20, 0, color(200, 400, 400));
+var myPad = new PlayerPaddle();
+var rainblock = new Rainblock();
+
+var draw = function() {
+    var bg = getImage("space/background");
+    image(bg, 0, 0);
+    
+    ball.draw();
+    myPad.draw();
+    rainblock.draw();
+    
+    myPad.update();
+    ball.update(myPad, myPad);
+};
+
+var mouseClicked = function() {
+    ball.mouseClicked();
+};

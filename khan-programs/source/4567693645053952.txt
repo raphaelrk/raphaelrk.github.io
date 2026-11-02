@@ -1,0 +1,28 @@
+/**
+ * Optical Illusion
+ * By Raphael Rouvinov-Kats
+ * */
+
+var N = 30;
+
+frameRate(60);
+fill(0, 0, 0, 0);
+stroke(0, 255, 51);
+strokeWeight(4);
+var draw = function() {
+    background(0, 26, 255);
+    for(var r = -1; r <= N; r ++) {
+        for(var c = -1; c <= N; c++) {
+            var x = 400/N * (c + 0.5);
+            var y = 400/N * (r + 0.5);
+            pushMatrix();
+                translate(x, y);
+            
+                
+                rotate(frameCount*5 + (x + y)*1.1);
+                line(0, 700/N/6, 0, 700/N/3);
+            popMatrix();
+        }
+    }
+    noLoop();
+};

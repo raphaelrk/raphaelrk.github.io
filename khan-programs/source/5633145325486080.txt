@@ -1,0 +1,78 @@
+/**
+ * Funk
+ * By Raphael Rouvinov-Kats
+ * 
+ * Pretty cool-looking animation
+ * */
+
+var pointAmount = 100;
+var pointSpeed = 5.0;
+var minLineDistance = 100; //400*sqrt(2) to connect all
+frameRate(60);
+stroke(0, 255, 9);
+strokeWeight(0.2);
+
+var Point = function(x, y, dx, dy) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+};
+
+// moves a Point object by its dx and dy
+// constrains point to canvas bounds, flips dx/dy if the point
+// would've left bounds
+Point.prototype.move = function() {
+    this.x += this.dx;
+    this.y += this.dy;
+    
+    if(this.x < 0 || this.x >= width) {
+        this.x = constrain(this.x, 0, width);
+        this.dx = -this.dx;
+    }
+    
+    if(this.y < 0 || this.y >= height) {
+        this.y = constrain(this.y, 0, height);
+        this.dy = -this.dy;
+    }
+};
+
+// creates and returns a random Point object
+var makePoint = function() {
+    var x = random(0, width);
+    var y = random(0, height);
+    var dx = random(-pointSpeed, pointSpeed);
+    var dy = random(-pointSpeed, pointSpeed);
+    return new Point(x, y, dx, dy);
+};
+
+// create a points array and fill it
+var points = [];
+for(var i=0; i<pointAmount; i++){ points[i] = makePoint(); }
+
+var draw = function() {
+    background(0, 0, 0);
+    
+    // move all the Points
+    for(var i = 0; i < points.length; i++) {
+        points[i].move();
+    }
+    
+    // loop through all the points
+    for(var i = 0; i < points.length; i++) {
+        var p1 = points[i];
+        
+        // loop through remaining points
+        for(var j = i+1; j < points.length; j++) {
+            var p2 = points[j];
+            
+            // draw line if close enough
+            if(dist(p1.x, p1.y, p2.x, p2.y) < minLineDistance) {
+                line(p1.x, p1.y, p2.x, p2.y);
+            }
+        }
+        
+        // draw the point
+        point(p1.x, p1.y);
+    }
+};

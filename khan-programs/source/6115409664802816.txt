@@ -1,0 +1,36 @@
+/**
+ * Vizualization example 1
+ * Raphael Rouvinov-Kats
+ * 
+ * loops through 20 rows and 20 columns, drawing rectangles all over the screen
+ * the colors of the rectangles are set under the 'HSB', or Hue Saturation Brightness color mode
+ * The hue is set as the remainder of x+y+frameCount when divided by 255 
+ *          > var hue = (x + y + frameCount) % 255;
+ * The saturation and value for each rectangle are set to 255
+ * */
+
+var blockSize = 20;
+
+frameRate(30);
+colorMode(HSB);
+
+noStroke();
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    for(var row = 0; row < height/blockSize; row++) {
+        for(var column = 0; column < width/blockSize; column++) {
+            var x = column * blockSize;
+            var y = row * blockSize;
+            
+            var hue = ((~x-~y) & frameCount) % 255;
+            var saturation = 255;
+            var brightness = 255;
+            fill(hue, saturation, brightness);
+            
+            rect(x, y, blockSize, blockSize);
+        }
+    }
+    
+};

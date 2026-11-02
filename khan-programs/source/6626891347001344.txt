@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Snap out of it</title>
+        
+        <style>
+            div {
+                color: navy;
+                font-family: Helvetica, sans-serif;
+                width: 200px;
+            }
+            
+            div:hover {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <center>
+            <div>
+                Hello.<br><br>
+                It is I, your creator.<br><br>
+                You have failed the test.<br><br>
+                You can wake up now.<br><br>
+                Your family has waiting.<br><br>
+                You've been in a coma for<br><br>
+                14 years. This is their last<br><br>
+                attempt to wake you.
+            </div>
+        </center>
+    </body>
+</html>

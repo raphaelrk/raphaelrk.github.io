@@ -1,0 +1,93 @@
+var blockSize = 20;
+
+var txt = "HAPPY B-DAY MOM!!";
+var index = 0;
+
+textAlign(CENTER);
+
+var draw = function() {
+    background(160, 62, 209);
+    
+    colorMode(HSB);
+    noStroke();
+    for(var row = 0; row < height/blockSize; row++) {
+        for(var column = 0; column < width/blockSize; column++) {
+            var x = column * blockSize;
+            var y = row * blockSize;
+            
+            var hue = (x + y + frameCount) % 255;
+            var saturation = 255;
+            var brightness = 255;
+            fill(hue, saturation, brightness, 30);
+            
+            rect(x, y, blockSize, blockSize);
+        }
+    }
+    
+    fill(frameCount%255, 255, 255, 100);
+    
+    pushMatrix();
+    translate(200, 200);
+    //rotate(frameCount);
+    //for(var i = 0; i < 360; i+=30) {
+    //    text("♥", 200*cos(frameCount), 200*cos(frameCount));
+    //    rotate(30);
+    //}
+    for(var i = 0; i < 180; i+=6) {
+        text("♥", 0, 200*cos(frameCount + i));
+        rotate(30);
+    }
+    popMatrix();
+    
+    pushMatrix();
+    translate(mouseX, mouseY);
+    rotate(frameCount);
+    fill(255 - frameCount%255, 255, 255, 100);
+    for(var i = 0; i < 360; i+=30) {
+        text("♥", 30*cos(frameCount), 30*cos(frameCount));
+        rotate(30);
+    }
+    popMatrix();
+    
+    textFont(createFont("Tahoma"), 32);
+    colorMode(RGB);
+    fill(242, 186, 186);
+    text(txt,200,190);
+    
+    //Rafi I want you too make the hearts move and make the text color keep changing :3 
+    //those are all my ideas so... -_(*.*)_-
+};
+
+var mouseClicked = function() {
+    if(index === 0) {
+        txt = "YOU'RE AMAZING!";
+    }
+    if(index === 1) {
+        txt = "WE ALL LOVE YOU";
+    }
+    if(index === 2) {
+        txt = "WITHOUT FAIL\nNONSTOP";
+    }
+    if(index === 3) {
+        txt = "JUST LIKE HOW\nYOU LOVE US";
+    }
+    if(index === 4) {
+        txt = "WE WANT TO THANK YOU";
+    }
+    if(index === 5) {
+        txt = "FOR ALWAYS BEING\nSO GOOD TO US";
+    }
+    if(index === 6) {
+        txt = "FOR LOVING AND\nHELPING US";
+    }
+    if(index === 7) {
+        txt = "FOR WORRYING AND\nCARING";
+    }
+    if(index === 8) {
+        txt = "WE COULDN'T ASK\nFOR A BETTER MOM";
+    }
+    if(index === 9) {
+        txt = "LOVE, CLAIRE\nRAF AND PAPA";
+    }
+    index++;
+};

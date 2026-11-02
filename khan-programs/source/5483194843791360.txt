@@ -1,0 +1,47 @@
+/**
+ * Ripples! Believe it or not
+ * by Raphael Rouvinov-Kats
+ * 
+ * Draws ripples around wherever you click your mouse!
+ * */
+
+var Ripple = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.startTime = frameCount;
+    
+    this.rippleAt = function(x, y) {
+        return 10*sin(dist(this.x, this.y, x, y)) * exp(2 + (this.startTime-frameCount)/10);
+    };
+};
+
+var ripples = [];
+
+frameRate(0);
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var l = 400 * 400;
+    while(l--) {
+        // coords
+        var x = l % 400;
+        var y = (l-x)/400;
+        
+        var depth = 0;
+        for(var i = 0; i < ripples.length; i++) {
+            depth += ripples[i].rippleAt(x, y);
+        }
+        
+        pix[(25*y<<6)+(x<<2)] = 100 + depth;
+        pix[(25*y<<6)+(x<<2)+1] = 100 + depth;
+        pix[(25*y<<6)+(x<<2)+2] = 200 + depth;
+    }
+    
+    this.updatePixels();
+};
+
+var mouseClicked = function() {
+    ripples.push(new Ripple(mouseX, mouseY));
+};

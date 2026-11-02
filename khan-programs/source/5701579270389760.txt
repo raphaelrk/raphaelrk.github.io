@@ -1,0 +1,18 @@
+var draw = function() {
+    // draw the "computer screen" outline
+    noFill(); // don't want a colored inside to the screen, it'll overwrite drawings
+    rect(50, 50, 300, 300);
+    
+    // this equals true if the mouse is in the rectangle
+    // and false if it's outside of the rectangle
+    var mouseIsOnScreen = (mouseX > 50) && (mouseX < 350) && (mouseY > 50) && (mouseY < 350);
+    
+    // this does the same as the above line, but
+    // with the mouse's coordinates from the last frame
+    var mouseWasOnScreen = (pmouseX > 50) && (pmouseX < 350) && (pmouseY > 50) && (pmouseY < 350);
+    
+    // draw the line if the mouse is pressed and in the rectangle
+    if(mouseIsOnScreen && mouseWasOnScreen) {
+        line(pmouseX, pmouseY, mouseX, mouseY);
+    }
+};

@@ -1,0 +1,48 @@
+// click the mouse in the canvas
+
+var particles = [];
+var xAnchor = 200;
+var yAnchor = 200;
+
+var mouseMoved = function() {
+    xAnchor = mouseX;
+    yAnchor = mouseY;
+};
+
+for (var i = 0; i < 2000; i += 1) {
+    var newParticle = {
+        x: random(400),
+        y: random(400),
+        xSpeed: random(2) - 1,
+        ySpeed: random(2) - 1,
+        mass: 10 + random(20)
+    };
+    particles.push(newParticle);  
+}
+
+// draws everything - called many times per second
+var draw = function() {
+    noStroke(); // do not draw shape border
+    background(0, 0, 0); // draw background   
+        
+    // draw anchor point
+    fill (255, 255, 255);
+    ellipse(xAnchor, yAnchor, 8, 8);        
+        
+    // move and draw particles
+    for (var i = 0; i < particles.length; i += 1) {   
+        if (dist(particles[i].x, particles[i].y, 
+                 xAnchor, yAnchor) > 200) {
+            particles[i].xSpeed = (xAnchor - particles[i].x) /
+                                  particles[i].mass;
+            particles[i].ySpeed = (yAnchor - particles[i].y) /
+                                  particles[i].mass;
+        }
+        
+        particles[i].x = particles[i].x + particles[i].xSpeed;
+        particles[i].y = particles[i].y + particles[i].ySpeed;
+                
+        fill(color(random(255), random(255), random(255)));
+        ellipse(particles[i].x, particles[i].y, 4, 4); 
+    }
+};

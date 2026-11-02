@@ -1,0 +1,63 @@
+// Which iteration of the Hilbert curve to draw
+var iteration = 6;
+
+// Length of each line in the Hilbert curve
+var length = 5;
+
+var forward = function(distance) {
+    line(0, 0, 0, distance);
+    translate(0, distance);
+};
+
+var right = function(angle) {
+    rotate(angle * PI / (180+5*sin(millis())));
+};
+
+var left = function(angle) {
+    right(-angle);
+};
+
+var rightHilbert;
+
+var leftHilbert = function(l, w) {
+    if (l === 0) {
+        return;
+    }
+    right(90);
+    rightHilbert(l - 1, w);
+    forward(w);
+    left(90);
+    leftHilbert(l - 1, w);
+    forward(w);
+    leftHilbert(l - 1, w);
+    left(90);
+    forward(w);
+    rightHilbert(l - 1, w);
+    right(90);
+};
+
+rightHilbert = function(l, w) {
+    if (l === 0) {
+        return;
+    }
+    left(90);
+    leftHilbert(l - 1, w);
+    forward(w);
+    right(90);
+    rightHilbert(l - 1, w);
+    forward(w);
+    rightHilbert(l - 1, w);
+    right(90);
+    forward(w);
+    leftHilbert(l - 1, w);
+    left(90);
+};
+
+var draw = function() {
+    resetMatrix();
+    translate(390, 10);
+    background(random(0, 200), 212, 134);
+    stroke(3, 3, 3);
+    strokeWeight(2);
+    leftHilbert(iteration, length);
+};

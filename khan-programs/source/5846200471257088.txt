@@ -1,0 +1,25 @@
+var rows = 20;
+var cols = 20;
+var rotations = 3; // half life 3 confirmed
+
+var draw = function() {
+    background(143, 71, 71);
+    stroke(255, 255, 255);
+    for(var r = 0; r < rows; r++) {
+        for(var c = 0; c < cols; c++) {
+            var x = 400/cols*c + cols/2;
+            var y = 400/rows*r + rows/2;
+            var w = 1 + dist(x, y, mouseX, mouseY)/(cols*sqrt(2));
+            var h = 1 + dist(x, y, mouseX, mouseY)/(rows*sqrt(2));
+            var mag = sqrt(w*w + h*h);
+            pushMatrix();
+            translate(x, y);
+            for(var ang = 0; ang < 360; ang += 360 / rotations) {
+                var lx = cos(ang)*mag;
+                var ly = sin(ang)*mag;
+                line(0, 0, lx, ly);
+            }
+            popMatrix();
+        }
+    }
+};

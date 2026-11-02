@@ -1,0 +1,7 @@
+// note- not actually a quine/self-reproducing because it's reading its own source
+
+var draw = function() {
+    if(frameCount === 7) {
+        println("var draw = " + this.draw + ";");
+    }
+};

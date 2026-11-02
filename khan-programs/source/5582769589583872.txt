@@ -1,0 +1,15 @@
+var nums = [1, 2, 3, 4]; // 1 2 3 4
+
+nums.pop(0); // 1 2 3
+nums.push(1); // 1 2 3 1
+nums.push(10); // 1 2 3 1 10
+nums.pop(); // 1 2 3 1
+
+nums.shift(); // 2 3 1
+nums.unshift(7); // 7 2 3 1
+
+textFont(createFont("Garamond", 36),36);
+for(var i = 0; i < nums.length; i++) {
+    fill(255, 0, 0);
+    text(nums[i], 10 + 36 * i, 50);
+}

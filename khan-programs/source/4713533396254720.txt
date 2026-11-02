@@ -1,0 +1,17 @@
+var jz = ["0100","1010","0101","1010"];
+
+var s = min(width, height)/4;
+var pad = 5;
+
+var draw = function() {
+    background(255, 233, 171);
+    noStroke();
+    for (var r = 0; r < jz.length; r++) {
+        for (var c = 0; c < jz[r].length; c++) {
+            var t = jz[r][c];
+            if (t === '0') { fill(255,255,255,0); }
+            if (t === '1') { fill(0,0,0); }
+            ellipse(c*s+s*0.5, r*s+s*0.5, s-pad, s-pad);
+        }
+    }
+};

@@ -1,0 +1,40 @@
+
+var x1 = 100;
+var x2 = 150;
+var x3 = 250;
+var x4 = 300;
+
+var y1 = 100;
+var y2 = 150;
+var y3 = 250;
+var y4 = 300;
+
+var xs = [x1, x2, x3, x4];
+var ys = [y1, y2, y3, y4];
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    stroke(255, 0, 0);
+    for(var i = 0; i < 4; i++) {
+        line(xs[i], 0, xs[i], height);
+        line(0, ys[i], width, ys[i]);
+    }
+    
+    //noFill();
+    stroke(0, 0, 0);
+    quad(xs[0], ys[0], xs[1], ys[1], xs[1], ys[3], xs[0], ys[2]);
+    quad(xs[0], ys[0], xs[2], ys[0], xs[3], ys[1], xs[1], ys[1]);
+    quad(xs[1], ys[1], xs[3], ys[1], xs[3], ys[3], xs[1], ys[3]);
+};
+
+var mouseDragged = function() {
+    for(var i = 0; i < 4; i++) {
+        if(abs(mouseX - xs[i]) < 3) {
+            xs[i] = mouseX;
+        }
+        if(abs(mouseY - ys[i]) < 3) {
+            ys[i] = mouseY;
+        }
+    }
+};

@@ -1,0 +1,36 @@
+/**
+ * Gaussian
+ * By Raphael Rouvinov-Kats
+ * 
+ * Draws gaussian distribution values
+ * https://en.wikipedia.org/wiki/Multivariate_normal_distribution
+ * */
+
+frameRate(0);
+
+var addGaussianAtPosition = function(posX, posY) {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var l = 401 * 401;
+    while(l--) {
+        var x = l % 401;
+        var y = (l-x)/401;
+        var dx = posX - x;
+        var dy = posY - y;
+        
+        var ang = atan2(dx, dy);
+        
+        var ind = (x + y * 400) << 2;
+        pix[ind] = map(ang, -180, 180, 0, 255);
+        pix[ind+1] = 0;
+        pix[ind+2] = 0;
+    }
+    
+    this.updatePixels();
+};
+
+var mousePressed = function() {
+    addGaussianAtPosition(mouseX, mouseY);
+};

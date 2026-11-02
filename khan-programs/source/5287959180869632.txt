@@ -1,0 +1,23 @@
+var textS = 20;
+
+textFont(createFont("Tahoma"), textS);
+
+frameRate(60);
+
+fill(189, 134, 134);
+var draw = function() {
+    background(255, 255, 255);
+    
+    for(var y = 0; y <= 400 + textS; y += textS) {
+        for(var x = 0; x < 400; x += textS/20*13) {
+            var n = noise((x-y + frameCount*16) * 0.003);
+            
+            // some cool characters: 178 ▓; 177 ▒; 176 ░; 215 ╫; 219 █.
+            if(n < 0.5) {
+                text("^", x, y);
+            } else {
+                text("█", x, y);
+            }
+        }
+    }
+};

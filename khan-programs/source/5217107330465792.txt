@@ -1,0 +1,25 @@
+// from http://eloquentjavascript.net/chapter6.html
+
+var forEach = function(array, action) {
+  for (var i = 0; i < array.length; i++){
+      action(array[i]);
+  }
+};
+
+var range = function(a, b) {
+    var arr = [];
+    for(var i = 0; i < b - a; i++) {
+        arr[i] = i + a;
+    }
+    return arr;
+};
+
+var sum = function(arr) {
+    var total = 0;
+    forEach(arr, function(a) {
+        total += a;
+    });
+    return total;
+};
+
+println(sum(range(0, 101)));

@@ -1,0 +1,64 @@
+/**
+ * Creates parabolas from foci and a sweeping directrix
+ * @author Raphael Rouvinov-Kats
+ * */
+ 
+var points = [];
+for(var i = 0; i < 4; i++) {
+    points.push([random(0, 400), random(0, 400)]);
+}
+
+//rotate(90); // to flip axis
+//translate(0, -400);
+
+var draw = function() {
+    background(255, 253, 243);
+    for(var i = 0; i < points.length; i++) {
+        stroke(0, 0, 0);
+        strokeWeight(4);
+        point(points[i][0], points[i][1]);
+    }
+    
+    var sx = frameCount % 400;
+    stroke(255, 0, 0);
+    strokeWeight(0.5);
+    line(sx, 0, sx, 400);
+    
+    stroke(23, 209, 57);
+    strokeWeight(0.5); // thin lines draw faster
+    for(var i = 0; i < points.length; i++) {
+        var fx = points[i][0];
+        var fy = points[i][1];
+        line((fx + sx)/2, fy-1, (fx + sx)/2, fy+1); // fills in gap at vertex
+        var opx = null;
+        var opy = null;
+        
+        if(fy > 200) { // I use this if else to make sure I only draw half of the
+                      // parabola since it's the same on both sides
+            for(var y = 0; y < fy; y += 2) { // since it 
+                var x = (fx*fx + fy*fy - 2*y*fy + y*y - sx*sx)/(2*(fx-sx));
+                
+                if(opx !== null) {
+                    line(opx, opy, x, y);
+                    line(opx, 2*fy - opy, x, 2*fy - y);
+                }
+                opx = x;
+                opy = y;
+            }
+        } else {
+            for(var y = 400; y > fy; y -= 2) { // since it 
+                var x = (fx*fx + fy*fy - 2*y*fy + y*y - sx*sx)/(2*(fx-sx));
+                if(opx !== null) {
+                    line(opx, opy, x, y);
+                    line(opx, -opy + 2*fy, x, -y + 2*fy);
+                }
+                opx = x;
+                opy = y;
+            }
+        }
+    }
+};
+
+var mousePressed = function() {
+    points.push([mouseX, mouseY]);
+};

@@ -1,0 +1,29 @@
+
+var pts = [];
+for (var i=0; i < 20; i++) {
+    pts.push({ x: random(0, 1), y: random(0, 1) });
+}
+
+var draw = function() {
+    background(0, 20 + 10*sin(frameCount), 40);
+    
+    // draw stars
+    stroke(178, 191, 255);
+    strokeWeight(3);
+    for (var i=0; i < pts.length; i++) {
+        point(pts[i].x * width, pts[i].y * height + 20*sin(frameCount + i * 130));
+    }
+
+    // draw card and tab bg
+    noStroke();
+    fill(48, 52, 89);
+    rect(120, 340, 160, 42, 8);
+    rect(120, 30, 160, 300, 8);
+
+    // draw tab icons
+    fill(89, 99, 143);
+    ellipse(144+38*0, 361, 28, 28);
+    ellipse(144+38*1, 361, 28, 28);
+    ellipse(144+38*2, 361, 28, 28);
+    ellipse(144+38*3, 361, 28, 28);
+};

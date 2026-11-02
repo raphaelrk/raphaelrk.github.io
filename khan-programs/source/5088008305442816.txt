@@ -1,0 +1,24 @@
+/**
+ * Conchoid of Nicomedes
+ * By Raphael Rouvinov-Kats
+ * 
+ * r = b + a sec(theta)
+ * http://mathworld.wolfram.com/ConchoidofNicomedes.html
+ * */
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    var b = sin(frameCount)*100;
+    var a = 50.0;
+    translate(width/2, height/2);
+    for(var theta = 0; theta < 360; theta += 0.1) {
+        var r = a + b/cos(theta);
+        
+        pushMatrix();
+        rotate(theta);
+        point(0, r);
+        popMatrix();
+    }
+    translate(-width/2, -height/2);
+};

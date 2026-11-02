@@ -1,0 +1,138 @@
+/**
+ * Simple maze gen
+ * By Raphael Rouvinov-Kats
+ * Makes a maze and a player
+ * 
+ * I plan on adding collision
+ * Spinoffs will include better maze generation and a lightbulb that casts shadows
+ * */
+ 
+colorMode(HSB);
+var tiles = [];
+var tileS = 20;
+var pX = 200;
+var pY = 200;
+var pSpeed = 1;
+var pR = 5;
+var floorB = 0;
+
+// set tiles to random values
+for(var r = 0; r < 400 / tileS; r++) {
+    tiles[r] = [];
+    for(var c = 0; c < 400 / tileS; c++) {
+        tiles[r][c] = color(random(0, 255), random(50, 150), 100);
+    }
+}
+
+// recursively makes a maze
+var makeAMaze = function(r, c) {
+    // return if out of bounds
+    if(r <= 0 || c <= 0 || r >= tiles.length-1 || c >= tiles[0].length-1) {
+        return;
+    }
+    if(brightness(tiles[r][c]) === floorB) {
+        return;
+    }
+    
+    // make this black if doing so doesn't create a 2x2 block
+    // this code looks clockwise around (c,r) to see if filing (c,r) would make a 2x2
+    var filledInARow = 0;
+    var willCreateTwoByTwo = false;
+    
+    if(brightness(tiles[r-1][c-1]) === floorB) { filledInARow++; } 
+    else { filledInARow = 0; }
+    
+    if(brightness(tiles[r-1][c]) === floorB) { filledInARow++; } 
+    else { filledInARow = 0; }
+    
+    if(brightness(tiles[r-1][c+1]) === floorB) { filledInARow++; } 
+    else { filledInARow = 0; }
+    if(filledInARow >= 3) { willCreateTwoByTwo = true; }
+    
+    if(brightness(tiles[r][c+1]) === floorB) { filledInARow++; } 
+    else { filledInARow = 0; }
+    if(filledInARow >= 3) { willCreateTwoByTwo = true; }
+    
+    if(brightness(tiles[r+1][c+1]) === floorB) { filledInARow++; } 
+    else { filledInARow = 0; }
+    if(filledInARow >= 3) { willCreateTwoByTwo = true; }
+    
+    if(brightness(tiles[r+1][c]) === floorB) { filledInARow++; } 
+    else { filledInARow = 0; }
+    if(filledInARow >= 3) {willCreateTwoByTwo = true; }
+    
+    if(brightness(tiles[r+1][c-1]) === floorB) { filledInARow++; } 
+    else { filledInARow = 0; }
+    if(filledInARow >= 3) { willCreateTwoByTwo = true; }
+    
+    if(brightness(tiles[r][c-1]) === floorB) {  filledInARow++; } 
+    else { filledInARow = 0; }
+    if(filledInARow >= 3) { willCreateTwoByTwo = true; }
+    
+    if(brightness(tiles[r-1][c-1]) === floorB) {  filledInARow++; } 
+    else { filledInARow = 0; }
+    if(filledInARow >= 3) { willCreateTwoByTwo = true; }
+    
+    if(brightness(tiles[r-1][c]) === floorB) {  filledInARow++; } 
+    else { filledInARow = 0; }
+    if(filledInARow >= 3) { willCreateTwoByTwo = true; }
+    
+    if(!willCreateTwoByTwo) {
+        var col = tiles[r][c];
+        var h = hue(col);
+        var s = saturation(col);
+        tiles[r][c] = color(h, s, floorB);
+        
+        for(var i = 0; i < 10; i++) {
+            var xShift = floor(random(-2, 3));
+            var yShift = floor(random(-2, 3));
+            makeAMaze(r+yShift, c+xShift);
+        }
+        // makeAMaze(r-1, c-1);
+        // makeAMaze(r-1, c);
+        // makeAMaze(r-1, c+1);
+        // makeAMaze(r, c-1);
+        // makeAMaze(r, c+1);
+        // makeAMaze(r+1, c-1);
+        // makeAMaze(r+1, c);
+        makeAMaze(r+1, c+1);
+    }
+};
+
+makeAMaze(1, 1);
+
+var draw = function() {
+    // draw tiles
+    for(var r = 0; r < tiles.length; r++) {
+        for(var c = 0; c < tiles[r].length; c++) {
+            var x = c * tileS;
+            var y = r * tileS;
+            stroke(0, 0, 0);
+            fill(tiles[r][c]);
+            rect(x, y, tileS, tileS);
+        }
+    }
+    
+    // draw player and light
+    pushMatrix();
+        translate(pX, pY);
+        var angle = atan2(mouseY - pY, mouseX - pX);
+        rotate(angle);
+        
+        noStroke();
+        fill(45, 255, 255, 100);
+        triangle(0, 0, 400, -100, 400, 100);
+        
+        fill(30, 250, 250, 150);
+        ellipse(0, 0, pR*2, pR*2);
+    popMatrix();
+    
+    if(mouseIsPressed) {
+        var ang = atan2(mouseY-pY, mouseX-pX);
+        
+        pX += cos(ang) * pSpeed;
+        pY += sin(ang) * pSpeed;
+        
+        // ang = 360 - ((ang + 360) % 360); // turn ang into [0, 360) degrees
+    }
+};

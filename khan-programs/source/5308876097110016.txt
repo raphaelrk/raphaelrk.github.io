@@ -1,0 +1,84 @@
+/**
+ * A box of chocolates
+ * by Raphael Rouvinov-Kats
+ * */
+frameRate(30);
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var l = 201 * 201;
+    while(l--) {
+        // coords
+        var x = l % 201;
+        var y = (l-x)/201;
+        
+        // dist from center
+        var x2 = mouseX|x;
+        var y2 = mouseY|y;
+        var d = sqrt(x2*x2+y2*y2);
+        
+        // 'time'
+        var t = (d * frameCount)%360;
+        
+        // http://jsperf.com/native-sin-vs-approx-fast-sin
+        // this is var s = 255 * sin(t)
+        var s = 255* (0.02222222*t - 0.00012345679 * t * t);
+        
+        var xr = 400 - x; // x-right
+        var yb = 400 - y; // y-bottom
+        
+        var willShowR = frameCount % 3 === 0;
+        var willShowG = true;
+        var willShowB = true;
+        
+        // top-left
+        var a = 0.5;
+        if(willShowR) {
+            pix[(25*y<<6)+(x<<2)] = pix[(25*y<<6)+(x<<2)]*a + s*(1-a);
+            pix[(25*y<<6)+(xr<<2)] = pix[(25*y<<6)+(xr<<2)]*a + s*(1-a);
+            pix[(25*yb<<6)+(x<<2)] = pix[(25*yb<<6)+(x<<2)]*a + s*(1-a);
+            pix[(25*yb<<6)+(xr<<2)] = pix[(25*yb<<6)+(xr<<2)]*a + s*(1-a);
+        }
+        if(willShowG) {
+            pix[(25*y<<6)+(x<<2)+1] = pix[(25*y<<6)+(x<<2)+1]*a + s*(1-a);
+            pix[(25*y<<6)+(xr<<2)+1] = pix[(25*y<<6)+(xr<<2)+1]*a + s*(1-a);
+            pix[(25*yb<<6)+(x<<2)+1] = pix[(25*yb<<6)+(x<<2)+1]*a + s*(1-a);
+            pix[(25*yb<<6)+(xr<<2)+1] = pix[(25*yb<<6)+(xr<<2)+1]*a + s*(1-a);
+        }
+        if(willShowB) {
+            pix[(25*y<<6)+(x<<2)+2] = pix[(25*y<<6)+(x<<2)+2]*a + s*(1-a);
+            pix[(25*y<<6)+(xr<<2)+2] = pix[(25*y<<6)+(xr<<2)+2]*a + s*(1-a);
+            pix[(25*yb<<6)+(x<<2)+2] = pix[(25*yb<<6)+(x<<2)+2]*a + s*(1-a);
+            pix[(25*yb<<6)+(xr<<2)+2] = pix[(25*yb<<6)+(xr<<2)+2]*a + s*(1-a);
+        }
+    }
+    
+    this.updatePixels();
+    var r = random(0, 1);
+    // if(r < 0.125) {
+        filter(THRESHOLD);
+    // }
+    // else if(r < 0.25) {
+    //     filter(GRAY);
+    // }
+    // else if(r < 0.375) {
+        
+    // }
+    // else if(r < 0.5) {
+    //     filter(POSTERIZE, 5);
+    // }
+    // else if(r < 0.675) {
+    //     filter(BLUR);
+    // }
+    // else if(r < 0.75) {
+    //     filter(OPAQUE);
+    // }
+    // else if(r < 0.875) {
+    //     filter(ERODE);
+    // }
+    // else {
+    //     filter(DILATE);
+    // }
+};

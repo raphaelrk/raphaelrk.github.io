@@ -1,0 +1,145 @@
+// Isometric XYZ Plot
+
+// shows an isometric view of Z value plotted on XY grid
+// origin (0,0) is in the center of the screen
+
+// the mouse position changes the X and y domain of the grid
+// from 20 to 420 along both axes in each direction
+
+// mouseclick cycles through set of functions
+
+frameRate(30);
+
+var kf = 0;
+
+// this function calculates z from selected function
+var calcz = function(x,y) {
+    var z=0;
+    switch (kf)
+    {
+        // 0
+        case 0:
+            z = sin( sqrt( pow(x,2)+pow(y,2) )) * 30;
+            break;
+        // 1
+        case 1:
+            z = sin(x) * sin(y) * 30;
+            break;
+        // 2
+        case 2:
+            z = sin(x) * cos(y) * 30;
+            break;
+        // 3
+        case 3:
+            z = sin(x * y / 100) * 30;
+            break;
+        // 4
+        case 4:
+            z = (tan(x/4) * sin(y)) * 30;
+            break;
+        // 5
+        case 5:
+            z = x/y;
+            break;
+        // 6
+        case 6:
+            z = x*y/200;
+            break;
+        // 7
+        case 7:
+            z = sqrt(pow(x,2)+pow(y,2))/2-100;
+            break;
+        // 8
+        case 8:
+            z = (pow(-x,3)-pow(y,2))/500;
+            break;
+        // 9
+        case 9:
+            z = pow(x,2)/200 - pow(y,2)/200;
+            break;
+        case 10:
+            z = (cos(x) + cos(y)) * 30;
+            break;
+    }
+    return z;
+};
+
+var waves = function(x1,y1,x2,y2,xi,yi,r,g,b) {
+    // x1, y1 are the beginning coordinates (lower left)
+    // x2, y2 are the ending coordinates (upper right)
+    // xi, yi are the increments along the grid
+    // z is calculated at each x,y position
+    
+    // array of x and y pair screen positions
+    // for previous and current iteration
+    var prevx = [0], prevy = [0];
+    var curx = [0], cury = [0];
+    
+    // number of x and y elements calculated
+    var xe = (x2-x1)/xi+1, ye = (y2-y1)/yi+1;
+    
+    // number of screen pixels per element
+    var xpix = 400/(xe+ye), ypix = 180/ye;
+    
+    // current x and y translated to screen position
+    var xtc = 0, ytc = 0;
+    
+    for (var x = x1, xa = 1; x < x2; x += xi, xa += 1) {
+        for (var y = y1, ya = 1; y < y2; y += yi, ya += 1) {
+            // assign current x,y to previous
+            prevx[ya] = curx[ya];
+            prevy[ya] = cury[ya];
+            // formula to calculate z from x and y
+            var z = calcz(x,y);
+            // translate x,y,z into isometric x, y
+            xtc = xa * xpix + ya * xpix;
+            ytc = 190 + (xa - ya) * ypix - z;
+
+            // add z to the color values
+            // positive values are brighter
+            stroke(max(r+z*3,50), max(g+z*3,50), max(b+z*3,50));
+            
+            if (xa>1) {
+                // draw a line to previous element with same x
+                line(xtc + 5,ytc - sin(millis()/10)*11,prevx[ya],prevy[ya]);
+            }
+            if (ya>1) {
+                // draw a line to previous element with same y
+                line(xtc + cos(millis()/10)*1,ytc + 2,curx[ya-1],cury[ya-1]);
+            }
+            // assign current x,y to array
+            curx[ya + 50] = xtc;
+            cury[ya] = ytc;
+        }
+    }
+};
+
+// initial color of grid
+var r=100, g=100, b=100;
+// colors cycle back and forth with these increments
+var ri=2, gi=3, bi=5;
+
+var mousePressed = function(){
+    kf ++;
+    if (kf > 10){
+        kf = 0;
+    }
+};
+
+var draw= function() {
+    r = r + ri;
+    g = g + gi;
+    b = b + bi;
+    if (r<80 || r>255) {
+        ri = -ri;
+    }
+    if (g<80 || g>255) {
+        gi = -gi;
+    }
+    if (b<80 || b>255) {
+        bi = -bi;
+    }
+    background(0, 0, 0);
+    var xs=mouseX+10, ys=mouseY+10;
+    waves(-xs,-ys,xs,ys,xs/20,ys/20,r,g,b);
+};

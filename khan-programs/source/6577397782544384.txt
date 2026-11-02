@@ -1,0 +1,190 @@
+var tri = {
+    x1:200,
+    y1:200,
+    x2:200+150/sqrt(2),
+    y2:200-150/sqrt(2),
+    x3:200+150/sqrt(2),
+    y3:200
+};
+var press = false;
+var positive = true;
+angleMode = "degrees";
+var mode = "degrees";var over = false;
+var nextKey = "";
+var word = "";
+var textBox = function(x, y){
+    textAlign(CENTER, CENTER);
+    fill(255, 0, 0);
+    text("Enter angle: ", 180, 360);
+    textAlign(TOP, LEFT);
+    if(!keyIsPressed){
+        nextKey = "";
+    }
+    var a = over?fill(255, 255, 255):fill(150, 150, 150);
+    rect(x, y, 40, 20);
+    if(mouseIsPressed){
+        if(mouseX > x && mouseX < x + 40 && mouseY > y && mouseY < y + 20){
+            over = true;
+        }else{
+            over = false;
+        }
+    }
+    if(over){
+        fill(0, 0, 0);
+        textSize(16);
+        var cursor = frameCount % 30 > 15?"|":"";
+        text(word + cursor, x+5, y+15);
+        if(word.length < 3 && mode === "degrees"){
+            word+=nextKey;
+        }else if(mode === "radians"){
+            var l = [];
+            var ml = 3;
+            for(var i in word){
+                l.push(word[i]);
+            }
+            if("." in l){
+                ml = 4;
+                if(nextKey === "."){
+                    nextKey = "";
+                }
+            }
+            if(word.length < 4){
+                word+=nextKey;
+            }
+        }
+    }
+    keyIsPressed = false;
+    if(!over){
+        word = "";
+    }
+};
+var drawTriangle = function(){
+    textAlign(CENTER, CENTER);
+    noFill();
+    strokeWeight(3);
+    stroke(0, 0, 0);
+    line(0, 200, 400, 200);
+    line(200, 30, 200, 400);
+    line(200, 0, 200, 8);
+    stroke(255, 0, 0);
+    ellipse(200, 200, 300, 300);
+    stroke(68, 68, 235);
+    triangle(tri.x1, tri.y1, tri.x2, tri.y2, tri.x3, tri.y3);
+    rect(tri.x3-(tri.x2>200?15:0), tri.y3-(tri.y2>200?0:15), 15, 15);
+    noStroke();
+    fill(255, 0, 0, 150);
+    ellipse(tri.x3, tri.y3, 15, 15);
+    ellipse(tri.x1, tri.y1, 15, 15);
+    fill(0, 255, 0, 150);
+    if(press) {
+        fill(0, 255, 0, 200);
+    }
+    ellipse(tri.x2, tri.y2, 15, 15);
+    textSize(20);
+    fill(0, 0, 0);
+    text("1", (tri.x1+tri.x2)/2-15, (tri.y1+tri.y2)/2);
+    text(""+round((tri.x3-200)/0.150)/1000, (tri.x1+tri.x3)/2, (tri.y1+tri.y3)/2+(tri.y2 > 200?-20:20));
+    text(""+(round(-(tri.y2-200)/0.150-0.05)/1000), (tri.x2+tri.x3)/2+(tri.x2 > 200?40:-40), (tri.y2+tri.y3)/2);
+    var theta = ((tri.y2 > 200?360:0)+((tri.y2 > 200?-1:1)*((tri.x2 > 200?90:90)-round(asin(round((tri.x3-200)/0.150)/1000)))));
+    var theta2 = theta;
+    if(mode === "radians"){
+        var theta2 = (theta*PI)/180;
+    }
+    text("θ = "+round(theta2*1000)/1000, 200, 20);
+    textAlign(TOP, LEFT);
+    var sin1 = round(sin(theta)*1000)/1000;
+    var cos1 = round(cos(theta)*1000)/1000;
+    var tan1 = round(tan(theta)*1000)/1000;
+    if(abs(sin1) > 100000){sin1 = undefined;}
+    if(abs(cos1) > 100000){cos1 = undefined;}
+    if(abs(tan1) > 100000){tan1 = undefined;}
+    text("sin = "+sin1, 10, 40);
+    text("cos = "+cos1, 10, 60);
+    text("tan = "+tan1, 10, 80);
+    textAlign(RIGHT, RIGHT);
+    var csc1 = round(1/sin(theta)*1000)/1000;
+    var sec1 = round(1/cos(theta)*1000)/1000;
+    var cot1 = round(1/tan(theta)*1000)/1000;
+    if(abs(csc1) > 100000){csc1 = undefined;}
+    if(abs(sec1) > 100000){sec1 = undefined;}
+    if(abs(cot1) > 100000){cot1 = undefined;}
+    text("csc = "+csc1, 390, 40);
+    text("sec = "+sec1, 390, 60);
+    text("cot = "+tan1, 390, 80);
+};
+var buttons = function(){
+    strokeWeight(1);
+    textSize(12);
+    noStroke();
+    var a = mode === "radians"?fill(150, 150, 150):fill(255, 255, 255);
+    rect(155, 375, 45, 20);
+    var a = mode === "degrees"?fill(150, 150, 150):fill(255, 255, 255);
+    rect(200, 375, 45, 20);
+    fill(0, 0, 0);
+    textAlign(TOP, LEFT);
+    text("degrees", 155, 390);
+    text(" radians", 200, 390);
+    if(mouseIsPressed && mouseX > 200 && mouseX < 245 && mouseY > 375 && mouseY < 395){
+        mode = "radians";
+    }
+    if(mouseIsPressed && mouseX > 155 && mouseX < 200 && mouseY > 375 && mouseY < 395){
+        mode = "degrees";
+    }
+};
+var evalAngle = function(){
+    var angle = parseFloat(word);
+    if(mode === "radians"){
+        angle = angle * 180 / PI;
+    }
+    tri.y2 = 200 - sin(angle) * 150;
+    tri.x2 = 200 + cos(angle) * 150;
+    tri.x3 = tri.x2;
+    angle = angle * PI / 180;
+};
+
+draw = function() {
+    background(255, 245, 232);
+    drawTriangle();
+    if(!mouseIsPressed){
+        press = false;
+    }
+    buttons();
+    textBox(220, 350);
+    if(word.length > 0){
+        evalAngle();
+    }
+};
+
+mouseDragged = function(){
+    if(press && mouseX > 49 && mouseX < 351){
+        tri.x2 = mouseX;
+        tri.x3 = tri.x2;
+        var a = mouseX - 200;
+        var c = 150;
+        var b = sqrt(c*c - a*a);
+        if(mouseY > 200){
+            tri.y2 = 200 + b;
+        }else{
+            tri.y2 = 200 - b; 
+        }
+    }
+};
+
+mousePressed = function(){
+    if(mouseX > tri.x2 - 8 && mouseX < tri.x2 + 8 && mouseY > tri.y2 - 8 && mouseY < tri.y2 + 8){
+        press = true;
+    }
+};
+
+keyPressed = function(){
+    if(keyCode >= 48 && keyCode <= 57){
+        nextKey = key - 48;
+        keyIsPressed = false;
+    }
+    if(keyCode === 127 || keyCode === LEFT || keyCode === 8){
+        word = word.substring(0, word.length-1);
+    }
+    if(keyCode === 190 && mode === "radians"){
+        nextKey = ".";
+    }
+};

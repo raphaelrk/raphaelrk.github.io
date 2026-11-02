@@ -1,0 +1,120 @@
+/**
+ * Father's day card
+ * by Claire Kats and Raphael Rouvinov-Kats
+ * Love you dad :)
+ * 
+ * https://www.khanacademy.org/cs/hahhahah/5596038570704896
+ * */
+ 
+ 
+ 
+var smallCol = color(28, 28, 28);
+var bigCol1 = color(231, 32, 0);
+var bigCol2 = color(71, 204, 118);
+
+var bigTriW = 73;
+
+var bigTriH = bigTriW * 3/4;
+var smallTriW = bigTriW/2;
+var smallTriH = bigTriH/2;
+
+var RIGHTSIDEUP = 0;
+var UPSIDEDOWN = 180;
+
+var Triangle = function(orientation, x, y) {
+    this.orientation = orientation;
+    this.x = x;
+    this.y = y;
+    
+    var col = bigCol1;
+    if(orientation !== RIGHTSIDEUP) {
+        col = bigCol2;
+    }
+    
+    this.col = col;
+};
+
+Triangle.prototype.draw = function() {
+    pushMatrix();
+        // move to big triangle center
+        translate(this.x, this.y);
+        
+        // rotate if upside-down triangle
+        rotate(this.orientation);
+        
+        translate(-10, 0);
+        
+        // set color for big triangle
+        noStroke();
+        fill(this.col);
+        
+        // draw big triangle
+        //triangle(-bigTriW/2, bigTriH/2, 
+        //         bigTriW/2, bigTriH/2, 
+        //         0, -bigTriH/2);
+        textSize(108);
+        text("♥",0,0);
+        
+        // calculations to rotate
+        var d = dist(200, 200, this.x, this.y);
+        var time = (frameCount*3 - d/5)%360;
+        
+        rotate(time);
+        
+        
+        // set color for small triangle
+        fill(smallCol);
+        
+        // draw small triangle
+        //triangle(-smallTriW/2, smallTriH/2, 
+        //         smallTriW/2, smallTriH/2, 
+        //         0, -smallTriH/2);
+        var i = getImage("cute/Star");
+        i.height /= 5;
+        i.width /= 5;
+        image(i, 0, 0);
+    popMatrix();
+};
+
+var getOrientation = function(row, column) {
+    var orientation = (row+column)%2; // 0 or 1
+        orientation *= UPSIDEDOWN; // RIGHTSIDEUP or UPSIDEDOWN
+        
+    return orientation;
+};
+
+draw = function() {
+    background(0, 0, 0);
+    
+    for(var r = 0; r < 400/bigTriH + 1; r++) {
+        for(var c = 0; c < 400/bigTriW * 2 + 1; c++) {
+            
+            var o = getOrientation(r, c);
+            var x = c*bigTriW/2;
+            var y = r*bigTriH;
+            
+            x += (x - mouseX)*abs(x - mouseX)/2000;
+            y += (y - mouseY)*abs(y - mouseY)/2000;
+            
+            (new Triangle(o, x, y)).draw();
+        }
+    }
+    
+    fill(230, 145, 213, 200);
+    rect(0, 0, 400, 400);
+    
+    textSize(27);
+    fill(255, 227, 227);
+    text("WE WOVE YOU DADDY!!!",38,71);
+    text("And don't worry you're\n     not like this guy",115,122);
+    
+    var w =getImage("creatures/OhNoes");
+    image(w, 134, 160);
+    text("Oh noes you forgot that this is a",4,301);
+    text("Father's Day card!!!!!",4,334);
+    text("Happy Father's Day!!!!",30,390);
+    textSize(88);
+    text("♥",52,197);
+    text("♥",329,382);
+    text("♥",293,237);
+};

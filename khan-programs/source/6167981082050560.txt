@@ -1,0 +1,22 @@
+/**
+ * Muah!!!!
+ * By Raphael
+ * */
+
+colorMode(HSB);
+textAlign(CENTER);
+
+frameRate(200);
+
+var draw = function() {
+    resetMatrix();
+    
+    translate(width/2, height/2);
+    rotate(frameCount*6);
+    
+    background(frameCount % 255, 255, 255);
+    
+    textSize(84);
+    fill(0, 0, 0);
+    text("Muah!\nMuah!Muah!Muah!\nMuah!Muah!\nMuah!Muah!\nMuah!Muah!\nMuah!Muah!", 0, -200);
+};

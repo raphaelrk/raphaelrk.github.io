@@ -1,0 +1,36 @@
+var lines = ["cos", "mos"];
+var speed = 20.0;
+
+var impact = loadFont("impact", 1000);
+textFont(impact, 270);
+
+colorMode(HSB);
+
+var draw = function() {
+    background(0, 0, 0);
+    
+    fill(speed*frameCount%255, 170, 255);
+    
+    for(var i = 0; i < lines.length; i++) {
+        var y = (i+1) * 400/lines.length - 40;
+        var line = lines[i];
+        for(var l = 0; l < line.length; l++) {
+            var x = 40 + l * 400/line.length;
+            var letter = line[l];
+            textFont(impact, 1000/lines.length/line.length);
+            text(letter, x, y);
+        }
+    }
+    
+    for(var y = 0; y < 400; y += random(5, 100)) {
+        for(var x = 0; x < 400; x += random(5, 100)) {
+            var p = get(x, y);
+            var b = p % 256;
+            var g = (p >> 8) % 256;
+            var r = (p >> 16) % 256;
+            //fill(r, g, b);
+            stroke(random(0, 255));
+            ellipse(x, y, 5, 5);
+        }
+    }
+};

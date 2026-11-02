@@ -1,0 +1,33 @@
+var printProperties = function(obj, depth) {
+    if(depth > 2) {
+        return;
+    }
+    
+    var left = ">";
+    for(var i = 0; i < depth; i++) {
+        left += ">>";
+    }
+    left += " ";
+    
+    for(var p in obj) {
+        println(left + typeof obj[p] + " " + p + ": " + obj[p]);
+        
+        if(typeof obj[p] === "object") {
+            printProperties(obj[p], depth + 1);
+        }
+    }
+};
+
+var draw = function() {
+    if(frameCount === 7) {
+        for(var p in this) {
+            if(typeof this[p] === "object") {
+                println("> " + typeof this[p] + " " + p + ": " + this[p]);
+                
+                printProperties(this[p], 1);
+            }
+        }
+        
+        noLoop();
+    }
+};

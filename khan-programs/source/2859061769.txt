@@ -1,0 +1,170 @@
+var getAngle = function(x1, y1, x2, y2) {
+        var xdiff = abs(x2 - x1); // adj
+        var ydiff = abs(y2 - y1); // opp
+        
+        var angle;
+        if(x1 > x2) {
+            if(y2 < y1) {
+                angle = -atan(ydiff/xdiff) + 90;
+            } else {
+                angle = atan(ydiff/xdiff) + 90;
+            }
+        } else {
+            if(y1 < y1) {
+                angle = atan(ydiff/xdiff) - 90;
+            } else {
+                angle = -atan(ydiff/xdiff) - 90;
+            }
+        }
+        
+        return angle;
+    };
+
+var dart = function(x, y, dx, dy) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    var angle = atan(dy/dx);
+    
+    this.update = function() {
+        x += dx;
+        y += dy;
+        dx = max(1, dx - 0.1);
+        dy = dy + 1;
+        angle = atan(dy/dx);
+        angle = getAngle(x, y, x + dx, y + dy);
+    };
+    
+    this.draw = function() {
+        pushMatrix();
+        translate(x, y);
+        rotate(angle);
+        ellipse(0, 0, 4, 10);
+        popMatrix();
+    };
+    
+    this.offscreen = function() {
+        return false;
+    };
+};
+
+var player = function() {
+    var x = 50;
+    var y = 350;
+    var a = 0; // angle, 0 is right, 90 is down, etc.
+    
+    this.angleToMouse = function() {
+        var xdiff = abs(mouseX - x); // adj
+        var ydiff = abs(mouseY - y); // opp
+        
+        var angle;
+        if(mouseX > x) {
+            if(mouseY < y) {
+                angle = -atan(ydiff/xdiff) + 90;
+            } else {
+                angle = atan(ydiff/xdiff) + 90;
+            }
+        } else {
+            if(mouseY < y) {
+                angle = atan(ydiff/xdiff) - 90;
+            } else {
+                angle = -atan(ydiff/xdiff) - 90;
+            }
+        }
+        
+        return angle;
+    };
+    
+    var distToMouse = function() {
+        return dist(x, y, mouseX, mouseY);
+    };
+    
+    this.draw = function() {
+        a = this.angleToMouse();
+        noStroke();
+        
+        // body
+        fill(173, 137, 106);
+        ellipse(x, y, 50, 100);
+        
+        // head
+        fill(173, 137, 106);
+        ellipse(x, y - 58 , 50, 50);
+        
+        // arm
+        fill(0, 13, 255);
+        pushMatrix();
+        translate(x, y);
+        rotate(a);
+        ellipse(0, 0 - 10, 10, 20);
+        popMatrix();
+        
+        // cloud
+        fill(255, 255, 255);
+        ellipse(46, 390, 79, 20);
+        ellipse(40, 384, 58, 20);
+    };
+};
+
+var bloon = function(x, y) {
+    this.x = x;
+    this.y = y;
+    
+    this.draw = function() {
+        fill(191, 70, 70);
+        ellipse(x, y, 20, 20);
+    };
+    
+    this.getX = function() {return x;};
+    this.getY = function() {return y;};
+};
+
+var level = function(arr) {
+    var bloons = [];
+    for(var i = 0; i < arr.length; i++) {
+        bloons.push(new bloon(arr[i][0], arr[i][1]));
+    }
+    
+    this.draw = function() {
+        for(var b = 0; b < bloons.length; b++) {
+            bloons[b].draw();
+        }
+    };
+    
+    this.free = function() {
+        for(var i = 0; i < bloons.length; i++) {
+            bloons.pop();
+        }
+    };
+};
+
+var p = new player();
+var d = []; // darts
+
+var level1arr =[[150,50],[200,50],[250,50],[300,50],[350,50],
+     [150, 100],[200, 100],[250, 100],[300, 100],[350, 100],
+     [150, 150],[200, 150],[250, 150],[300, 150],[350, 150],
+     [150, 200],[200, 200],[250, 200],[300, 200],[350, 200]];
+var level1 = new level(level1arr);
+
+var draw = function() {
+    background(213, 222, 221);
+    level1.draw();
+    p.draw();
+    for(var i = 0; i < d.length; i++) {
+        d[i].update();
+        d[i].draw();
+        
+        //if(d[i].offScreen()) {
+        //    d.pop(i);
+        //    i--;
+        //}
+    }
+};
+
+var mousePressed = function() {
+    d.push(new dart(50, 350, 
+        (mouseX - 50)/10, 
+        (mouseY - 350)/10));
+};

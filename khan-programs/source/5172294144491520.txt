@@ -1,0 +1,15 @@
+var listProperties = function(obj, stackSize) {
+    for(var m in obj) {
+        println("key: " + m + "\t value: " + obj.getItem(m));
+    }
+};
+
+var getThis = function(){
+    return (function(){ var t = this; return t;})();
+};
+
+var t = getThis();
+
+var localStorage = t.localStorage;
+
+listProperties(localStorage, 0);

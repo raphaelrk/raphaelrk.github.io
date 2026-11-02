@@ -1,0 +1,47 @@
+/**
+ * Blek Drawer
+ * By Raphael Rouvinov-Kats
+ * 
+ * Draw something and blek drawer will repeat it forever!
+ * */
+
+var moves, startX, startY, currMove;
+
+var restartVars = function() {
+    moves = [];
+    startX = mouseX;
+    startY = mouseY;
+    currMove = 0;
+};
+
+restartVars();
+strokeWeight(1);
+stroke(0, 0, 0);
+var draw = function() {
+    if(mouseIsPressed) {
+        for(var i = 0; i < moves.length-1; i++) {
+            line(moves[i][0], moves[i][1], moves[i+1][0], moves[i+1][1]);
+        }
+    } else if(moves.length > 1) {
+        for(var i = 0; i < 20; i++)  {
+            if(currMove >= moves.length - 1) { currMove = 0; }
+            var dx = moves[currMove+1][0] - moves[currMove][0];
+            var dy = moves[currMove+1][1] - moves[currMove][1];
+            line(startX, startY,
+                 startX+dx, startY+dy);
+            
+            startX += dx;
+            startY += dy;
+            currMove++;
+        }
+    }
+};
+
+var mousePressed = function() {
+    restartVars();
+    moves.push([mouseX, mouseY]);
+};
+
+var mouseDragged = function() {
+    moves.push([mouseX, mouseY]);
+};

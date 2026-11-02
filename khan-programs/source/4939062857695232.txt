@@ -1,0 +1,29 @@
+var draw = function() {
+    if(frameCount === 7) { // AKA do this once
+    
+        // constants that hold which range of properties will be printed
+        // required because the output will remove old text
+        // the output can show ~510 of the properties
+        // there were 534 properties at time of writing
+        var pStart = 0;
+        var pEnd = 500;
+        
+        // counter for what property you're on
+        var propertyCount = 0;
+        
+        // loop through all properties in this
+        for(var p in this) {
+            
+            // print property if in range
+            if(propertyCount >= pStart && propertyCount <= pEnd) {
+                println("> " + typeof this[p] + " " + p + ": " + this[p]);
+            }
+            
+            // increment counter
+            propertyCount++;
+        }
+        
+        // stop looping
+        noLoop();
+    }
+};

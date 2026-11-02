@@ -1,0 +1,29 @@
+var gradient = function(sr, sg, sb, rc, gc, bc) {
+    noStroke();
+    
+    var Red = sr;
+    var Green= sg;
+    var Blue = sb;
+    
+    for (var i = 0; i < 400; i += 1) {
+        var x = i * 3;
+        Red += rc;
+        Green += gc;
+        Blue += bc;
+        fill(Red, Green, Blue);
+        rect(x, 0, 3, 400);
+    }
+};
+
+var draw = function() {
+    // r, g, b starting values
+    var sr = 1; 
+    var sg = 1;
+    var sb = 1;
+    
+     // changes in r, g, and b
+    var rc = sin(millis()/1000)+2;
+    var gc = cos(millis()/100)+2;
+    var bc = -cos(millis()/10)+2;
+    gradient(sr, sg, sb, rc, gc, bc);
+};

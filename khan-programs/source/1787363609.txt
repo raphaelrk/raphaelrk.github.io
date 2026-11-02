@@ -1,0 +1,384 @@
+/**drawButton Function 2.1
+
+ * Feel free to use this for your own programs, but please
+
+ * include this link:
+
+ * http://www.khanacademy.org/cs/drawbutton/1082731226
+
+ * To use it, copy everything except the draw loop, and paste
+
+ * it in your program.
+
+ * This function takes 5 parameters: text, x-position,
+
+ * y-position, width (or length), and color.
+
+ * If the mouse is over the button, over_button is set to
+
+ * be true; otherwise, false. Immediately after the function
+
+ * is called, you can use over_button for other purposes,
+
+ * like a button_clicked function.
+
+*/
+
+
+
+var over_button; //After the function is called, this variable will be either true or false.
+
+
+
+var drawButton = function(button_text, x, y, length, color) {
+
+    
+
+    var button_height = 22;
+
+    
+
+    over_button = false;
+
+    var outline = color;
+
+    var greyV = 180; // Lightness of the button.
+
+    var greyVB = 220; // Lightness of the button when the mouse is over it
+
+    var Val = greyV;   
+
+    
+
+    x -= length/2;
+
+            
+
+    //Button's Side
+
+    strokeWeight(1);
+
+    stroke(0, 0, 0, 100);
+
+    fill(outline);
+
+    rect(x-2, y+2, length, button_height, 3);
+
+         
+
+    // If hovered over
+
+    if (mouseX >= x && mouseX <= x + length && mouseY >= y && mouseY <= y + button_height) {
+
+        Val = greyVB;
+
+        over_button = true;
+
+        if (mouseIsPressed) {
+
+                x -=2;
+
+                y += 2;
+
+        }
+
+    }
+
+    fill(random(0,255), random(0,255), random(0,255));
+
+    textSize(20);
+
+    text("The Filter(); Function!",100,100);
+
+    
+
+    textSize(13);
+
+    text("Try to figure out the code for anti-blurry without looking in the code!",12,123);
+
+    
+
+    
+
+    // Button Face
+
+    strokeWeight(2);
+
+    stroke (outline);
+
+    fill(Val, Val, Val);
+
+    rect(x, y, length, button_height, 2);
+
+    
+
+    // Text
+
+    textAlign(CENTER,CENTER);
+
+    fill (0, 102, 19);
+
+    textSize(12);
+
+    text (button_text, x + length/2, y + button_height/2);
+
+    textAlign(LEFT, 0);
+
+};
+
+// Don't copy anything after this point; the following is not the function.
+
+var r = 0;
+
+var g;
+
+var b;
+
+r = round(random(0,1)) * 255;
+
+g = round(random(0,1)) * 255;
+
+b = round(random(0,1)) * 255;
+
+if (r === g && g === b) {
+
+    var rnd = round(random(1, 3));
+
+    switch(rnd) {
+
+        case 1:
+
+            r = 0;
+
+            g = 255;
+
+            break;
+
+        case 2:
+
+            g = 0;
+
+            b = 255;
+
+            break;
+
+        case 3:
+
+            b = 0;
+
+            r = 255;
+
+    }
+
+}
+
+var which_button;
+
+var invert = false;
+
+var mouse = false;
+
+var blurry = false;
+
+var hoverno = false; // being a good little boy for now
+
+var click = false; // good for you!
+
+var small = false;
+
+
+
+var draw = function() {
+
+    this.cursor(CROSS);
+
+    which_button = 0;
+
+    
+
+    background(r, g, b);
+
+    
+
+    drawButton("INVERT", 200, 176, 90, color(50, 18, 255));
+
+    if (over_button) {
+
+        which_button = 1;
+
+    }
+
+    
+
+    drawButton("NATURAL", 200, 208, 90, color(255, 0, 0));
+
+    if (over_button) {
+
+        which_button = 2;
+
+    }
+
+    
+
+    drawButton("BLURRY", 200, 240, 90, color(238, 255, 0));
+
+    if (over_button) {
+
+        which_button = 3;
+
+    }
+
+    
+
+    drawButton("ANTI-BLURRY", 200, 272, 90, 
+
+                color(0, 255, 30));
+
+    if (over_button) { 
+
+        which_button = 4;
+
+    }
+
+    
+
+    drawButton("NO HOVERING", 200, 10, 90, 
+
+               color(random(0,255), random(0,255), 
+
+               random(0,255)));
+
+    if (over_button) {
+
+        which_button = 5; 
+
+        hoverno = true;
+
+    }
+
+    
+
+    drawButton("NO CLICKIES", 200, 360, 90, 
+
+                color(random(0,255), random(0,255),
+
+                random(0,255)));
+
+    if (mouseIsPressed && over_button) { 
+
+        which_button = 6; 
+
+        click = true;
+
+    }
+
+    
+
+    if(blurry){
+
+        filter(BLUR);
+
+        textSize(20);
+
+        text("Filter(BLUR);",146,326);
+
+    }
+
+    
+
+    if (invert) {
+
+        filter(INVERT);
+
+        textSize(20);
+
+        text("Filter(INVERT);",10,217);
+
+       
+
+    } if (mouse){
+
+        filter(NORMAL);
+
+        fill(255, 0, 0);
+
+        textSize(20);
+
+        text("Filter(NORMAL);",105,383);
+
+    }
+
+    if (hoverno){
+
+        println("HOVERED");
+
+    }
+
+    if (click){
+
+        println("CLICKED");
+
+    }
+
+};
+
+
+
+var mouseClicked = function() {
+
+    switch (which_button) {
+
+        case 1:
+
+            invert = true;
+
+            break;
+
+        case 2:
+
+            invert = false;
+
+            break;
+
+        case 3:
+
+            blurry = true;
+
+            break;
+
+        case 4: 
+
+            blurry = false;
+
+            break;
+
+        
+
+        case 5:
+
+            mouse = true;
+
+            break;
+
+        case 6:
+
+            mouse = false;
+
+            break;
+
+        case 7:
+
+            hoverno = true;
+
+            break;
+
+        case 8:
+
+            hoverno = false;
+
+            break;
+
+    }
+
+};
+

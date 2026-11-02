@@ -1,0 +1,74 @@
+/**
+ * Gaussian
+ * By Raphael Rouvinov-Kats
+ * 
+ * Sort of draws gaussian distribution values
+ * https://en.wikipedia.org/wiki/Multivariate_normal_distribution
+ * 
+ * But it's equal at all angles, so it's just a normal distribution
+ * https://en.wikipedia.org/wiki/Normal_distribution
+ * */
+
+frameRate(0);
+
+var normalPDF = function(x, mu, sigma) {
+    return 1/sqrt(2*PI*sigma*sigma) * pow(Math.E, -(x-mu)*(x-mu)/(2*sigma*sigma));
+};
+
+var addGaussianAtPosition = function(posX, posY, col) {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var RED = 0, GREEN = 1, BLUE = 2;
+    var colToSubtract = col;
+    
+    // var r = random(0, 1);
+    // if      (r < 1/3) { colToSubtract = RED; }
+    // else if (r < 2/3) { colToSubtract = GREEN; }
+    // else              { colToSubtract = BLUE; }
+    
+    var l = 401 * 401;
+    while(l--) {
+        var x = l % 401;
+        var y = (l-x)/401;
+        var dx = posX - x;
+        var dy = posY - y;
+        
+        var d = sqrt(dx*dx + dy*dy);
+        var val = normalPDF(d, 0, 100) * (1 << 16);
+        
+        var ind = (x + y * 400) << 2;
+        pix[ind + colToSubtract] -= val;
+    }
+    
+    this.updatePixels();
+};
+
+var points = [];
+
+function createPoints() {
+    points = [];
+    for (var i=0; i < 5; i++) {
+        points.push({ x: random(width), y: random(height), color: random(0, 3) | 0 });
+    }
+}
+createPoints();
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    for (var i=0; i < points.length; i++) {
+        var pt = points[i];
+        addGaussianAtPosition(
+            pt.x + sin(frameCount) * 100,
+            pt.y + cos(frameCount*1.7) * 50,
+            pt.color
+        );
+    }
+};
+
+var mousePressed = function() {
+    createPoints();
+    // addGaussianAtPosition(mouseX, mouseY);
+};

@@ -1,0 +1,151 @@
+noStroke();
+var paddleWidth = 80;
+var paddleCenter;
+
+// the speed of the ball when it first leaves the paddle
+var initialSpeedX = (random(110, 120)/10);
+var initialSpeedY = (random(-135,-145)/10);
+// the current speed of the ball
+var ballSpeedX = initialSpeedX;
+var ballSpeedY = initialSpeedY;
+
+// the current location of the ball
+var ballX = 0;
+var ballY = 0;
+
+//create health variable
+var health = 3;
+
+//create score variable
+var score = 0;
+
+//create font variables
+var serif = createFont("serif", 20);
+var monospace = createFont("monospace", 70);
+
+//create alive variable
+var alive = true; 
+
+var heart = function(healthNow) {
+    if (healthNow >= 1) {
+        fill(0, 180, 0);
+        rect(13, 5, 5.5, 5);
+        fill(255, 150, 50);
+        ellipse(12, 16, 12, 16);
+        ellipse(20, 16, 12, 16);
+    }
+    if (healthNow >= 2) {
+        fill(0, 180, 0);
+        rect(38, 5, 5.5, 5);
+        fill(255, 150, 50);
+        ellipse(37, 16, 12, 16);
+        ellipse(45, 16, 12, 16);
+    }
+    if (healthNow >= 3) {
+        fill(0, 180, 0);
+        rect(63, 5, 5.5, 5);
+        fill(255, 150, 50);
+        ellipse(62, 16, 12, 16);
+        ellipse(70, 16, 12, 16);
+    }
+};
+
+// true if ball is moving, false if ball is attached to paddle
+var ballMoving = false;
+
+var draw = function() {
+    if (mouseX >= 10 && mouseX <= 390) {
+        paddleCenter = mouseX;
+    } else if (mouseX < 10) {
+        paddleCenter = 10;
+    } else {
+        paddleCenter = 389;
+    }
+    if (alive) {
+        //draw the background
+        background(200, 0, 255);
+    
+        //draw the hearts
+        heart(health);
+    
+        //draw the score
+        fill(255, 150, 50);
+        textFont(monospace, 20);
+        text(("Score: " + score), 270, 22);
+
+        // draw the paddle
+        fill(0, 180, 0);
+        rect(paddleCenter - paddleWidth/2, 350, paddleWidth, 8);
+    
+        // move the ball
+        if (ballMoving) {
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+        }
+        else {
+            ballX = paddleCenter;
+            ballY = 340;
+        }
+    
+        // draw the ball/pumpkin
+        fill(255, 150, 50);
+        ellipse(ballX, ballY, 20, 20);
+        //draw the stem
+        fill(0, 180, 0); 
+        rect(ballX-3, ballY-3, 6, 6);
+        
+        // check if ball has hit the top wall
+        if (ballY <= 10) {
+            ballSpeedY = -ballSpeedY;
+        }
+        // check if the ball has hit the left wall
+        if (ballX <= 10) {
+            ballSpeedX = -ballSpeedX;
+        }
+        // check if the ball has hit the right wall
+        if (ballX >= 390) {
+            ballSpeedX = -ballSpeedX;
+        }
+        // check if the ball has hit the paddle
+        if (ballY >= 340 && ballY < 346 && ballX >= mouseX - paddleWidth/2 && ballX <= mouseX + paddleWidth/2) {
+            ballSpeedY = -ballSpeedY;
+            
+            /** WHAT I, RAPHAEL, ADDED **/
+            ballSpeedX = (ballX-mouseX)/paddleWidth * 24;
+            
+            if (ballMoving) {
+                score += 1;
+            }
+        }
+        // check if ball fell out the bottom
+        if (ballY >= 400) {
+            ballMoving = false;
+            // if so, change the health too
+            health -= 1;
+    }
+    //check if you're dead
+    if (health === 0) {
+        alive = false;
+        fill(0, 0, 0);
+        rect(0, 0, 400, 400);
+        //text
+        fill(200, 0, 255);
+        textFont(monospace, 70);
+        text("Game Over", 12, 160);
+        textFont(serif, 40);
+        text(("Final Score: " + score), 80, 260);
+    }
+    }
+};
+
+// this function gets called automatically
+// when the mouse is clicked
+var mouseClicked = function() {
+    if (!ballMoving) {
+        // reset the ball speed
+        ballSpeedX = initialSpeedX;
+        ballSpeedY = initialSpeedY;
+        
+        ballMoving = true;
+    }
+};

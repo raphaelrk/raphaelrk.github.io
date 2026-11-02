@@ -1,0 +1,13 @@
+/*jshint -W085 */
+
+var t;
+
+with (this) {
+    t = this;
+}
+
+debug(t);
+
+// result:
+// an object that only contains the key externals with the corresponding value of 
+// an object that can't do anything but tell you it can't do anything

@@ -1,0 +1,177 @@
+/*var v0x=0, v0y=0, v0z=1,
+    v1x=1, v1y=0, v1z=0,
+    v2x=0, v2y=1, v2z=0;*/
+
+frameRate(24);
+//var gsiz=200;
+var tex=[];
+//var fps=24;
+
+draw= function() {
+    background(255);
+    if(!this.loadPixels){
+    //}else{
+        return;
+    }
+    
+    /** Rotation matrix; three mutually perpendicular unit vectors (with a caveat about reflections) **/
+    var v0x=0, v0y=0, v0z=1,
+        v1x=1, v1y=0, v1z=0,
+        v2x=0, v2y=1, v2z=0;
+    var m,t, x,y,z, l,c,i,j;
+    var dx=(mouseX-200)*1e-2, dy=(mouseY-200)*1e-2, dz;
+    
+    /** push main forward-facing vector (v0) aside with the other two orthogonal vectors times the mouse deviation from the middle; normalize **/
+    v0x+=dx*v1x + dy*v2x;
+    v0y+=dx*v1y + dy*v2y;
+    v0z+=dx*v1z + dy*v2z;
+    m=1/sqrt(v0x*v0x + v0y*v0y + v0z*v0z);
+    v0x*=m; v0y*=m; v0z*=m;
+    
+    /** Tidy up other two vectors, iteratively **/
+    for(i=0; i<3; i++){
+        /** Subtract v0 times the dot-product of v0 and v1 from v1, should make v1 orthogonal to v0 (but too short; normalize) **/
+        m=v0x*v1x + v0y*v1y + v0z*v1z;
+        v1x-=m*v0x; v1y-=m*v0y; v1z-=m*v0z;
+        m=1/sqrt(v1x*v1x + v1y*v1y + v1z*v1z);
+        v1x*=m; v1y*=m; v1z*=m;
+        
+        /** Same as above for v2 **/
+        m=v0x*v2x + v0y*v2y + v0z*v2z;
+        v2x-=m*v0x; v2y-=m*v0y; v2z-=m*v0z;
+        m=1/sqrt(v2x*v2x + v2y*v2y + v2z*v2z);
+        v2x*=m; v2y*=m; v2z*=m;
+        
+        /** Set m to half the dot product of v1 and v2 and subtract m*v1 from v2 and m*v2 from v1 to make them (roughly?) perpendicular **/
+        m=(v1x*v2x + v1y*v2y + v1z*v2z)*0.5;
+        x=v1x; y=v1y; z=v1z;
+        v1x-=m*v2x; v1y-=m*v2y; v1z-=m*v2z;
+        v2x-=m*x; v2y-=m*y; v2z-=m*z;
+        
+        /** normalize again **/
+        m=1/sqrt(v1x*v1x + v1y*v1y + v1z*v1z);
+        v1x*=m; v1y*=m; v1z*=m;
+        m=1/sqrt(v2x*v2x + v2y*v2y + v2z*v2z);
+        v2x*=m; v2y*=m; v2z*=m;
+    }
+    
+    var siz=200;
+    
+    /** Paint texture **/
+    var t=frameCount*0.01;
+    var img;//=getImage("avatars/leaf-orange");
+    randomSeed(3213);
+    noStroke();
+    background(0, 0, 0);
+    for(i=0; i<32; i++){
+        x=noise(t,0,i*13.1)*8;
+        y=noise(t,17.1,i*13.1)*8;
+        x=(x-(x|0))*64-32;
+        y=(y-(y|0))*64-32;
+        fill(random(16777216)|0x7f000000);
+        for(j=0; j<4; j++){
+            //image(img, x, y, 10, 10);
+            ellipse(x+(j&1)*64+(millis()%64 - 32),y+(j>>1&1)*64+(millis()%64 - 32),5,5);
+        }
+    }
+    img=getImage("cute/Star");
+    resetMatrix();
+    translate(32,32);
+    rotate(frameCount);
+    translate(-32,-32);
+    var ximm = (millis()/2)%64;
+    var yimm = (millis()/2)%64;
+    image(img,ximm,yimm,32,32);
+    image(img,ximm + 64,yimm + 64,32,32);
+    image(img,ximm - 64,yimm - 64,32,32);
+    resetMatrix();
+    this.loadPixels(); 
+    var p=this.imageData.data;
+    
+    /** Storing texture data locally speeds up access 10-20x; comment out following line to use global tex[] array **/
+    var tex=[];
+    for(i=0; i<4096; i++){
+        x=i&63; y=i>>6;
+        l=x + y*400 << 2;
+        tex[i]=p[l]<<16 | p[l+1]<<8 | p[l+2];
+    }
+    
+    var ms=millis();
+    
+    for(x=-siz; x<0; x++){
+        for(y=-siz; y<0; y++){
+            /** Construct ray using rotation matrix, forward-facing vector plus a little sideways/up-down heading times pixel coordinates **/
+            dx=v0x + v1x*x*5e-3 + v2x*y*5e-3;
+            dy=v0y + v1y*x*5e-3 + v2y*y*5e-3;
+            dz=v0z + v1z*x*5e-3 + v2z*y*5e-3;
+            /** how far would this ray travel before it hits the plane? (from a distance of "one") **/
+            m=2/dz;
+            
+            /** texture coordinates from distance times dx and dy **/
+            var u=1e3+dx*m*64 & 63, v=1e3+dy*m*64 & 63;
+            
+            /** get texel **/
+            c=tex[u | v<<6];
+            /** brightness is reciprocal of distance (which is dz) **/
+            m=dz*0x400|0;
+            
+            // top left
+            l=(80200 + (200-x) + y*400) << 2;
+            p[l]=(c>>16&255)*m >> 10;
+            p[l+1]=(c>>8&255)*m >> 10;
+            p[l+2]=(c&255)*m >> 10;
+            
+            // top right
+            l=(80200 + 400 - (200-x) + y*400) << 2;
+            p[l]=(c>>16&255)*m >> 10;
+            p[l+1]=(c>>8&255)*m >> 10;
+            p[l+2]=(c&255)*m >> 10;
+            
+            // bottom left
+            l=(80200 + (200-x) + (0-y)*400) << 2;
+            p[l]=(c>>16&255)*m >> 10;
+            p[l+1]=(c>>8&255)*m >> 10;
+            p[l+2]=(c&255)*m >> 10;
+            
+            // bottom right
+            l=(80200 + 400-(200-x) + (0-y)*400) << 2;
+            p[l]=(c>>16&255)*m >> 10;
+            p[l+1]=(c>>8&255)*m >> 10;
+            p[l+2]=(c&255)*m >> 10;
+            
+            
+            /**
+            l=80200 + siz - x + y*400 << 2;
+            p[l]=(c>>16&255)*m >> 10;
+            p[l+1]=(c>>8&255)*m >> 10;
+            p[l+2]=(c&255)*m >> 10;
+            
+            l=80200 + x + y*400 << 2;
+            p[l]=(c>>16&255)*m >> 10;
+            p[l+1]=(c>>8&255)*m >> 10;
+            p[l+2]=(c&255)*m >> 10;
+            l=80200 + siz - x + y*400 << 2;
+            p[l]=(c>>16&255)*m >> 10;
+            p[l+1]=(c>>8&255)*m >> 10;
+            p[l+2]=(c&255)*m >> 10;
+            **/
+        }
+    }
+    
+    ms=millis()-ms;
+    this.updatePixels();
+    
+    //fps=constrain(1e3/(ms+5), 10, 40);
+    //gsiz=constrain(gsiz+(ms>25 ? -4 : 4)*(abs(ms-25)>2?1:0), 0, 200);
+    
+    fill(0xffff0000); text(ms/*+" ("+fps+")"*/,20,20);
+    
+    /** diagnose health of rotation matrix, first three numbers are squared length of vectors (should all be one), next three are dot products of every pair (should all be zero) **/
+    text((v0x*v0x + v0y*v0y + v0z*v0z).toFixed(5)+"\n"+
+        (v1x*v1x + v1y*v1y + v1z*v1z).toFixed(5)+"\n"+
+        (v2x*v2x + v2y*v2y + v2z*v2z).toFixed(5)+"\n\n"+
+        
+        (v0x*v1x + v0y*v1y + v0z*v1z).toFixed(5)+"\n"+
+        (v1x*v2x + v1y*v2y + v1z*v2z).toFixed(5)+"\n"+
+        (v2x*v0x + v2y*v0y + v2z*v0z).toFixed(5), 20,50);
+};

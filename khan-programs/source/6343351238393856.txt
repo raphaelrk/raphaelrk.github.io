@@ -1,0 +1,21 @@
+/**
+ * Ellipses003
+ * From https://gist.github.com/xnqu/7386723
+ * by xnqu
+ * */
+
+colorMode(HSB, 360);
+background(100);
+translate(200, 200);
+
+for(var a = 0; a < 360; a++) {
+    noFill();
+    stroke(a, 200, 360);
+    strokeWeight(0.4);
+    var dx = 75 + 25*sin(5.5*a);
+    var dy = 75 + 25 * sin(11 * a);
+    pushMatrix();
+        rotate(a);
+        ellipse(0, 150, dx, dy);
+    popMatrix();
+}

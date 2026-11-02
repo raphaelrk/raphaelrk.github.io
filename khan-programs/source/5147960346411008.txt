@@ -1,0 +1,142 @@
+/**
+ * MHS impossible quiz level
+ * 
+ * By Raphael Rouvinv-Kats
+ * */
+
+var signum = function(num) {
+    return abs(num)/num;
+};
+
+var Button = function(x, y, w, h, text,
+                      buttonColor, textColor) {
+    this.x = x;
+    this.y = y;
+    this.w = w; // width
+    this.h = h; // height
+    this.text = text;
+    this.buttonColor = buttonColor;
+    this.textColor = textColor;
+};
+
+Button.prototype.draw = function() {
+    // set rect settings
+    stroke(0, 0, 0, 50);
+    strokeWeight(4);
+    var r = red(this.buttonColor);
+    var g = green(this.buttonColor);
+    var b = blue(this.buttonColor);
+    var dC = 0; // change in color
+    if(this.hoveredOver()) {
+        dC = 10;
+        if(mouseIsPressed) { dC = 20; }
+    }
+    
+    // draw rect
+    fill(r-dC - 30, g-dC - 30, b-dC - 30);
+    rect(this.x, this.y, this.w, this.h, 8); // shadowy rect
+    noStroke();
+    fill(r-dC, g-dC, b-dC);
+    var pad = 2;
+    rect(this.x + pad, this.y + pad, this.w - pad*2, this.h - pad*2, 8); // foreground rect
+    
+    // set text settings
+    fill(this.textColor);
+    var text_size = this.w / this.text.length;
+    textFont(createFont("sans-serif"), 24);
+    textSize(text_size);
+    
+    // draw text
+    text(this.text, 
+         this.x + this.w/2 - this.text.length*text_size/3,
+         this.y + this.h/2 + text_size / 3);
+};
+
+Button.prototype.hoveredOver = function() {
+    if(mouseX > this.x && mouseX < this.x + this.w &&
+       mouseY > this.y && mouseY < this.y + this.h) {
+           return true;
+       }
+       
+   return false;
+};
+
+Button.prototype.moveAwayFromMouse = function() {
+    var dx= 0, dy = 0;
+    var x = this.x + this.w / 2;
+    var y = this.y + this.h / 2;
+    
+    var xDiff = x - mouseX;
+    var yDiff = y - mouseY;
+    if(xDiff === 0) {
+        xDiff = 0.1;
+    }
+    var ang = atan2(xDiff, yDiff);
+    
+    dx = 30*cos(ang);
+    dy = 30*sin(ang);
+    
+    dx = abs(dx) * signum(xDiff);
+    dy = abs(dy) * signum(yDiff);
+    
+    // if in clicking distance, move fast towards mouse
+    if(dist(x, y, mouseX, mouseY) < dist(0, 0, this.w/2, this.h/2)) {
+        dx = -signum(dx)*this.w;
+        dy = -signum(dy)*this.h;
+    }
+    
+    this.x += dx;
+    this.y += dy;
+    
+    this.x = constrain(this.x, 5, width - this.w -5);
+    this.y = constrain(this.y, 5, height - this.h - 5);
+};
+
+var unfollowButton = new Button(266, 353, 134, 47, "UNFOLLOW", 
+                                 color(179, 93, 179), color(255, 255, 255));
+mouseX = 0;
+mouseY = 0;
+
+var draw = function() {
+    fill(250, 250, 250, 100);
+    noStroke();
+    rect(0, 0, width, height);
+    
+    stroke(0, 0, 0);
+    fill(0, 0, 0);
+    
+    for(var i = 0; i < 5; i++) {
+        fill(255, 0, 0, 100);
+        var txt = "#mundypride";
+        if(random(0, 1) < 0.1) {
+            txt = "1:1";
+        }
+        
+        text(txt, random(-400, 400), random(0, 500));
+    }
+    
+    // move and draw unfollow button
+    unfollowButton.moveAwayFromMouse();
+    unfollowButton.draw();
+    
+    // principal bg
+    fill(0, 48, 191, 50);
+    rect(0, 0, width, 63);
+    
+    // @MHS_Principal
+    fill(204, 0, 0);
+    textFont(createFont("Tahoma"), 54);
+    text("@MHS_Principal", 8, 50);
+};
+
+var keyPressed = function() {
+    if('#' === key.toString() || '1' === key.toString()) {
+        noLoop();
+        
+        background(0, 0, 0);
+        
+        fill(255, 255, 255);
+        textFont(createFont("Tahoma"), 36);
+        text("<Insert next level here>", 10, 100);
+    }
+};

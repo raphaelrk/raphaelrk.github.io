@@ -1,0 +1,16 @@
+/*jshint -W085 */
+
+var t;
+
+var getThis = function() {
+    with (this) {
+        return this;
+    }
+};
+
+t = getThis();
+
+debug(t);
+
+// result:
+// an object that only contains all the thingamijigies 'this' should have

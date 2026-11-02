@@ -1,0 +1,24 @@
+var draw = function() {
+    background(255, 229, 255);
+    
+    stroke(255, 255, 255);
+    strokeWeight(4);
+    for(var r = 0; r <= 11; r++) {
+       for(var c = 0; c <= 13; c++) {
+           
+           var dx = 4*(frameCount - 200*sin(frameCount));
+           var dy = 100*(1 - cos(frameCount));
+           var x = map(c, 0, 10, 0, width) + dx;
+               x = (x % 440) - 20;
+           var y = map(r, 0, 10, 10, height+20) + dy;
+               y = (y % 500) - 90;
+           
+           line(x, y, x+dx/8000, y+map(dy,0,200,-10,10));
+       }
+    }
+    
+    textAlign(CENTER);
+    fill(255, 99, 99, 100);
+    textFont(createFont("cursive"), 50);
+    text("Love you mama!", width/2, height/2 + 13);
+};

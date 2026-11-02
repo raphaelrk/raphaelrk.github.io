@@ -1,0 +1,11 @@
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    for(var i=0; i<pix.length; i++) {
+        pix[i] = random(0, 255);
+    }
+    
+    this.updatePixels();
+};

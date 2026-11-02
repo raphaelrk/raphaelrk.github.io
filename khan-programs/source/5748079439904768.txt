@@ -1,0 +1,13 @@
+var getThis = function(){
+    return (function(){ var t = this; return t;})();
+};
+
+var t = getThis();
+
+var listProperties = function(obj) {
+    for(var m in obj) {
+        debug(typeof m + ": " + m);
+    }
+};
+
+debug(t);

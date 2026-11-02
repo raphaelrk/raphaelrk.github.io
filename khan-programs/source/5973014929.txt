@@ -1,0 +1,317 @@
+/**
+ * Least Squares Linear Regression
+ * By Raphael Rouvinov-Kats
+ * 
+ * simplest least-squares fit to the data
+ * more info from super general to super specific:
+ * https://en.wikipedia.org/wiki/Machine_learning
+ * https://en.wikipedia.org/wiki/Linear_regression
+ * https://en.wikipedia.org/wiki/Ordinary_least_squares
+ * https://en.wikipedia.org/wiki/Proofs_involving_ordinary_least_squares
+ * 
+ **/
+ 
+/**
+ * The math worked out:
+ * 
+ * a vector of length L is an L x 1 matrix, [[1],[2],...,[L]]
+ * an apostrophe means transpose
+ * 
+ * Data:
+ * X is the N x D matrix of independent variables.
+ *      [[x_1],[x_2],...,[x_N]]
+ *      Where x_i is a length D input vector / variable and column in the matrix
+ * Y is the N x 1 matrix of dependent variables that result
+ * 
+ * Goal: to create a line
+ * y_hat = w'x + b
+ * that approximates the data
+ * with w a vector and b a scalar such that the least squares distance
+ * of Y_hat from Y is minimized
+ * Y ~= w' X + B
+ * 
+ * we can change the equation to
+ * y_hat = w' X
+ * by adding a first row to X of all ones
+ * So each x_i is now [[1] [x_i1] [x_i2] ... [x_iD]]
+ * 
+ * J is the loss function, the squared distance of Y from Y_hat
+ * J = sum_i^N (y_i - y_hat)^2
+ * J = (Y - X'w)' (Y - X'w)        ‹ convert to matrix notation
+ * J = (Y' - w'X) (Y - X'w)        ‹ apply transpose
+ * J = Y'Y - Y'X'w - w'XY + w'XX'w ‹ distribute
+ * 
+ * to minimize the loss, take the gradient and set it equal to zero
+ * first step done by applying 
+ * http://www.atmos.washington.edu/~dennis/MatrixCalculus.pdf
+ * dJ/dw = -Y'X' - Y'X' + w'(XX' + X'X) = 0
+ * w'(XX' + X'X) = 2Y'X'
+ * 2w'XX' = 2Y'X'
+ * X'Xw = XY
+ * w = (X'X)^-1 (XY)
+ * 
+ * Done!
+ * The line is
+ * f(x) = [(X'X)^-1 (XY)]' x
+ **/
+
+/**
+ * Returns a gaussian random function with the given mean and stdev
+ * From http://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve 
+ **/
+var gaussian = function(mean, stdev) {
+    var y2;
+    var use_last = false;
+    return function() {
+        var y1;
+        if(use_last) {
+           y1 = y2;
+           use_last = false;
+        }
+        else {
+            var x1, x2, w;
+            do {
+                 x1 = 2.0 * Math.random() - 1.0;
+                 x2 = 2.0 * Math.random() - 1.0;
+                 w  = x1 * x1 + x2 * x2;               
+            } while( w >= 1.0);
+            w = Math.sqrt((-2.0 * Math.log(w))/w);
+            y1 = x1 * w;
+            y2 = x2 * w;
+            use_last = true;
+       }
+
+       var retval = mean + stdev * y1;
+       if(retval > 0) {
+           return retval;
+       }
+       return -retval;
+   };
+};
+
+/**
+ * Returns the inverse of matrix M
+ * from http://blog.acipo.com/matrix-inversion-in-javascript/
+ * */
+var matrix_invert = function(M) {
+    // I use Guassian Elimination to calculate the inverse:
+    // (1) 'augment' the matrix (left) by the identity (on the right)
+    // (2) Turn the matrix on the left into the identity by elemetry row ops
+    // (3) The matrix on the right is the inverse (was the identity matrix)
+    // There are 3 elemtary row ops: (I combine b and c in my code)
+    // (a) Swap 2 rows
+    // (b) Multiply a row by a scalar
+    // (c) Add 2 rows
+    
+    //if the matrix isn't square: exit (error)
+    if(M.length !== M[0].length){return;}
+    
+    //create the identity matrix (I), and a copy (C) of the original
+    var i=0, ii=0, j=0, dim=M.length, e=0, t=0;
+    var I = [], C = [];
+    for(i=0; i<dim; i+=1){
+        // Create the row
+        I[I.length]=[];
+        C[C.length]=[];
+        for(j=0; j<dim; j+=1){
+            
+            //if we're on the diagonal, put a 1 (for identity)
+            if(i===j){ I[i][j] = 1; }
+            else{ I[i][j] = 0; }
+            
+            // Also, make the copy of the original
+            C[i][j] = M[i][j];
+        }
+    }
+    
+    // Perform elementary row operations
+    for(i=0; i<dim; i+=1){
+        // get the element e on the diagonal
+        e = C[i][i];
+        
+        // if we have a 0 on the diagonal (we'll need to swap with a lower row)
+        if(e===0){
+            //look through every row below the i'th row
+            for(ii=i+1; ii<dim; ii+=1){
+                //if the ii'th row has a non-0 in the i'th col
+                if(C[ii][i] !== 0){
+                    //it would make the diagonal have a non-0 so swap it
+                    for(j=0; j<dim; j++){
+                        e = C[i][j];       //temp store i'th row
+                        C[i][j] = C[ii][j];//replace i'th row by ii'th
+                        C[ii][j] = e;      //repace ii'th by temp
+                        e = I[i][j];       //temp store i'th row
+                        I[i][j] = I[ii][j];//replace i'th row by ii'th
+                        I[ii][j] = e;      //repace ii'th by temp
+                    }
+                    //don't bother checking other rows since we've swapped
+                    break;
+                }
+            }
+            //get the new diagonal
+            e = C[i][i];
+            //if it's still 0, not invertable (error)
+            if(e===0){return;}
+        }
+        
+        // Scale this row down by e (so we have a 1 on the diagonal)
+        for(j=0; j<dim; j++){
+            C[i][j] = C[i][j]/e; //apply to original matrix
+            I[i][j] = I[i][j]/e; //apply to identity
+        }
+        
+        // Subtract this row (scaled appropriately for each row) from ALL of
+        // the other rows so that there will be 0's in this column in the
+        // rows above and below this one
+        for(ii=0; ii<dim; ii++){
+            // Only apply to other rows (we want a 1 on the diagonal)
+            if(ii===i){continue;}
+            
+            // We want to change this element to 0
+            e = C[ii][i];
+            
+            // Subtract (the row above(or below) scaled by e) from (the
+            // current row) but start at the i'th column and assume all the
+            // stuff left of diagonal is 0 (which it should be if we made this
+            // algorithm correctly)
+            for(j=0; j<dim; j++){
+                C[ii][j] -= e*C[i][j]; //apply to original matrix
+                I[ii][j] -= e*I[i][j]; //apply to identity
+            }
+        }
+    }
+    
+    //we've done all operations, C should be the identity
+    //matrix I should be the inverse:
+    return I;
+};
+
+/**
+ * multiplies matrices m1 and m2
+ * from http://stackoverflow.com/questions/27205018/multiply-2-matrices-in-javascript
+ * */
+var multiplyMatrices = function(m1, m2) {
+    var result = [];
+    for (var i = 0; i < m1.length; i++) {
+        result[i] = [];
+        for (var j = 0; j < m2[0].length; j++) {
+            var sum = 0;
+            for (var k = 0; k < m1[0].length; k++) {
+                sum += m1[i][k] * m2[k][j];
+            }
+            result[i][j] = sum;
+        }
+    }
+    return result;
+};
+
+/**
+ * Creates a ROWS x COLS matrix filled with zeros
+ * */
+var zeros = function(rows, cols) {
+    var M = [];
+    for(var r = 0; r < rows; r++) {
+      M.push([]);
+      for(var c = 0; c < cols; c++) {
+          M[r].push(0);
+      }
+    }
+    
+    return M;
+};
+
+/**
+ * Returns the transpose of matrix M
+ * */
+var transpose = function(M) {
+    var old_rows = M.length;
+    var old_cols = M[0].length;
+    var newM = zeros(old_cols, old_rows);
+    
+    for (var r = 0; r < old_rows; r++) {
+        for (var c = 0; c < old_cols; c++) {
+            newM[c][r] = M[r][c];
+        }
+    }
+    
+    return newM;
+};
+
+var phi = function(x) {
+    return [1, x, x*x, x*x*x];
+};
+
+var X = [];
+var Phi = [];
+var Y = [];
+var slope = (height/width); // random(-2, 2);
+var b = height; // random(100, 300);
+var gauss_noise = gaussian(1000, 100);
+for(var i = 0; i < 10; i++) {
+    var x = random(0, width);
+    var y = b - slope * x + (gauss_noise() - 1000);
+    X.push([1, x]); // note this is the transpose of what was described above
+    Phi.push(phi(x));
+    Y.push([y]);
+}
+
+var w = transpose([phi(0)]);
+
+var fit = function() {
+    // w = (X'X)^-1 (XY)
+    // println("w: " + w.length + "," + w[0].length);
+    // println("X: " + X.length + "," + X[0].length);
+    // println("Y: " + Y.length + "," + Y[0].length);
+    w = multiplyMatrices(matrix_invert(multiplyMatrices(transpose(Phi), Phi)), 
+                         multiplyMatrices(transpose(Phi), Y));
+};
+
+var predict = function(x) {
+    //println("w: " + w.length + "," + w[0].length);
+    //println("x: " + x.length + "," + x[0].length);
+    return multiplyMatrices(transpose(w), x);
+};
+
+fit();
+
+var draw = function() {
+    background(208, 216, 232);
+    
+    // draw data
+    stroke(0, 0, 0);
+    strokeWeight(4.5);
+    for(var i = 0; i < X.length; i++) {
+        point(X[i][1], Y[i][0]);
+    }
+    
+    // draw correct line
+    // stroke(0, 255, 77, 50);
+    // strokeWeight(1);
+    // line(0, b, width, b - slope * width);
+    
+    // draw prediction
+    stroke(255, 0, 0);
+    strokeWeight(1);
+    for(var x = 0; x < 400; x++) {
+        var phi_x = transpose([phi(x)]);
+        point(x, predict(phi_x));
+    }
+    /*
+    var x1 = transpose([phi(0)]);
+    var x2 = transpose([phi(width)]);
+    var y1 = predict(x1);
+    var y2 = predict(x2);
+    
+    line(x1[1][0], y1, x2[1][0], y2);*/
+};
+
+var mousePressed = function() {
+    X.push([1, mouseX]);
+    Phi.push(phi(mouseX));
+    Y.push([mouseY]);
+    fit();
+};
+
+var mouseDragged = function() {
+    mousePressed();
+};

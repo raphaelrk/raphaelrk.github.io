@@ -1,0 +1,2427 @@
+// PokéBall!
+
+/**
+████████████████║
+█║PIXEL MASTER █║
+█║by Matt      █║
+████████████████║
+╚╚╚╚╚╚╚╚╚╚╚╚╚╚╚╚╚
+█║ • = Clear
+╣
+█║ Right click on canvas to remove pixel.
+╣
+█║ Undo button is in the top-right corner.
+╣
+█║ Change the title/variable name of your image in the top-left corner.
+╣
+█╗ Draw Modes:
+█╬█║ Pencil: Hold mouse to color in pixel.
+█╬╣
+█╬█║ Bucket: Click to fill in all adjacent pixels of that color.
+█╬╣
+█╬█║ Rectangle: Click and drag to draw a rectangle.
+█╬╣
+█╬█║ Ellipse: Click and drag to draw an ellipse.
+█╬╣
+█╬█║ Eye: Click to select a new color from anywhere on the screen.
+█╩╝
+*/
+
+//To edit an image already in string form. Paste the string in here.
+//String can be found inside newImage function in generated code.
+var loadString = "00000011222111000000,00001123222223410000,00012253266777781000,00125526777888878100,01325267788888887810,04222677888899997710,122227788889aaaa7771,b2226788889aaaaaa771,4226778899aacccca774,42677889aaccccccca74,4667889aacccccccca74,b77788deefccccccca71,be4d8gehiejcccccc4e1,1hkeeeihhiecccc4elh1,01bhmeihnoeeeeelpp10,01hhneehiiehhhnppp10,001hhnoeeeonnnppp100,0001hhnnnnnnnppp1000,000011pppppppp110000,00000011111111000000/θθθ,ĖĖĖ,ηŊŚ,λŠŠ,Ŏŭŭ,Φαα,ᴉČČ,εŋŋ,ǝľľ,ʇįį,ηǵǵ,ŮŮŮ,ᴉȃȃ,Ĵňň,ĵĵĵ,Ěĵĵ,žĭĭ,ŰŰŰ,İİŁ,Ĉǥǥ,ĔĎĎ,ǜǚĀ,ĖĖĦ,ĻŢɯ,ĹĴŨ,ŮŸǝ";
+
+
+//DO NOT CHANGE//
+var BACKGROUND = 255;
+var D = 90;
+var FILL = function(f, a) {
+    if (a === undefined) {
+        if (BACKGROUND < D) {
+            fill(255 - f);
+        } else {
+            fill(f);
+        }
+    } else if (BACKGROUND < D) {
+        fill(255 - f, 255 - f, 255 - f, a);
+    } else {
+        fill(f, f, f, a);
+    }
+};
+
+var STROKE = function(s, a) {
+    if (a === undefined) {
+        if (BACKGROUND < D) {
+            stroke(255 - s);
+        } else {
+            stroke(s);
+        }
+    } else if (BACKGROUND < D) {
+        stroke(255 - s, 255 - s, 255 - s, a);
+    } else {
+        stroke(s, s, s, a);
+    }
+};
+
+var textSet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZāăąǎǟǡǣȁȃćĉċčďđēĕėęěȅȇĝğġģǥǧǵĥħĩīĭįıǐȉĵķǩĺļľŀłńņňŉŋōŏőœǒǫǭŕŗřśŝşšţťŧũūŭůűųǔǖǘǚǜŵŷźżžĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĴĶĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽɐɔǝɟƃɥᴉɾʞɯɹʇʌʍʎαβγδεζηθικλμξπρσςτυφχψωΓΔΘΛΞΠΣΦΨΩ";var getColorFromString = function(s) {if (s.length >= 4) {return color(textSet.indexOf(s[0]), textSet.indexOf(s[1]), textSet.indexOf(s[2]), textSet.indexOf(s[3]));} else {return color(textSet.indexOf(s[0]), textSet.indexOf(s[1]), textSet.indexOf(s[2]));}};var newImage = function(data, res) {data = split(data, "/");var plot = split(data[0], ",");var colors = split(data[1], ",");var w = 0;for (var i in plot) {w = max(w, plot[i].length);}var h = plot.length;for (var i in colors) {colors[i] = getColorFromString(colors[i]);}if (res === undefined) {res = min(width/w, height/h);}res = round(res);colorMode(RGB, 255);pushMatrix();resetMatrix();pushStyle();rectMode(CORNER);var img = createGraphics(w * res, h * res, P2D);if (img) {img.background(0x00010101);img.noStroke();for (var b in plot) {for (var a in plot[b]) {if (plot[b][a] !== ".") {img.fill(colors[textSet.indexOf(plot[b][a])]);img.rect(a * res, b * res, res, res);}}}}popStyle();popMatrix();return img;};
+
+var error = function(txt, row, col) {var output = (function() {return this;})().Output;if (output) {if (output.errors.length === 0) {output.handleError({message: 3});output.errors[0] = {text: txt,row: row,column: col};} else {output.errors.push({text: txt,row: row,column: col});}}};
+
+var pixel = [];
+var grid = {
+    width: 20, height: 20, stroke: true
+};
+if (loadString.length > 0) {
+    try {
+        var data = split(loadString, "/");
+        var plot = split(data[0], ",");
+        var colors = split(data[1], ",");
+        for (var i in colors) {
+            colors[i] = getColorFromString(colors[i]);
+        }
+        var w = 0;
+        var h = plot.length;
+        for (var b in plot) {
+            w = max(w, plot[b].length);
+            var s = [];
+            for (var a in plot[b]) {
+                if (plot[b][a] === ".") {
+                    s[a] = undefined;
+                } else {
+                    s[a] = colors[textSet.indexOf(plot[b][a])];
+                }
+            }
+            plot[b] = s;
+        }
+        pixel = plot;
+        grid.width = w;
+        grid.height = h;
+    } catch (err) {
+        error("loadString is corrupt or invalid. Reset loadString variable to continue." + err, 27, 0);
+    }
+}
+
+var colorToString = function(c) {
+    if (c === undefined) {
+        return;
+    }
+    return (textSet[red(c)] + textSet[green(c)] + textSet[blue(c)]);
+};
+var convertToString = function(a, w, h) {
+    var colors = [];
+    for (var y = 0; y < h; y ++) {
+        for (var x = 0; x < w; x ++) {
+            if (colors.indexOf(a[y][x]) === -1 && a[y][x] !== undefined) {
+                colors.push(a[y][x]);
+            }
+        }
+    }
+    var plot = [];
+    for (var y = 0; y < h; y ++) {
+        plot[y] = "";
+        for (var x = 0; x < w; x ++) {
+            if (a[y][x] === undefined) {
+                plot[y] += ".";
+            } else {
+                plot[y] += textSet[colors.indexOf(a[y][x])];
+            }
+        }
+    }
+    for (var i in colors) {
+        colors[i] = colorToString(colors[i]);
+    }
+    colors = join(colors, ",");
+    plot = join(plot, ",");
+    return plot + "/" + colors;
+};
+
+var shortenRev = function(a) {
+    return reverse(shorten(reverse(a)));
+};
+
+var convertToStringTrim = function(a, w, h) {
+    var l = 0;
+    for (var i in a) {
+        l = max(a[i].length, l);
+    }
+    if (l === 0) {
+        return;
+    }
+    var colors = [];
+    for (var y = 0; y < h; y ++) {
+        for (var x = 0; x < w; x ++) {
+            if (colors.indexOf(a[y][x]) === -1 && a[y][x] !== undefined) {
+                colors.push(a[y][x]);
+            }
+        }
+    }
+    var plot = [];
+    for (var y = 0; y < h; y ++) {
+        plot[y] = "";
+        for (var x = 0; x < w; x ++) {
+            if (a[y][x] === undefined) {
+                plot[y] += ".";
+            } else {
+                plot[y] += textSet[colors.indexOf(a[y][x])];
+            }
+        }
+    }
+    for (var i in colors) {
+        colors[i] = colorToString(colors[i]);
+    }
+    colors = join(colors, ",");
+    var leftTrim = true;
+    for (var i in plot) {
+        if (plot[i][0] !== ".") {
+            leftTrim = false;
+        }
+    }
+    try {
+    while (leftTrim) {
+        try {
+        for (var i in plot) {
+            plot[i] = join(shortenRev(split(plot[i], "")), "");
+        }
+        } catch (err) {
+            println("a: " + err);
+        }
+        try {
+        leftTrim = true;
+        for (var i in plot) {
+            if (plot[i][0] !== ".") {
+                leftTrim = false;
+            }
+        }
+        } catch (err) {
+            println("b: " + err);
+        }
+    }
+    } catch (err) {
+        println(err);
+    }
+    for (var i in plot) {
+        while (plot[i][plot[i].length - 1] === "." && plot[i].length > 1) {
+            plot[i] = join(shorten(plot[i]), "");
+        }
+    }
+    while (plot[0] === ".") {
+        plot = shortenRev(plot);
+    }
+    while (plot[plot.length - 1] === ".") {
+        plot = shorten(plot);
+    }
+    plot = join(plot, ",");
+    return plot + "/" + colors;
+};
+
+var p;
+var entry = "untitled";
+var printCode = function(s) {
+    if (entry.length < 1) {
+        entry = "untitled";
+    }
+    var img = newImage(s);
+    println("//Parameters: (data, resolution): (resolution is optional)\n");
+    println("/* Created using Pixel Master by Matt: https://www.khanacademy.org/cs/pixel-master-image-generator/5340753432150016 */");
+    println("var " + entry + " = newImage(\"" + s + "\");\n");
+    println("//Use your variable as an image:");
+    println("image(" + entry + ", " + 100 + ", " + 100 + ", " + (img.width/4) + ", " + (img.height/4) + ");\n");
+    println("//Press CTRL+A to highlight.\n");
+    println("//^^^Paste this code into your program.^^^\n\n");
+};
+
+var printAuxCode = function(s) {
+    println('var textSet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZāăąǎǟǡǣȁȃćĉċčďđēĕėęěȅȇĝğġģǥǧǵĥħĩīĭįıǐȉĵķǩĺļľŀłńņňŉŋōŏőœǒǫǭŕŗřśŝşšţťŧũūŭůűųǔǖǘǚǜŵŷźżžĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĴĶĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽɐɔǝɟƃɥᴉɾʞɯɹʇʌʍʎαβγδεζηθικλμξπρσςτυφχψωΓΔΘΛΞΠΣΦΨΩ\";var getColorFromString = function(s) {if (s.length >= 4) {return color(textSet.indexOf(s[0]), textSet.indexOf(s[1]), textSet.indexOf(s[2]), textSet.indexOf(s[3]));} else {return color(textSet.indexOf(s[0]), textSet.indexOf(s[1]), textSet.indexOf(s[2]));}};var newImage = function(data, res) {data = split(data, "/");var plot = split(data[0], ",");var colors = split(data[1], ",");var w = 0;for (var i in plot) {w = max(w, plot[i].length);}var h = plot.length;for (var i in colors) {colors[i] = getColorFromString(colors[i]);}if (res === undefined) {res = min(width/w, height/h);}res = round(res);colorMode(RGB, 255);pushMatrix();resetMatrix();pushStyle();rectMode(CORNER);var img = createGraphics(w * res, h * res, P2D);if (img) {img.background(0x00010101);img.noStroke();for (var b in plot) {for (var a in plot[b]) {if (plot[b][a] !== ".") {img.fill(colors[textSet.indexOf(plot[b][a])]);img.rect(a * res, b * res, res, res);}}}}popStyle();popMatrix();return img;};');
+    printCode(s);
+};
+
+var page = "intro";
+var ppage = page;
+var clearPage = true;
+var goToPage = function(p) {
+    clearPage = true;
+    page = p;
+};
+
+var cursorState = true;
+var setCursor = function(c) {
+    cursorState = c;
+};
+
+var pmouseIsPressed;
+var initX, initY;
+
+textFont(createFont("Calibri"), 12);
+
+frameRate(40);
+
+var mouseInside = function(x, y, w, h) {
+    if (mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h) {
+        return true;
+    } else {
+        return false;
+    }
+};
+var initInside = function(x, y, w, h) {
+    if (initX >= x && initX <= x + w && initY >= y && initY <= y + h) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+
+var buttonPressed, buttonHover;
+var button = function(txt, x, y, ts, a) {
+    var h = 18;
+    if (ts === undefined) {
+        textSize(12);
+    } else {
+        textSize(ts);
+        h = ts + 6;
+    }
+    textAlign(CENTER, CENTER);
+    var w = textWidth(txt) + 12;
+    buttonPressed = false;
+    buttonHover = false;
+    strokeWeight(2);
+    stroke(100);
+    rect(x - w/2 - 1, y - h/2 + 1, w, h, 6);
+    stroke(0);
+    pushMatrix();
+    var color1 = color(220, 220, 220);
+    var color2 = color(0, 0, 0);
+    if (mouseInside(x - w/2, y - h/2, w, h) && (a || a === undefined)) {
+        color1 = color(160, 160, 160);
+        color2 = color(255, 255, 255);
+        buttonHover = true;
+        if (initInside(x - w/2, y - h/2, w, h)) {
+            if (mouseIsPressed) {
+                translate(-1, 1);
+            } else if (pmouseIsPressed) {
+                buttonPressed = true;
+            }
+        }
+        setCursor(HAND);
+    }
+    fill(color1);
+    rect(x - w/2, y - h/2, w, h, 6);
+    fill(color2);
+    text(txt, x, y + 1);
+    strokeWeight(1);
+    popMatrix();
+};
+
+var button2 = function(txt, x, y, ts, b) {
+    buttonPressed = false;
+    buttonHover = false;
+    var w = textWidth(txt);
+    var h = ts + 2;
+    x -= w/2 + 5;
+    y -= h/2;
+    if (b === undefined) {
+        b = false;
+    }
+    if (!mouseIsPressed && pmouseIsPressed && initInside(x, y, w + 10, h) && mouseInside(x, y, w + 10, h)) {
+        buttonPressed = true;
+    }
+    if (mouseInside(x, y, w + 10, h)) {
+        buttonHover = true;
+        setCursor(HAND);
+        if (mouseIsPressed) {
+            strokeWeight(2);
+            if (page === "edit") {
+                fill(0, 0, 0, 50);
+            } else {
+                FILL(0, 50);
+            }
+        } else {
+            strokeWeight(1);
+            if (page === "edit") {
+                fill(255, 255, 255, 50);
+            } else {
+                FILL(255, 50);
+            }
+        }
+    } else if (!b) {
+        noFill();
+        strokeWeight(1);
+    }
+    if (b) {
+        strokeWeight(2);
+        if (page === "edit") {
+            fill(0, 0, 0, 20);
+        } else {
+            FILL(0, 20);
+        }
+    }
+    if (page === "edit") {
+        stroke(0, 0, 0, 50);
+    } else {
+        STROKE(0, 50);
+    }
+    rect(x, y, w + 10, h);
+    if (page === "edit") {
+        fill(0);
+    } else {
+        FILL(0);
+    }
+    textAlign(CENTER, CENTER);
+    text(txt, x + w/2 + 5, y + h/2);
+};
+
+var act;
+var messageSet = "";
+var button3 = function(x, y, w, h) {
+    buttonPressed = false;
+    strokeWeight(1);
+    if (mouseInside(x, y, w, h)) {
+        fill(220, 224, 237);
+        setCursor(HAND);
+        messageSet = "Change the size of the canvas.";
+        if (mouseIsPressed) {
+            fill(178, 180, 191);
+            strokeWeight(2);
+            if (initInside(x, y, w, h) && act) {
+                buttonPressed = true;
+            }
+        }
+    } else {
+        fill(199, 202, 214);
+    }
+};
+
+var buttonBox = function(x, y, w, h, b) {
+    buttonPressed = false;
+    buttonHover = false;
+    if (b === undefined) {
+        b = false;
+    }
+    if (!mouseIsPressed && pmouseIsPressed && initInside(x, y, w, h) && mouseInside(x, y, w, h)) {
+        buttonPressed = true;
+    }
+    if (b) {
+        strokeWeight(2);
+        fill(0, 0, 0, 20);
+    } else if (mouseInside(x, y, w, h)) {
+        buttonHover = true;
+        setCursor(HAND);
+        if (mouseIsPressed) {
+            strokeWeight(2);
+            fill(0, 0, 0, 50);
+        } else {
+            strokeWeight(1);
+            fill(255, 255, 255, 50);
+        }
+    } else if (!b) {
+        strokeWeight(1);
+        noFill();
+    }
+    stroke(0, 0, 0, 50);
+    rect(x, y, w, h);
+};
+
+var typing = false;
+var typePos = 0;
+var CTRL = false;
+var endPress;
+var caret = false;
+var disp = false, a, b, start, end, x1, x2;
+var exitHighlight = function() {
+    disp = false;
+    a = undefined;
+    b = undefined;
+    start = undefined;
+    end = undefined;
+    x1 = undefined;
+    x2 = undefined;
+};
+var keyReleased = function() {
+    CTRL = false;
+    caret = false;
+};
+
+var allowedKeys = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+var keyPressed = function() {
+    if (keyCode === CONTROL) {
+        CTRL = true;
+    }
+    if (typing) {
+        switch(keyCode) {
+        case LEFT:
+            if (disp) {
+                typePos = start;
+            } else if (typePos > 0) {
+                typePos --;
+            }
+            caret = true;
+            exitHighlight();
+            break;
+        case RIGHT:
+            if (disp) {
+                typePos = end;
+            } else if(typePos < entry.length) {
+                typePos ++;
+            }
+            caret = true;
+            exitHighlight();
+            break;
+        case DOWN:
+            entry = "";
+            caret = true;
+            exitHighlight();
+            break;
+        case BACKSPACE: case DELETE:
+            if (disp) {
+                entry = join(concat(subset(split(entry, ""), 0, start), subset(split(entry, ""), end, entry.length - end)), "");
+                typePos = start;
+            } else if(typePos > 0) {
+                entry = join(concat(subset(split(entry, ""), 0, typePos - 1), subset(split(entry, ""), typePos, entry.length - typePos)), "");
+                typePos --;
+            }
+            caret = true;
+            exitHighlight();
+            break;
+            case ENTER:
+                typing = false;
+        }
+        if (CTRL) {
+            switch (key.toString().toLowerCase()) {
+                case "a":
+                    disp = true;
+                    a = 0;
+                    b = entry.length;
+                    break;
+                case "x":
+                    if (disp) {
+                        entry = join(concat(subset(split(entry, ""), 0, start), subset(split(entry, ""), end, entry.length - end)), "");
+                    typePos = start;
+                        exitHighlight();
+                    }
+                    break;
+            }
+        } else if (allowedKeys.indexOf(key.toString()) !== -1) {
+            if (disp) {
+                entry = join(concat(append(subset(split(entry, ""), 0, start), key.toString()), subset(split(entry, ""), end, entry.length - end)), "");
+                typePos = start + 1;
+            } else {
+                entry = join(splice(split(entry, ""), key.toString(), typePos), "");
+                typePos ++;
+            }
+            caret = true;
+            exitHighlight();
+        }
+    }
+};
+
+var shiftX = 0;
+var getPos = function(x) {
+    var txtDist = Infinity;
+    var txtNum = 0;
+    var tx = x + shiftX + 5;
+    for (var i = 0; i <= entry.length; i ++) {
+        if (abs(mouseX - tx) < txtDist) {
+            txtDist = abs(mouseX - tx);
+            txtNum = i;
+        }
+        if (i < entry.length) {
+            tx += textWidth(entry[i]);
+        }
+    }
+    return txtNum;
+};
+
+var caret = false;
+var cTime = 0;
+var entryBar = function(x, y, width, height) {
+    textSize(14);
+    if (mouseInside(x, y, width, height)) {
+        setCursor(TEXT);
+        messageSet = "Edit the title/name of the image.";
+        if (mouseIsPressed) {
+            typing = true;
+        }
+    }
+    if (mouseIsPressed && entry !== "") {
+        if (pmouseIsPressed) {
+            if (disp || mouseInside(x, y, width, height)) {
+                typePos = getPos(x);
+                b = typePos;
+            }
+            if (a !== undefined) {
+                setCursor(TEXT);
+            }
+        } else {
+            if (mouseInside(x, y, width, height)) {
+                typePos = getPos(x);
+                a = typePos;
+            }
+            b = undefined;
+        }
+    }
+    if (a !== b && a !== undefined && b !== undefined) {
+        disp = true;
+        start = min(a, b);
+        end = max(a, b);
+    } else {
+        disp = false;
+    }
+    if (mouseIsPressed && !pmouseIsPressed && !mouseInside(x, y, width, height)) {
+        typing = false;
+        exitHighlight();
+    }
+    
+    var typeX = 6;
+    for (var i = 0; i < typePos; i ++) {
+        typeX += textWidth(entry[i]);
+    }
+    while (typeX + shiftX < 6) {
+        shiftX ++;
+    }
+    while (typeX + shiftX > width - 5) {
+        shiftX --;
+    }
+    var endX = 6;
+    for (var i = 0; i < entry.length; i ++) {
+        endX += textWidth(entry[i]);
+    }
+    while (shiftX < 0 && endX + shiftX < width - 5) {
+        shiftX ++;
+    }
+    if (shiftX > 0) {
+        shiftX = 0;
+    }
+    
+    
+    
+    
+    fill(255);
+    noStroke();
+    rect(x, y, width, height);
+    
+    if (disp) {
+        fill(70, 130, 240);
+        x1 = 0;
+        x2 = 0;
+        var tx = x + shiftX + 5;
+        for (var i = 0; i <= entry.length; i ++) {
+            if (i === start) {
+                x1 = max(tx, x + 5);
+            }
+            if (i === end) {
+                x2 = min(tx, x + width - 2);
+            }
+            if (i < entry.length) {
+                tx += textWidth(entry[i]);
+            }
+        }
+        rect(x1, y + 3, x2 - x1, height - 5);
+    }
+    
+    textAlign(LEFT, CENTER);
+    var px = 0;
+    var nx = 0;
+    for (var i = 0; i < entry.length; i ++) {
+        nx = px + textWidth(entry[i]);
+        if (disp && i >= start && i < end) {
+            fill(255);
+        } else {
+            fill(0);
+        }
+        if (nx + shiftX >= 0 && px + shiftX <= width - 10) {
+            text(entry[i], x + shiftX + px + 5, y + height/2);
+        }
+        px += textWidth(entry[i]);
+    }
+    
+    strokeWeight(2);
+    stroke(0);
+    if (caret) {
+        cTime = 0;
+    } else {
+        cTime ++;
+    }
+    if (typing && (floor(cTime/14) % 2 === 0 || mouseIsPressed) && !disp) {
+        line(x + typeX + shiftX, y + 3, x + typeX + shiftX, y + height - 3);
+    }
+    
+    fill(255);
+    noStroke();
+    noFill();
+    strokeWeight(1);
+    stroke(150);
+    line(x, y - 1, x + width, y - 1);
+    stroke(100);
+    rect(x, y, width, height);
+    
+    if (typing) {
+        messageSet = "Edit the title/name of the image.";
+    }
+};
+
+var currentColor;
+var ppixel = [];
+var plotHistory = [{
+    width: grid.width,
+    height: grid.height,
+    pixel: []
+}];
+var drawMode = "pencil";
+var shapeFill = true;
+var mouseTime = 0;
+
+var modeScript = ["Hold mouse to color in pixel.", "Click to fill in all adjacent pixels of that color.", "Click and drag to draw a rectangle.", "Click and drag to draw an ellipse.", "Select a color on the canvas."];
+var updatePlotHistory = function() {
+    var p = [];
+        for (var b = 0; b < pixel.length; b ++) {
+            p[b] = [];
+            if (pixel[b] !== undefined) {
+                for (var a = 0; a < pixel[b].length; a ++) {
+                    p[b][a] = pixel[b][a];
+                }
+            }
+        }
+    var plotObject = {
+        width: grid.width,
+        height: grid.height,
+        pixel: p
+    };
+    if (plotHistory[plotHistory.length - 1] !== plotObject) {
+        if (plotHistory.length >= 20) {
+            plotHistory = append(subset(plotHistory, 1, plotHistory.length - 1), plotObject);
+        } else {
+            plotHistory.push(plotObject);
+        }
+    }
+};
+
+var pencil = function(x, y, c) {
+    rotate(45);
+    stroke(c);
+    line(1.5, -8, 1.5, 6);
+    line(-1.5, -8, -1.5, 6);
+    fill(c);
+    rect(-2, -11, 3, 3);
+    stroke(c);
+    line(-1.5, -5, 1.5, -5);
+    line(-1.5, 6, 0, 10);
+    line(1.5, 6, 0, 10);
+};
+
+var bucket = function(x, y, c) {
+    rotate(-2);
+    noStroke();
+    fill(c);
+    beginShape();
+    vertex(-6, -4);
+    vertex(6, -4);
+    vertex(5, 8);
+    vertex(-5, 8);
+    endShape(CLOSE);
+    noFill();
+    stroke(c);
+    bezier(-4, -4, -4, -9, 4, -9, 4, -4);
+};
+
+var rectangle = function(x, y, c) {
+    if (shapeFill) {
+        noStroke();
+        fill(c);
+    } else {
+        stroke(c);
+        noFill();
+    }
+    rect(-8, -6, 16, 12);
+};
+
+var ell = function(x, y, c) {
+    if (shapeFill) {
+        noStroke();
+        fill(c);
+    } else {
+        stroke(c);
+        noFill();
+    }
+    ellipse(0, 0, 16, 12);
+};
+
+var eye = function(x, y, c) {
+    stroke(c);
+    noFill();
+    bezier(-8, 0, -8, -5, 8, -5, 8, 0);
+    bezier(-8, 0, -8, 5, 8, 5, 8, 0);
+    fill(c);
+    noStroke();
+    ellipse(0, 0, 6, 6);
+};
+
+var drawIcon = function(icon, x, y, mode) {
+    var c;
+    if (drawMode === mode) {
+        c = 0;
+    } else {
+        c = color(0, 0, 0, 140);
+    }
+    pushMatrix();
+    translate(x, y);
+    icon(x, y, c);
+    popMatrix();
+};
+
+var colorSelect = 0;
+var colorArray;
+var rEP = true;
+var editMenu = function(h) {
+    //Background
+    strokeWeight(1);
+    for (var i = 0; i < h; i ++) {
+        stroke(182 - i/2, 186 - i/2, 204 - i/2);
+        line(0, i, 400, i);
+    }
+    stroke(0);
+    line(0, h, 400, h);
+    
+    //Title Entry Bar
+    fill(50, 60, 70);
+    textAlign(CENTER, BOTTOM);
+    textSize(12);
+    text("Title", 60, h/2 - 7);
+    entryBar(10, h/2 - 4, 100, 20);
+    strokeWeight(1);
+    stroke(0, 0, 0, 50);
+    line(120, 0, 120, h);
+    
+    //Draw Mode Buttons
+    var t = 30;
+    var a = 130;
+    var y = h/2 - 3;
+    var s = 24;
+    if (page === "color") {
+        buttonBox(390 - s, h - 10 - s, s, s);
+        if (buttonHover) {
+            messageSet = modeScript[modeScript.length - 1];
+        }
+        if (buttonPressed) {
+            drawMode = "color finder";
+        }
+        drawIcon(eye, 390 - s/2, h - 10 - s/2, "color finder");
+        return;
+    }
+    fill(50, 60, 70);
+    textAlign(LEFT, BOTTOM);
+    textSize(12);
+    text("Draw Mode", a, h/2 - 7);
+    var d = ["pencil", "fill", "rectangle", "ellipse", "color finder"];
+    
+    button2("Fill", a + (d.length - 1) * t + (s - t)/2, h/2 - 14, 12, shapeFill);
+    if (buttonHover) {
+        messageSet = "Toggle shapes between fill and outline only.";
+    }
+    if (buttonPressed) {
+        shapeFill = !shapeFill;
+    }
+    
+    for (var i in d) {
+        if (drawMode === d[i] && messageSet === "") {
+            messageSet = [modeScript[i], "Hold right mouse button to clear a pixel."];
+        }
+    }
+    for (var i = 0; i < d.length; i ++) {
+        buttonBox(a + i * t, y, s, s, (drawMode === d[i]));
+        if (buttonHover) {
+            messageSet = modeScript[i];
+        }
+        if (buttonPressed) {
+            drawMode = d[i];
+            if (i === d.length - 1 && colorArray.length < 20) {
+                colorSelect = 19;
+            }
+        }
+    }
+    
+    //Draw Mode Icons
+    strokeWeight(1);
+    translate(a + s/2, y + s/2);
+    
+    drawIcon(pencil, 0, 0, "pencil");
+    
+    drawIcon(bucket, t, 0, "fill");
+    
+    drawIcon(rectangle, t * 2, 0, "rectangle");
+    
+    drawIcon(ell, t * 3, 0, "ellipse");
+    
+    drawIcon(eye, t * 4, 0, "color finder");
+    
+    resetMatrix();
+    
+    stroke(0, 0, 0, 50);
+    line(a + t * (d.length - 1) + s + 10, 0, a + t * (d.length - 1) + s + 10, h);
+    
+    //Canvas Buttons
+    fill(50, 60, 70);
+    textAlign(CENTER, CENTER);
+    textSize(12);
+    var t = {
+        x: a + t * (d.length - 1) + s + 40,
+        y: h/2 - 5,
+        w: 39,
+        h: 27,
+    };
+    text("Canvas", t.x, h/2 - 13);
+    strokeWeight(1);
+    stroke(0, 0, 0, 50);
+    line(341, h/2 - 5, 341, h);
+    
+    
+    button2("Stroke", t.x, t.y + t.h/2 - 8, 11, grid.stroke);
+    if (buttonHover) {
+        messageSet = "Toggle whether grid lines appear on the canvas.";
+    }
+    if (buttonPressed) {
+        rEP = true;
+        grid.stroke = !grid.stroke;
+    }
+    
+    button2("Clear", t.x, t.y + t.h/2 + 7, 11);
+    if (buttonHover) {
+        messageSet = "Clear entire canvas to the selected color.";
+    }
+    if (buttonPressed) {
+        rEP = true;
+        updatePlotHistory();
+        for (var b = 0; b < grid.height; b ++) {
+            for (var a = 0; a < grid.width; a ++) {
+                pixel[b][a] = currentColor;
+            }
+        }
+    }
+    
+    t.x += 40;
+    
+    textAlign(CENTER, CENTER);
+    textSize(10);
+    strokeWeight(1);
+    stroke(0, 0, 0, 100);
+    fill(170, 173, 189);
+    rect(t.x + t.w/3, t.y, t.w/3, t.h/3);
+    rect(t.x + t.w/3, t.y + t.h * 2/3, t.w/3, t.h/3);
+    fill(0);
+    text("W", t.x + t.w/2, t.y + t.h/6);
+    text("H", t.x + t.w/2, t.y + t.h * 5/6);
+    text("W", t.x + t.w/2, t.y + t.h/6);
+    text("H", t.x + t.w/2, t.y + t.h * 5/6);
+    
+    textSize(12);
+    button2("Undo", t.x + t.w/2, t.y - 10, 12);
+    if (buttonHover) {
+        messageSet = "Undo last action.";
+    }
+    if (buttonPressed && plotHistory.length > 0) {
+        rEP = true;
+        var plotObject = plotHistory[plotHistory.length - 1];
+        pixel = plotObject.pixel;
+        grid.width = plotObject.width;
+        grid.height = plotObject.height;
+        plotHistory = shorten(plotHistory);
+    }
+    
+    
+    if (mouseTime === 0 || (mouseTime >= 18 && mouseTime % 3 === 0)) {
+        act = true;
+    } else {
+        act = false;
+    }
+    
+    var gMin = 3;
+    var gMax = 50;
+    
+    stroke(0, 0, 0, 100);
+    button3(t.x, t.y, t.w/3, t.h/3);
+    if (buttonPressed && grid.width > gMin) {
+        rEP = true;
+        grid.width --;
+    }
+    rect(t.x, t.y, t.w/3, t.h/3);
+    
+    button3(t.x - 5, t.y + t.h/3, t.w/2 + 5, t.h/3);
+    if (buttonPressed) {
+        rEP = true;
+        if (grid.width > gMin) {
+            grid.width --;
+        }
+        if (grid.height > gMin) {
+            grid.height --;
+        }
+    }
+    beginShape();
+    vertex(t.x, t.y + t.h/3);
+    vertex(t.x - 5, t.y + t.h/2);
+    vertex(t.x, t.y + t.h * 2/3);
+    vertex(t.x + t.w/2, t.y + t.h * 2/3);
+    vertex(t.x + t.w/2, t.y + t.h/3);
+    endShape(CLOSE);
+    
+    button3(t.x, t.y + t.h * 2/3, t.w/3, t.h/3);
+    if (buttonPressed && grid.height > gMin) {
+        rEP = true;
+        grid.height --;
+    }
+    rect(t.x, t.y + t.h * 2/3, t.w/3, t.h/3);
+    
+    button3(t.x + t.w * 2/3, t.y, t.w/3, t.h/3);
+    if (buttonPressed && grid.width < gMax) {
+        rEP = true;
+        grid.width ++;
+    }
+    rect(t.x + t.w * 2/3, t.y, t.w/3, t.h/3);
+    
+    button3(t.x + t.w/2, t.y + t.h/3, t.w/2 + 5, t.h/3);
+    if (buttonPressed) {
+        rEP = true;
+        if (grid.width < gMax) {
+            grid.width ++;
+        }
+        if (grid.height < gMax) {
+            grid.height ++;
+        }
+    }
+    beginShape();
+    vertex(t.x + t.w, t.y + t.h/3);
+    vertex(t.x + t.w + 5, t.y + t.h/2);
+    vertex(t.x + t.w, t.y + t.h * 2/3);
+    vertex(t.x + t.w/2, t.y + t.h * 2/3);
+    vertex(t.x + t.w/2, t.y + t.h/3);
+    endShape(CLOSE);
+    
+    button3(t.x + t.w * 2/3, t.y + t.h * 2/3, t.w/3, t.h/3);
+    if (buttonPressed && act && grid.width < gMax) {
+        rEP = true;
+        grid.height ++;
+    }
+    rect(t.x + t.w * 2/3, t.y + t.h * 2/3, t.w/3, t.h/3);
+    
+    fill(0);
+    textSize(12);
+    text("-", t.x + t.w/6, t.y + t.h/2 - 1);
+    text("+", t.x + t.w * 5/6, t.y + t.h/2 - 1);
+    
+    if (mouseIsPressed) {
+        mouseTime ++;
+    } else {
+        mouseTime = 0;
+    }
+};
+
+
+var paletteRight = function(x, y, h) {
+    strokeWeight(1);
+    noFill();
+    for (var i = 0; i < 5; i ++) {
+        stroke(i/5 * BACKGROUND);
+        rect(x + i, y + i, width + 10 - x, h, 10);
+    }
+    fill(134, 184, 224);
+    stroke(0);
+    rect(x, y, width + 10 - x, h, 10);
+    stroke(255);
+    rect(x + 1, y + 1, width + 10 - x, h - 2, 10);
+};
+
+colorArray = [
+    color(0, 0, 0),
+    color(255, 255, 255),
+    color(100, 100, 100),
+    color(200, 200, 200),
+    color(255, 0, 0),
+    color(255, 150, 0),
+    color(255, 255, 0),
+    color(0, 200, 0),
+    color(0, 0, 255),
+    color(160, 0, 160),
+];
+    
+currentColor = colorArray[colorSelect];
+var colorPalette = function(x, y, h) {
+    //Background
+    if (mouseX >= x && mouseY >= y && mouseY <= y + h) {
+        messageSet = "Select color for editing.";
+    }
+    var s = 19;
+    paletteRight(x, y, h);
+    
+    fill(50, 60, 70);
+    textSize(11);
+    textAlign(CENTER, CENTER);
+    text("Colors", (x + width)/2, y + 12);
+    
+    //Select Color
+    var t = {
+        x: x + 8,
+        y: y + 22,
+        y2: 0
+    };
+    fill(0, 0, 0, 60);
+    noStroke();
+    rect(t.x - 2, t.y - 2, s * 2 + 10, s * 5 + 25);
+    stroke(0);
+    var l = 20;
+    for (var i = 0; i < l; i ++) {
+        if (colorArray[i] === undefined) {
+            strokeWeight(1);
+            stroke(255, 255, 255, 120);
+            fill(255, 255, 255, 25);
+        } else {
+            if (alpha(colorArray[i]) < 255) {
+                noStroke();
+                fill(255);
+                rect(t.x, t.y, s, s);
+                fill(0);
+                rect(t.x + s/2, t.y, s/2, s/2);
+                rect(t.x, t.y + s/2, s/2, s/2);
+            }
+            if (colorSelect === i) {
+                strokeWeight(2);
+                stroke(255, 0, 0);
+            } else if (mouseInside(t.x, t.y, s, s)) {
+                stroke(240, 240, 0);
+                strokeWeight(2);
+                setCursor(HAND);
+                if (initInside(t.x, t.y, s, s) && !mouseIsPressed && pmouseIsPressed) {
+                    colorSelect = i;
+                    currentColor = colorArray[i];
+                }
+            } else {
+                stroke(0);
+                strokeWeight(1);
+            }
+            fill(colorArray[i]);
+        }
+        rect(t.x, t.y, s, s);
+        stroke(255, 255, 255, 120);
+        rect(t.x + 1, t.y + 1, s - 2, s - 2);
+        t.x += s + 5;
+        if (t.x + s > width) {
+            t.x = x + 8;
+            t.y += s + 5;
+        }
+    }
+    
+    //Clear
+    if (colorSelect === l) {
+        strokeWeight(2);
+        stroke(255, 0, 0);
+    } else if (mouseInside((x + 400 - s)/2, t.y, s, s)) {
+        stroke(240, 240, 0);
+        strokeWeight(2);
+        setCursor(HAND);
+        if (initInside((x + 400 - s)/2, t.y, s, s) && !mouseIsPressed && pmouseIsPressed) {
+            colorSelect = l;
+            currentColor = undefined;
+        }
+    } else {
+        stroke(0);
+        strokeWeight(1);
+    }
+    noFill();
+    rect((x + 400 - s)/2, t.y, s, s);
+    stroke(255, 255, 255, 120);
+    rect((x + 400 - s)/2 + 1, t.y + 1, s - 2, s - 2);
+    strokeWeight(2);
+    stroke(0);
+    point((x + 400)/2, t.y + s/2);
+    t.y += s + 5;
+    
+    //Current Color
+    noStroke();
+    fill(0, 0, 0, 60);
+    rect(x + 3, t.y, s * 2 + 16, y + h - 3 - t.y, 4);
+    
+    if (currentColor === undefined || alpha(currentColor) < 255) {
+        fill(255);
+    } else {
+        fill(currentColor);
+    }
+    stroke(0);
+    strokeWeight(1);
+    rect(x + 8, t.y + 5, s * 2 + 5, s);
+    if (alpha(currentColor) < 255) {
+        fill(0);
+        var h2 = (s * 2 + 5)/4;
+        noStroke();
+        rect(x + 8, t.y + s/2 + 5, h2, s/2);
+        rect(x + h2 + 8, t.y + 5, h2, s/2);
+        rect(x + h2 * 2 + 8, t.y + s/2 + 5, h2, s/2);
+        rect(x + h2 * 3 + 8, t.y + 5, h2, s/2);
+    }
+    if (currentColor === undefined) {
+        fill(255);
+    } else {
+        fill(currentColor);
+    }
+    stroke(255, 255, 255, 120);
+    rect(x + 9, t.y + 6, s * 2 + 3, s - 2);
+    if (currentColor === undefined) {
+        strokeWeight(2);
+        stroke(0);
+        point((x + 400)/2, t.y + s/2 + 5);
+    }
+    
+    //Button
+    if (colorArray.length < 20) {
+        button("Add Color", (x + width)/2, y + h - 15, 10);
+        if (buttonHover) {
+            messageSet = "Add a color to a custom slot.";
+        }
+        if (buttonPressed) {
+            colorSelect = 19;
+        }
+    } else {
+        button("Edit Color", (x + width)/2, y + h - 15, 10);
+        if (buttonHover) {
+            messageSet = "Edit color in the selected custom slot.";
+        }
+    }
+    if (buttonPressed) {
+        goToPage("color");
+    }
+};
+
+var colorOver;
+
+var colorHover = [];
+var c = {};
+var hu = 255;
+var al = 255;
+var viewColor = function(x, y, h) {
+    //Update
+    if (mouseX < x || mouseY < y || mouseY > y + h) {
+        if (drawMode === "color finder") {
+            setCursor("crosshair");
+            colorOver = get(mouseX, mouseY);
+            if (mouseIsPressed && !pmouseIsPressed) {
+                goToPage("edit");
+                drawMode = "pencil";
+                currentColor = colorOver;
+                colorArray[colorSelect] = colorOver;
+                mouseIsPressed = false;
+            }
+        }
+    }
+    
+    //Background
+    var s = 19;
+    paletteRight(x, y, h);
+    
+    //Colors
+    fill(50, 60, 70);
+    textSize(11);
+    textAlign(CENTER, CENTER);
+    text("Colors", (x + width)/2, y + 12);
+    var t = {
+        x: x + 8,
+        y: y + 22,
+        y2: 0
+    };
+    fill(0, 0, 0, 60);
+    noStroke();
+    rect(t.x - 2, t.y - 2, s * 2 + 10, s * 5 + 25);
+    stroke(0);
+    var l = 20;
+    if (colorSelect < 10) {
+        colorSelect = l - 1;
+    }
+    while (colorArray[colorSelect] === undefined && colorArray[colorSelect - 1] === undefined && colorSelect > 10) {
+        colorSelect --;
+    }
+    for (var i = 10; i < l; i ++) {
+        if (mouseInside(t.x, t.y, s, s) && initInside(t.x, t.y, s, s) && !mouseIsPressed && pmouseIsPressed) {
+            colorSelect = i;
+            hu = hue(colorArray[i]);
+            al = alpha(colorArray[i]);
+            c.x = saturation(colorArray[i]);
+            c.y = 255 - brightness(colorArray[i]);
+        }
+        if (colorArray[i] === undefined) {
+            fill(255, 255, 255, 25);
+        } else {
+            if (alpha(colorArray[i]) < 255) {
+                noStroke();
+                fill(255);
+                rect(t.x, t.y, s, s);
+                fill(0);
+                rect(t.x + s/2, t.y, s/2, s/2);
+                rect(t.x, t.y + s/2, s/2, s/2);
+            }
+            fill(colorArray[i]);
+        }
+        if (colorSelect === i) {
+            strokeWeight(2);
+            stroke(255, 0, 0);
+        } else if (mouseInside(t.x, t.y, s, s)) {
+            stroke(240, 240, 0);
+            strokeWeight(2);
+            setCursor(HAND);
+        } else if (colorSelect[i] === undefined) {
+            strokeWeight(1);
+            stroke(255, 255, 255, 120);
+        } else {
+            strokeWeight(1);
+            stroke(0);
+        }
+        if (colorHover[i]) {
+            stroke(240, 160, 0);
+            strokeWeight(2);
+        }
+        rect(t.x, t.y, s, s);
+        stroke(255, 255, 255, 120);
+        rect(t.x + 1, t.y + 1, s - 2, s - 2);
+        t.x += s + 5;
+        if (t.x + s > width) {
+            t.x = x + 8;
+            t.y += s + 5;
+        }
+    }
+    t.y += 2;
+    textAlign(LEFT, TOP);
+    textSize(11);
+    noStroke();
+    var w = s * 2 + 5;
+    var g = 22;
+    fill(0);
+    text("Red: " + red(colorOver), t.x, t.y);
+    fill(red(colorOver), 0, 0);
+    rect(t.x, t.y + 11, w * red(colorOver)/255, 10);
+    t.y += g;
+    
+    fill(0);
+    text("Grn: " + green(colorOver), t.x, t.y);
+    fill(0, green(colorOver), 0);
+    rect(t.x, t.y + 11, w * green(colorOver)/255, 10);
+    t.y += g;
+    
+    fill(0);
+    text("Blu: " + blue(colorOver), t.x, t.y);
+    fill(0, 0, blue(colorOver));
+    rect(t.x, t.y + 11, w * blue(colorOver)/255, 10);
+    t.y += g;
+    
+    colorMode(HSB);
+    fill(0);
+    text("Hue: " + round(hue(colorOver)), t.x, t.y);
+    fill(hue(colorOver), 255, 255);
+    rect(t.x, t.y + 11, w * hue(colorOver)/255, 10);
+    t.y += g;
+    
+    fill(0);
+    text("Sat: " + round(saturation(colorOver)), t.x, t.y);
+    fill(255, saturation(colorOver), 255);
+    rect(t.x, t.y + 11, w * saturation(colorOver)/255, 10);
+    t.y += g;
+    
+    fill(0);
+    text("Brt: " + round(brightness(colorOver)), t.x, t.y);
+    fill(brightness(colorOver));
+    rect(t.x, t.y + 11, w * brightness(colorOver)/255, 10);
+    t.y += g;
+    
+    colorMode(RGB);
+    t.y = y + h - s - 33;
+    
+    //Current Color
+    noStroke();
+    fill(0, 0, 0, 60);
+    rect(x + 3, t.y, s * 2 + 16, y + h - 3 - t.y, 4);
+    
+    stroke(0);
+    
+    strokeWeight(1);
+    if (colorOver === undefined || alpha(colorOver) < 255) {
+        fill(255);
+    } else {
+        fill(colorOver);
+    }
+    rect(x + 8, t.y + 5, s * 2 + 5, s);
+    if (alpha(colorOver) < 255) {
+        fill(0);
+        var h2 = (s * 2 + 5)/4;
+        noStroke();
+        rect(x + 8, t.y + s/2 + 5, h2, s/2);
+        rect(x + h2 + 8, t.y + 5, h2, s/2);
+        rect(x + h2 * 2 + 8, t.y + s/2 + 5, h2, s/2);
+        rect(x + h2 * 3 + 8, t.y + 5, h2, s/2);
+    }
+    if (colorOver === undefined) {
+        fill(255);
+    } else {
+        fill(colorOver);
+    }
+    stroke(255, 255, 255, 120);
+    rect(x + 9, t.y + 6, s * 2 + 3, s - 2);
+    if (colorOver === undefined) {
+        strokeWeight(2);
+        stroke(0);
+        point((x + 400)/2, t.y + s/2 + 5);
+    }
+    
+    //Button
+    button("Cancel", (x + width)/2, y + h - 15, 10);
+    if (buttonPressed) {
+        goToPage("edit");
+        drawMode = "pencil";
+    }
+};
+
+var drawColorSelect = function(x, y, h, s) {
+    pushMatrix();
+    translate(x, y);
+    colorMode(HSB);
+    noStroke();
+    var w = 4;
+    for (var b = 0; b < s; b += w) {
+        for (var a = 0; a < s; a += w) {
+            fill(h, a, 255 - b);
+            rect(a, b, w + 0.5, w + 0.5);
+        }
+    }
+    popMatrix();
+    colorMode(RGB);
+};
+
+var hueSlider = function(x, y, w, n) {
+    strokeWeight(1);
+    pushMatrix();
+    translate(x, y);
+    colorMode(HSB);
+    for (var i = 0; i < n; i ++) {
+        stroke(255 - i * 255/n, 255, 255);
+        line(0, i, w, i);
+    }
+    colorMode(RGB);
+    popMatrix();
+};
+fill(51, 109, 166);
+var colorHover = [];
+var findColor = function(x, y) {
+    //Update
+    colorHover = [];
+    var s = 255;
+    var w = 50;
+    var w2 = 16;
+    var n = 240;
+    var t = {
+        x: x - s/2 - w/2,
+        y: y - s/2
+    };
+    var b = {
+        x: t.x + s + w/2 - w2/2,
+        y: t.y + (255 - n)/2
+    };
+    if (mouseInside(t.x - 8, t.y - 8, s + 16, s + 16)) {
+        setCursor("crosshair");
+        if (mouseIsPressed) {
+            c.x = constrain(mouseX - t.x, 0, 255);
+            c.y = constrain(mouseY - t.y, 0, 255);
+        }
+    }
+    if (mouseInside(b.x, b.y - 4, w2, n + 8)) {
+        setCursor("crosshair");
+        if (mouseIsPressed) {
+            hu = constrain(255 - (mouseY - b.y) * 255/n, 0, 255);
+        }
+    }
+    colorMode(HSB);
+    if (al < 255) {
+        colorOver = color(hu, c.x, 255 - c.y, al);
+    } else {
+        colorOver = color(hu, c.x, 255 - c.y);
+    }
+    colorMode(RGB);
+    //Draw
+    strokeWeight(4);
+    stroke(255);
+    noFill();
+    rect(t.x - 9, t.y - 9, s + 9 + w, s + 18);
+    stroke(0);
+    strokeWeight(18);
+    noFill();
+    rect(t.x, t.y, s, s);
+    fill(0);
+    noStroke();
+    rect(t.x + s, t.y - 9, w, s + 18);
+    
+    drawColorSelect(t.x, t.y, hu, s);
+    
+    strokeWeight(2);
+    stroke(160);
+    noFill();
+    rect(b.x, b.y - 1, w2, n + 1);
+    hueSlider(b.x, b.y, w2, n);
+    
+    noFill();
+    strokeWeight(2);
+    stroke(200);
+    rect(b.x - 4.5, b.y + (255 - hu) * n/255 - 4.5, w2 + 8, 8);
+    
+    for (var i in colorArray) {
+        if (colorArray[i] !== undefined) {
+            stroke(255, 160, 0);
+            var y2 = b.y + (255 - hue(colorArray[i])) * n/255;
+            if (mouseInside(b.x + w2 + 5, y2 - 4, 10, 8)) {
+                colorHover[i] = true;
+                strokeWeight(4);
+                setCursor(HAND);
+                if (mouseIsPressed) {
+                    hu = hue(colorArray[i]);
+                }
+            } else {
+                strokeWeight(2);
+            }
+            line(b.x + w2 + 5, y2, b.x + w2 + 15, y2);
+            if (hu === hue(colorArray[i])) {
+                if (mouseInside(t.x + saturation(colorArray[i]) - 4, t.y + 255 - brightness(colorArray[i]) - 4, 8, 8)) {
+                    colorHover[i] = true;
+                }
+                strokeWeight(6);
+                //stroke(255 - red(colorArray[i]), 255 - green(colorArray[i]), 255 - blue(colorArray[i]));
+                stroke(255);
+                point(t.x + saturation(colorArray[i]), t.y + 255 - brightness(colorArray[i]));
+                strokeWeight(3);
+                stroke(0);
+                point(t.x + saturation(colorArray[i]), t.y + 255 - brightness(colorArray[i]));
+            }
+        } 
+    }
+    
+    noFill();
+    strokeWeight(3);
+    stroke(255);
+    rect(t.x + c.x - 5, t.y + c.y - 5, 10, 10, 2);
+    strokeWeight(1);
+    stroke(0);
+    rect(t.x + c.x - 5, t.y + c.y - 5, 10, 10, 2);
+};
+
+var alphaSlider = function(y, w, h) {
+    var l = 260;
+    strokeWeight(1);
+    noFill();
+    for (var i = 0; i < 5; i ++) {
+        STROKE(i/5 * 255);
+        rect(-10 + i, y + i, w + 10, h, 10);
+    }
+    stroke(0);
+    fill(170);
+    rect(-10, y, w + 10, h, 10);
+    stroke(255);
+    rect(-10, y + 1, w + 9, h - 2, 10);
+    fill(200);
+    rect(-10, y + 1, l + 9, h - 2);
+    
+    fill(50, 60, 70);
+    textSize(12);
+    textAlign(CENTER, CENTER);
+    text("Opacity", l/2, y + 10);
+    
+    var y2 = y + h * 3/5;
+    if (mouseInside(10, y2 - 10, l - 20, 20)) {
+        noStroke();
+        fill(0, 0, 0, 20);
+        rect(10, y2 - 10, l - 20, 20);
+        setCursor(HAND);
+        if (mouseIsPressed) {
+            al = constrain((mouseX - 20) * 255/(l - 40), 0, 255);
+        }
+    }
+    strokeWeight(2);
+    stroke(50);
+    line(20, y2, l - 20, y2);
+    fill(220);
+    strokeWeight(1);
+    rect(16 + (al/255) * (l - 40), y2 - 8, 8, 14, 2);
+    line(18 + (al/255) * (l - 40), y2 - 4, 21.5 + (al/255) * (l - 40), y2 - 4);
+    line(18 + (al/255) * (l - 40), y2 - 1, 21.5 + (al/255) * (l - 40), y2 - 1);
+    line(18 + (al/255) * (l - 40), y2 + 2, 21.5 + (al/255) * (l - 40), y2 + 2);
+    
+    
+    strokeWeight(1);
+    stroke(0);
+    line(l, y, l, y + h);
+    
+    button("Set Color", (w + l)/2, y + h/2, 10);
+    if (buttonPressed) {
+        currentColor = colorOver;
+        colorArray[colorSelect] = colorOver;
+        goToPage("edit");
+    }
+};
+
+
+var insideEllipse = function(a, b, x1, y1, x2, y2) {
+    if (4 * sq(a - (x1 + x2)/2)/sq(x2 - x1) + 4 * sq(b - (y1 + y2)/2)/sq(y2 - y1) <= 1 + 2/(x2 - x1)) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+var onEllipse = function(a, b, x1, y1, x2, y2) {
+    if (4 * sq(a - (x1 + x2)/2)/sq(x2 - x1) + 4 * sq(b - (y1 + y2)/2)/sq(y2 - y1) >= 1 - 2/(x2 - x1) && 4 * sq(a - (x1 + x2)/2)/sq(x2 - x1) + 4 * sq(b - (y1 + y2)/2)/sq(y2 - y1) <= 1 + 2/(x2 - x1)) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+var inShape = function(a, b, x1, y1, x2, y2) {
+    if (drawMode === "rectangle") {
+        if (shapeFill) {
+            return true;
+        } else if (a === x1 || a === x2 || b === y1 || b === y2) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (drawMode === "ellipse") {
+        if (shapeFill) {
+            if (insideEllipse(a, b, x1, y1, x2, y2)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (onEllipse(a, b, x1, y1, x2, y2)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+var initCol;
+var endFill;
+var getSurrounding = function(b, a, m) {
+    var a = constrain(a, 0, grid.width - 1);
+    var b = constrain(b, 0, grid.height - 1);
+    if (pixel[b][a] === initCol && !m[b][a]) {
+        pixel[b][a] = currentColor;
+        m[b][a] = true;
+        endFill = false;
+    }
+};
+
+var r = {};
+var editBG = false;
+var editPlot = function(x, y, width, height) {
+    //Update
+    while (pixel.length < grid.height) {
+        pixel.push([]);
+    }
+    while (pixel.length > grid.height) {
+        pixel = shorten(pixel);
+    }
+    for (var i in pixel) {
+        while (pixel[i].length > grid.width) {
+            pixel[i] = shorten(pixel[i]);
+        }
+    }
+    var s = min(floor(width/grid.width), floor(height/grid.height));
+    var t = {
+        x: x + width/2 - grid.width/2 * s,
+        y: y + height/2 - grid.height/2 * s
+    };
+    if (mouseInside(t.x, t.y, grid.width * s - 1, grid.height * s - 1)) {
+        switch (drawMode) {
+            case "pencil": setCursor("crosshair"); break;
+            case "fill": setCursor(HAND); break;
+            case "rectangle":
+            case "ellipse": setCursor("move"); break;
+        }
+    }
+    if ((mouseInside(t.x, t.y, grid.width * s - 1, grid.height * s - 1) && (mouseIsPressed || pmouseIsPressed)) || rEP) {
+        background(BACKGROUND);
+        if (mouseInside(t.x, t.y, grid.width * s - 1, grid.height * s - 1)) {
+            if (mouseIsPressed && !pmouseIsPressed && pixel !== ppixel) {
+                updatePlotHistory();
+            }
+            if (mouseIsPressed && mouseButton === RIGHT && !typing) {
+                pixel[floor((mouseY - t.y)/s)][floor((mouseX - t.x)/s)] = undefined;
+            }
+            switch (drawMode) {
+                
+                case "pencil":
+                    if (mouseIsPressed && mouseButton === LEFT) {
+                            pixel[floor((mouseY - t.y)/s)][floor((mouseX - t.x)/s)] = currentColor;
+                    }
+                    setCursor("crosshair");
+                    break;
+                    
+                case "fill":
+                    initCol = undefined;
+                    if (mouseIsPressed && !pmouseIsPressed  && mouseButton === LEFT && pixel[floor((mouseY - t.y)/s)][floor((mouseX - t.x)/s)] !== currentColor) {
+                        initCol = pixel[floor((mouseY - t.y)/s)][floor((mouseX - t.x)/s)];
+                        pixel[floor((mouseY - t.y)/s)][floor((mouseX - t.x)/s)] = currentColor;
+                        var m = [];
+                        for (var i = 0; i < grid.height; i ++) {
+                            m[i] = [];
+                        }
+                        m[floor((mouseY - t.y)/s)][floor((mouseX - t.x)/s)] = true;
+                        endFill = false;
+                        while (!endFill) {
+                            endFill = true;
+                            for (var b = 0; b < grid.height; b ++) {
+                                for (var a = 0; a < grid.width; a ++) {
+                                    if (m[b][a]) {
+                                        getSurrounding(b, a - 1, m);
+                                        getSurrounding(b, a + 1, m);
+                                        getSurrounding(b - 1, a, m);
+                                        getSurrounding(b + 1, a, m);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    setCursor(HAND);
+                    break;
+                
+                case "rectangle":
+                case "ellipse":
+                    if (mouseIsPressed && mouseButton === LEFT) {
+                        if (!pmouseIsPressed) {
+                            r.x1 = floor((mouseX - t.x)/s);
+                            r.y1 = floor((mouseY - t.y)/s);
+                        }
+                        r.x2 = floor((mouseX - t.x)/s);
+                        r.y2 = floor((mouseY - t.y)/s);
+                        
+                        r.xa = min(r.x1, r.x2);
+                        r.xb = max(r.x1, r.x2);
+                        r.ya = min(r.y1, r.y2);
+                        r.yb = max(r.y1, r.y2);
+                        setCursor("move");
+                    } else if (pmouseIsPressed && mouseButton === LEFT) {
+                        for (var b = r.ya; b <= r.yb; b ++) {
+                            for (var a = r.xa; a <= r.xb; a ++) {
+                                if (inShape(a, b, r.xa, r.ya, r.xb, r.yb)) {
+                                    pixel[b][a] = currentColor;
+                                }
+                            }
+                        }
+                        setCursor("move");
+                    } else {
+                        r = {};
+                    }
+                    break;
+                    
+                case "color finder": break;
+                
+                default: drawMode = "pencil";
+            }
+        } else {
+            r = {};
+        }
+        
+        //Draw
+        strokeWeight(1);
+        if (grid.stroke) {
+            STROKE(0);
+        } else {
+            noStroke();
+        }
+        for (var b = 0; b < grid.height; b ++) {
+            for (var a = 0; a < grid.width; a ++) {
+                if (pixel[b][a] === undefined) {
+                    noFill();
+                } else {
+                    fill(pixel[b][a]);
+                }
+                rect(t.x + a * s, t.y + b * s, s + 0.49, s + 0.49);
+                if (pixel[b][a] === undefined) {
+                    STROKE(0);
+                    point(t.x + a * s + s/2, t.y + b * s + s/2);
+                    if (!grid.stroke) {
+                        noStroke();
+                    }
+                }
+            }
+        }
+        
+        //Draw Rectangle
+        if (grid.stroke) {
+            STROKE(0);
+        } else {
+            noStroke();
+        }
+        if (currentColor === undefined) {
+            fill(BACKGROUND);
+        } else {
+            fill(currentColor);
+        }
+        if (r.xa !== undefined && r.xb !== undefined && r.ya !== undefined && r.yb !== undefined) {
+            for (var b = r.ya; b <= r.yb; b ++) {
+                for (var a = r.xa; a <= r.xb; a ++) {
+                    if (inShape(a, b, r.xa, r.ya, r.xb, r.yb)) {
+                        rect(t.x + a * s, t.y + b * s, s + 0.49, s + 0.49);
+                        if (currentColor === undefined) {
+                            stroke(0);
+                            point(t.x + a * s + s/2, t.y + b * s + s/2);
+                            if (!grid.stroke) {
+                                noStroke();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!grid.stroke) {
+            noFill();
+            STROKE(0);
+            rect(t.x, t.y, grid.width * s, grid.height * s);
+        }
+        
+        if (!editBG) {
+            FILL(0);
+            pushMatrix();
+            translate(x/2, y + height/2);
+            rotate(-90);
+            textSize(13);
+            text(grid.width + " x " + grid.height, 0, 0);
+            popMatrix();
+        }
+        rEP = false;
+    }
+    noStroke();
+    fill(BACKGROUND);
+    textFont(createFont("Calibri Bold"), 14);
+    if (editBG) {
+        rect(0, y, t.x, height);
+        button("-", x/2, y + 16, 16);
+    } else {
+        rect(0, y, t.x, height/4);
+        button("+", x/2, y + 16, 16);
+    }
+    if (buttonPressed) {
+        editBG = !editBG;
+        rEP = true;
+    }
+    textFont(createFont("Calibri"), 12);
+    if (editBG) {
+        noStroke();
+        if (mouseInside(x/2 - 10, y + 40, 20, 240)) {
+            setCursor(HAND);
+            noStroke();
+            FILL(0, 50);
+            rect(x/2 - 10, y + 40, 20, 240);
+            if (mouseIsPressed && initInside(x/2 - 10, y + 40, 20, 240)) {
+                BACKGROUND = constrain((-mouseY + y + 270) * 255/220, 0, 255);
+                rEP = true;
+            }
+            messageSet = "Change background color.";
+        }
+        noStroke();
+        STROKE(50);
+        strokeWeight(2);
+        line(x/2, y + 50, x/2, y + 270);
+        strokeWeight(1);
+        FILL(220);
+        var h = y + 270 - BACKGROUND * 220/255;
+        rect(x/2 - 7, h - 4, 14, 8, 2);
+        line(x/2 - 3, h - 2, x/2 - 3, h + 2);
+        line(x/2, h - 2, x/2, h + 2);
+        line(x/2 + 3, h - 2, x/2 + 3, h + 2);
+    }
+    
+    grid.pstroke = grid.stroke;
+    grid.pwidth = grid.width;
+    grid.pheight = grid.height;
+};
+
+p = {
+    x1: 100, 
+    y1: 100,
+    x2: 200,
+    y2: 200,
+    trim: false,
+    se: true
+};
+
+var f = 0;
+var printing = false;
+var bottomMenu = function(y) {
+    fill(BACKGROUND);
+    noStroke();
+    rect(0, y - 10, width, height + 10 - y);
+    var l = 0;
+    for (var i in pixel) {
+        l = max(pixel[i].length, l);
+    }
+    button("Print", 30, y, 12, l > 0);
+    if (buttonHover) {
+        messageSet = "Print image data and functions to the console";
+    } 
+    if (buttonPressed) {
+        printing = true;
+    }
+    button("Preview", 85, y, 12, l > 0);
+    if (buttonHover) {
+        messageSet = "Preview image as it would appear in a program.";
+    }
+    if (buttonPressed) {
+        p.img = newImage(convertToString(pixel, grid.width, grid.height));
+        p.x1 = 100;
+        p.y1 = 100;
+        p.x2 = p.x1 + p.img.width/4;
+        p.y2 = p.y1 + p.img.height/4;
+        p.trim = false;
+        p.se = true;
+        goToPage("preview");
+    }
+    if (l < 1) {
+        noStroke();
+        fill(BACKGROUND, BACKGROUND, BACKGROUND, 100);
+        rect(0, y - 10, width, height + 10 - y);
+    }
+    textSize(11);
+    textAlign(LEFT, TOP);
+    var message;
+    try {
+        if (messageSet[0].length > 1) {
+            message = messageSet[floor(frameCount/300) % messageSet.length];
+        } else {
+            message = messageSet;
+        }
+    } catch (err) {
+        message = messageSet;
+    }
+    textLeading(11);
+    FILL(0);
+    text(message, 120, y - 8, 200, 400);
+};
+
+var dashedLineH = function(y, xA, xB) {
+    var x1 = min(xA, xB);
+    var x2 = max(xA, xB);
+    var m = 6;
+    var n = round((x2 - x1)/m);
+    n += (n % 2) - 1;
+    var w = (x2 - x1)/max(n, 1);
+    var t = 0;
+    for (var i = x1; i < x2 - w; i += w) {
+        if (t % 2 === 0) {
+            line(i, y, i + w, y);
+        }
+        t ++;
+    }
+};
+
+var dashedLineV = function(x, yA, yB) {
+    var y1 = min(yA, yB);
+    var y2 = max(yA, yB);
+    var m = 6;
+    var n = round((y2 - y1)/m);
+    n += (n % 2) - 1;
+    var w = (y2 - y1)/max(n, 1);
+    var t = 0;
+    for (var i = y1; i < y2 - w; i += w) {
+        if (t % 2 === 0) {
+            line(x, i, x, i + w);
+        }
+        t ++;
+    }
+};
+
+var resize = [];
+resize[LEFT] = [];
+resize[CENTER] = [];
+resize[RIGHT] = [];
+resize[LEFT][TOP] = "nw-resize";
+resize[CENTER][TOP] = "n-resize";
+resize[RIGHT][TOP] = "ne-resize";
+resize[RIGHT][CENTER] = "e-resize";
+resize[RIGHT][BOTTOM] = "se-resize";
+resize[CENTER][BOTTOM] = "s-resize";
+resize[LEFT][BOTTOM] = "sw-resize";
+resize[LEFT][CENTER] = "w-resize";
+
+var border = [];
+border[LEFT] = [];
+border[CENTER] = [];
+border[RIGHT] = [];
+var bsc = "";
+var dragBorder = function(x, y, xp, yp) {
+    if (p.x1 > p.x2) {
+        if (xp === LEFT) {
+            x += 2;
+        }
+        if (xp === RIGHT) {
+            x -= 2;
+        }
+    } else {
+        if (xp === LEFT) {
+            x -= 2;
+        }
+        if (xp === RIGHT) {
+            x += 2;
+        }
+    }
+    if (p.y1 > p.y2) {
+        if (yp === TOP) {
+            y += 2;
+        }
+        if (yp === BOTTOM) {
+            y -= 2;
+        }
+    } else {
+        if (yp === TOP) {
+            y -= 2;
+        }
+        if (yp === BOTTOM) {
+            y += 2;
+        }
+    }
+    var s = 6;
+    if (!mouseIsPressed) {
+        border[xp][yp] = false;
+    }
+    if (mouseInside(x - s/2 - 2, y - s/2 - 2, s + 4, s + 4)) {
+        setCursor(resize[xp][yp]);
+        if (mouseIsPressed && !pmouseIsPressed) {
+            border[xp][yp] = true;
+        }
+        fill(150);
+    } else {
+        fill(255);
+    }
+    rect(x - s/2, y - s/2, s, s);
+    buttonPressed = border[xp][yp];
+    if (buttonPressed && bsc === "") {
+        bsc = resize[xp][yp];
+    }
+};
+
+var dispPreview = function() {
+    if (p.x1 === undefined || p.y1 === undefined || p.x2 === undefined || p.y2 === undefined) {
+        p.x1 = 100;
+        p.y1 = 100;
+        p.x2 = 200;
+        p.y2 = 200;
+    }
+    if (p.trim === undefined) {
+        p.trim = false;
+    }
+    if (p.img === undefined) {
+        if (p.trim) {
+            p.img = newImage(convertToStringTrim(pixel, grid.width, grid.height));
+        } else {
+            p.img = newImage(convertToString(pixel, grid.width, grid.height));
+        }
+    }
+    var x1 = p.x1;
+    var x2 = p.x2;
+    var y1 = p.y1;
+    var y2 = p.y2;
+    
+    var w = x2 - x1;
+    var h = y2 - y1;
+    if (w === 0) {
+        w = 1;
+    }
+    if (h === 0) {
+        h = 1;
+    }
+    
+    image(p.img, x1, y1, w, h);
+    
+    if (p.se) {
+        strokeWeight(1);
+        STROKE(0);
+        dashedLineH(y1, x1, x2);
+        dashedLineH(y2, x1, x2);
+        dashedLineV(x1, y1, y2);
+        dashedLineV(x2, y1, y2);
+        
+        bsc = "";
+        
+        if (mouseInside(min(x1, x2) + 4, min(y1, y2) + 4, abs(w) - 8, abs(h) - 8)) {
+            setCursor("move");
+            if (mouseIsPressed && !pmouseIsPressed) {
+                border[0] = true;
+            }
+        }
+        if (!mouseIsPressed) {
+            border[0] = false;
+        }
+        if (border[0]) {
+            p.x1 += mouseX - pmouseX;
+            p.y1 += mouseY - pmouseY;
+            p.x2 += mouseX - pmouseX;
+            p.y2 += mouseY - pmouseY;
+        }
+        
+        dragBorder(x1, y1, LEFT, TOP);
+        if (buttonPressed) {
+            if (mouseY >= h * (mouseX - x1)/w + y1) {
+                p.x1 = mouseX;
+                p.y1 = h * (mouseX - x1)/w + y1;
+            } else {
+                p.y1 = mouseY;
+                p.x1 = w * (mouseY - y1)/h + x1;
+            }
+        }
+        
+        dragBorder((x1 + x2)/2, y1, CENTER, TOP);
+        if (buttonPressed) {
+            p.y1 = mouseY;
+        }
+        
+        dragBorder(x2, y1, RIGHT, TOP);
+        if (buttonPressed) {
+            if (mouseY <= -h * (mouseX - x1)/w + y2) {
+                p.y1 = mouseY;
+                p.x2 = -w * (mouseY - y2)/h + x1;
+            } else {
+                p.x2 = mouseX;
+                p.y1 = -h * (mouseX - x1)/w + y2;
+            }
+        }
+        
+        dragBorder(x2, (y1 + y2)/2, RIGHT, CENTER);
+        if (buttonPressed) {
+            p.x2 = mouseX;
+        }
+        
+        dragBorder(x2, y2, RIGHT, BOTTOM);
+        if (buttonPressed) {
+            if (mouseY <= h * (mouseX - x1)/w + y1) {
+                p.x2 = mouseX;
+                p.y2 = h * (mouseX - x2)/w + y2;
+            } else {
+                p.y2 = mouseY;
+                p.x2 = w * (mouseY - y2)/h + x2;
+            }
+        }
+        
+        dragBorder((x1 + x2)/2, y2, CENTER, BOTTOM);
+        if (buttonPressed) {
+            p.y2 = mouseY;
+        }
+        
+        dragBorder(x1, y2, LEFT, BOTTOM);
+        if (buttonPressed) {
+            if (mouseY >= -h * (mouseX - x1)/w + y2) {
+                p.y2 = mouseY;
+                p.x1 = -w * (mouseY - y1)/h + x2;
+            } else {
+                p.x1 = mouseX;
+                p.y2 = -h * (mouseX - x2)/w + y1;
+            }
+        }
+        
+        dragBorder(x1, (y1 + y2)/2, LEFT, CENTER);
+        if (buttonPressed) {
+            p.x1 = mouseX;
+        }
+        
+        if (bsc !== "") {
+            setCursor(bsc);
+        }
+    }
+};
+
+var topMenu = function(y) {
+    noStroke();
+    fill(BACKGROUND);
+    rect(0, 0, width, y);
+    STROKE(0);
+    strokeWeight(1);
+    line(0, y, width, y);
+    
+    /*
+    strokeWeight(1);
+    for (var i = 0; i < y; i ++) {
+        stroke(182 - i/2, 186 - i/2, 204 - i/2);
+        line(0, i, 400, i);
+    }
+    STROKE(0);
+    line(0, y, 400, y);
+    */
+    
+    textSize(12);
+    button2("Reset Size", 50, y/2, 12);
+    if (buttonPressed) {
+        p.x1 = 100;
+        p.y1 = 100;
+        p.x2 = p.x1 + p.img.width/4;
+        p.y2 = p.y1 + p.img.height/4;
+    }
+    button2("Size Modifier", 200, y/2, 12, p.se);
+    if (buttonPressed) {
+        p.se = !p.se;
+    }
+    button2("Trim Image", 350, y/2, 12, p.trim);
+    if (buttonPressed) {
+        p.trim = !p.trim;
+        if (p.trim) {
+            p.img = newImage(convertToStringTrim(pixel, grid.width, grid.height));
+        } else {
+            p.img = newImage(convertToString(pixel, grid.width, grid.height));
+        }
+        p.x2 = p.x1 + p.img.width/4;
+        p.y2 = p.y1 + p.img.height/4;
+    }
+};
+
+var bottomMenu2 = function(y) {
+    noStroke();
+    fill(BACKGROUND);
+    rect(0, height - y, width, y);
+    STROKE(0);
+    strokeWeight(1);
+    line(0, height - y, width, height - y);
+    textSize(12);
+    button2("Print", 30, height - y/2, 12);
+    if (buttonPressed) {
+        if (p.trim) {
+            printCode(convertToStringTrim(pixel, grid.width, grid.height));
+        } else {
+            printCode(convertToString(pixel, grid.width, grid.height));
+        }
+    }
+    button2("Print w/ Code", 100, height - y/2, 12);
+    if (buttonPressed) {
+        if (p.trim) {
+            printAuxCode(convertToStringTrim(pixel, grid.width, grid.height));
+        } else {
+            printAuxCode(convertToString(pixel, grid.width, grid.height));
+        }
+    }
+    button2("Exit", 350, height - y/2, 12);
+    if (buttonPressed) {
+        goToPage("edit");
+    }
+};
+
+var printMenu = function(y) {
+    fill(255);
+    noStroke();
+    rect(0, y - 15, width, height + 15 - y);
+    textSize(13);
+    if (p.trim === undefined) {
+        p.trim = false;
+    }
+    if (mouseInside(18, y - 6, 12, 12)) {
+        noFill();
+        stroke(200);
+        rect(14, y - 10, 120, 20);
+        if (!mouseIsPressed && pmouseIsPressed && initInside(18, y - 6, 12, 12)) {
+            p.trim = !p.trim;
+        }
+    }
+    textAlign(LEFT, CENTER);
+    fill(0);
+    text("Trim Empty Space", 35, y);
+    noFill();
+    stroke(100);
+    rect(18, y - 6, 12, 12);
+    textAlign(CENTER, CENTER);
+    if (p.trim) {
+        text("\u2714", 24, y);
+    }
+    
+    button("Print", 160, y);
+    if (buttonPressed) {
+        if (p.trim) {
+            printCode(convertToStringTrim(pixel, grid.width, grid.height));
+        } else {
+            printCode(convertToString(pixel, grid.width, grid.height));
+        }
+    }
+    
+    button("Print w/ Code", 230, y);
+    if (buttonPressed) {
+        if (p.trim) {
+            printAuxCode(convertToStringTrim(pixel, grid.width, grid.height));
+        } else {
+            printAuxCode(convertToString(pixel, grid.width, grid.height));
+        }
+    }
+    button("Back", 300, y);
+    if (buttonPressed || (mouseIsPressed && !pmouseIsPressed && (mouseX >= 340 || mouseY <= y - 20))) {
+        printing = false;
+    }
+};
+
+var untitled = newImage("000000....00..00......00..000000..00....,0000000...00..000....000..000000..00....,00...000..00...000..000...00......00....,00...000..00....000000....00......00....,0000000...00.....0000.....000000..00....,000000....00.....0000.....000000..00....,00........00....000000....00......00....,00........00...000..000...00......00....,00........00..000....000..000000..000000,00........00..00......00..000000..000000,........................................,........................................,........................................,0....0....0.....000...00000..0000..0000.,00..00...0.0...0...0....0....0.....0...0,0.00.0..0...0...0.......0....0.....0...0,0....0..00000....00.....0....0000..0000.,0....0..0...0..0...0....0....0.....0..0.,0....0..0...0...000.....0....0000..0...0,......................................../ΩΩΩ");
+
+var creator = newImage(".........000....000...00...000000.000000,0........0000..0000..0000..000000.000000,0........0000000000.000000...00.....00,0........00.0000.00.00..00...00.....00,00..0.0..00..00..00.00..00...00.....00,0.0.0.0..00......00.00.000...00.....00,00...00..00......00.000000...00.....00,......0..00......00.00..00...00.....00,....0.0..00......00.00..00...00.....00,.....0...00......00.00..00...00.....00/000");
+
+var pA = [[15,29,10,21,22,29,18,6,16,24,17,29,28,13,27,0,22,22,3,11,26,16,1,5], [12,8,21,2,28,28,11,25,23,9,12,9,8,20,29,8,19,26,28,29,3,9,13,20], [21,21,30,3,12,23,4,22,7,15,6,29,3,27,15,11,27,28,9,13,25,25,14,29], [25,24,8,10,21,17,0,26,7,28,3,0,25,17,30,18,17,3,25,4,26,10,18,10], [12,5,22,29,19,2,11,24,3,2,6,10,14,18,5,15,14,21,13,12,4,9,18,12], [12,12,29,0,10,9,5,13,4,18,0,12,20,25,13,22,25,9,17,24,1,16,23,16], [12,10,29,24,14,10,15,18,5,26,2,14,30,18,14,28,16,1,3,12,20,10,21,28], [11,16,19,7,16,9,19,2,26,8,15,15,19,18,6,4,29,23,17,9,15,1,28,18], [2,29,15,22,1,1,26,25,16,20,9,19,1,18,1,5,29,23,28,22,11,13,3,28], [3,28,17,4,27,25,10,29,8,17,10,7,11,12,28,0,28,25,7,25,2,5,4,11], [10,29,28,17,7,14,23,21,19,9,18,18,1,21,27,14,28,19,26,8,24,25,26,27], [2,4,21,22,24,1,10,27,28,19,11,28,6,20,29,10,0,12,24,3,14,26,18,27], [25,15,21,28,25,22,20,4,27,23,19,9,20,14,15,30,1,28,11,30,14,10,27,14], [20,22,21,29,1,12,30,2,8,9,30,25,12,27,9,20,26,28,23,8,0,17,7,8]];
+var f = 0;
+var intro = function() {
+    var x = 80;
+    var y = 130;
+    var w = 24;
+    var h = 14;
+    var s = 10;
+
+    background(255);
+    noStroke();
+    fill(0);
+    if (f > 30) {
+        rect(x, y, w * s, h * s);
+    } else if (f < 130) {
+        for (var b = 0; b < h; b ++) {
+            for (var a = 0; a < w; a ++) {
+                if (pA[b][a] <= f) {
+                    rect(x + a * s, y + b * s, s, s);
+                }
+            }
+        }
+    }
+    if (f < 170) {
+        image(untitled, 100, 150, 200, 100);
+    }
+    noStroke();
+    fill(0);
+    if (f >= 100 && f < 130) {
+        for (var b = 0; b < h; b ++) {
+            for (var a = 0; a < w; a ++) {
+                if (pA[b][a] <= f - 100) {
+                    rect(x + a * s, y + b * s, s, s);
+                }
+            }
+        }
+    } else if (f >= 130 && f < 170) {
+        rect(x, y, w * s, h * s);
+    }
+    noStroke();
+    fill(255);
+    if (f >= 140) {
+        for (var b = 0; b < h; b ++) {
+            for (var a = 0; a < w; a ++) {
+                if (pA[b][a] <= f - 140) {
+                    rect(x + a * s, y + b * s, s, s);
+                }
+            }
+        }
+        image(creator, 100, 175, 200, 50);
+    }
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(12);
+    text("(Click to Continue)", 200, 350);
+    if (f > 220) {
+        noStroke();
+        fill(255, 255, 255, (f - 220) * 255/30);
+        rect(0, 0, width, height);
+    }
+    if (f > 250 || (!mouseIsPressed && pmouseIsPressed)) {
+        goToPage("edit");
+        f = 0;
+    }
+    f ++;
+};
+
+var editMode = function() {
+    if (drawMode === "color finder") {
+        viewColor(341, 50, 338);
+    } else {
+        editPlot(25, 60, 310, 310);
+        editMenu(50);
+        if (printing) {
+            printMenu(385);
+        } else {
+            bottomMenu(385);
+        }
+        colorPalette(341, 50, 338);
+    }
+};
+
+var editColor = function() {
+    if (drawMode !== "color finder") {
+        background(BACKGROUND);
+        alphaSlider(342, 323, 45);
+        findColor(341/2, 200);
+        editMenu(50);
+    }
+    viewColor(341, 50, 338);
+};
+
+var previewMode = function() {
+    if (BACKGROUND < D) {
+        background(BACKGROUND + 40);
+    } else {
+        background(BACKGROUND - 20);
+    }
+    dispPreview();
+    topMenu(30);
+    bottomMenu2(30);
+};
+
+var mousePressed = function() {
+    initX = mouseX;
+    initY = mouseY;
+};
+
+var pcursorState;
+var updateCursor = function() {
+    switch (cursorState) {
+        case true: cursor(); break;
+        case false: noCursor(); break;
+        default: this.cursor(cursorState);
+    }
+};
+
+var onScreen = false;
+var updateMouse = function() {
+    pmouseIsPressed = mouseIsPressed;
+    if (onScreen) {
+        updateCursor();
+    }
+    if (mouseX !== pmouseX || mouseY !== pmouseY) {
+        onScreen = true;
+    }
+};
+var updateKeys = function() {
+    if (!keyIsPressed) {
+        endPress = true;
+    }
+};
+
+var dispMode = function() {
+    switch (page) {
+        case "intro": intro(); break;
+        case "edit": editMode(); break;
+        case "color": editColor(); break;
+        case "preview": previewMode(); break;
+        default: goToPage("edit");
+    }
+};
+
+var update = function() {
+    messageSet = "";
+    if (clearPage) {
+        background(BACKGROUND);
+        clearPage = false;
+        rEP = true;
+    }
+    if (ppage === 1) {
+        ppage = page;
+    }
+    if (ppage !== page) {
+        ppage = 1;
+    }
+};
+
+var draw = function() {
+    setCursor(true);
+    update();
+    dispMode();
+    updateMouse();
+    updateKeys();
+};
+
+var mouseOut = function() {
+    onScreen = false;
+    mouseIsPressed = false;
+};

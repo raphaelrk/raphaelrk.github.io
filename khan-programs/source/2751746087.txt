@@ -1,0 +1,11 @@
+background(255, 248, 235);
+textSize(40);
+fill(0, 0, 0);
+text("Type a letter!", 80, 200);
+
+var keyTyped = function() {
+    background(255, 248, 235);
+    text("You typed: ", 100, 150);
+    text(key, 300, 150);
+    text("Value: " + (key + 0), 120, 250);
+};

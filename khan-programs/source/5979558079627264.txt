@@ -1,0 +1,31 @@
+frameRate(60);
+var s = -3;
+var draw = function() {
+    noStroke();
+    fill(255, 227, 227, 50);
+    rect(-50, -50, 500, 500);
+    
+    fill(255, 255, 209);
+    rect(35, 34, 50, 23, 17);
+    fill(9, 0, 255);
+    text((-frameCount*s) % 360 + "°", 50, 50);
+    
+    var xSL = cos(s*frameCount);
+    var ySL = sin(s*frameCount);
+    if(abs(xSL) < abs(ySL)) {
+        ySL = abs(xSL) * ySL / abs(ySL);
+    } else {
+        xSL = abs(ySL) * xSL / abs(xSL);
+    }
+    
+    pushMatrix();
+        translate(200, 200);
+        noStroke();
+        fill(22, 14, 128);
+        rect(0, 0, xSL*150, ySL*150);
+        
+        stroke(255, 0, 0);
+        strokeWeight(5);
+        point(cos(s*frameCount)*150,sin(s*frameCount)*150);
+    popMatrix();
+};

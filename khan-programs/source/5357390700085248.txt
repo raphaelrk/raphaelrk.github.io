@@ -1,0 +1,40 @@
+colorMode(HSB);
+
+var nodeCount = 360;
+var friendCount = 2;
+var centerX = 200;
+var centerY = 200;
+var radius = 198;
+
+var coordsOfPoint = function(ptNum) {
+    var theta = map(ptNum, 0, nodeCount-1, 0, 360);
+    return new PVector(centerX + radius*cos(theta), centerY + radius*sin(theta));
+};
+
+var coords = [];
+
+for(var i = 0; i < nodeCount; i++) {
+    coords[i] = coordsOfPoint(i);
+}
+
+background(255, 0, 255);
+var draw = function() {
+    if(frameCount >= nodeCount) {
+        //return;
+        frameCount = frameCount % nodeCount;
+    }
+    
+    // draw friends
+    for(var j = 0; j < friendCount; j++) {
+        var friend = (frameCount + floor(nodeCount/(friendCount+1))*(j+1)) % nodeCount;
+        strokeWeight(1);
+        stroke(map(friend, 0, nodeCount-1, 0, 255), 255, 255, 100);
+        //stroke(map(frameCount, 0, nodeCount-1, 0, 255), 255, 255);
+        line(coords[frameCount].x, coords[frameCount].y, coords[friend].x, coords[friend].y); // coords[0].y
+    }
+    
+    // draw point
+    stroke(0, 0, 0);
+    strokeWeight(3);
+    point(coords[frameCount].x, coords[frameCount].y);
+};

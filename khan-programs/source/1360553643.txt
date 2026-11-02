@@ -1,0 +1,117 @@
+var snowmanRotation = 1;
+var snowSize = 10;
+var snowAmount = 49;
+var snowSpeed = 4;
+var snowX = [snowAmount];
+var snowY = [snowAmount];
+var specificSnowSize = [snowAmount];
+/* var snowTypes = {
+    Circle: 0,
+    Triangle: 1,
+    Rectangle: 2
+}; */
+//higher angle = clockwise, lower = ccw
+
+var snowAngle = 0.1;
+
+//var snowGravity = [snowAmount];
+
+for (var i = 0; i < snowAmount; i++) {
+    snowX[i] = round(random(1,399));
+    snowY[i] = round(random(1,399));
+    specificSnowSize[i] = snowSize * random(0.1, 3);
+}
+
+
+
+var draw = function() {
+    // we don't need outlines for any of these shapes
+    noStroke();
+    
+    // the sky
+    background(255, 158, 197);
+    
+    // ground
+    fill(232, 235, 237);
+    rect(0, 329, 400, 71);
+    
+    // set the size of the biggest snowball
+    var snowballSize = 157;
+    
+    // set x coordinate of the snowman
+    var snowmanX = 215;
+    
+    // bottom snowball
+    fill(255, 255, 255);
+    ellipse(snowmanX, 309, snowballSize, snowballSize);
+    
+    // middle snowball shadow
+    fill(240, 240, 240);
+    ellipse(snowmanX, 218, 0.8 * snowballSize, 0.8 * snowballSize);
+
+    // middle snowball
+    fill(255, 255, 255);
+    ellipse(snowmanX, 212, 0.8 * snowballSize, 0.8 * snowballSize);
+
+
+
+    // top snowball shadow
+    fill(240, 240, 240);
+    ellipse(snowmanX, 128, 0.6 * snowballSize, 0.6 *snowballSize);
+    
+    // top snowball
+    fill(255, 255, 255);
+    ellipse(snowmanX, 123, 0.6 * snowballSize, 0.6 *snowballSize);
+    
+    // buttons
+    fill(153, 40, 40);
+    ellipse(snowmanX, 194, 10, 10);
+    ellipse(snowmanX, 222, 10, 10);
+    
+    //nose
+    fill(255, 119, 0);
+    triangle(snowmanX, 136, snowmanX, 147, snowmanX + 25, 151);
+    
+    // set color for eyes, hat, and arms
+    fill(43, 38, 38);
+    
+    // eyes
+    var eyeSize = 12;
+    var distanceFromCenter = 22;
+    ellipse(snowmanX - distanceFromCenter, 129, eyeSize, eyeSize);
+    ellipse(snowmanX + distanceFromCenter, 129, eyeSize, eyeSize);
+    
+    // hat
+    rect(snowmanX - 63, 92, 126, 5);
+    rect(snowmanX - 39, 37, 76, 60);
+    
+    // for the arms, we want a thick line
+    stroke(43, 38, 38);
+    strokeWeight(2);
+    
+    // left arm
+    line(snowmanX - 127, 140, snowmanX - 58, 187);
+    line(snowmanX - 109, 117, snowmanX - 101, 157);
+    line(snowmanX - 132, 171, snowmanX - 91, 165);
+    
+    // right arm
+    line(snowmanX + 61, 192, snowmanX + 135, 144);
+    line(snowmanX + 104, 165, snowmanX + 142, 169);
+    line(snowmanX + 86, 176, snowmanX + 113, 125);
+
+    for (var j = 0; j < snowAmount; j++) {
+        fill(255, 255, 255);
+        ellipse(snowX[j],snowY[j], specificSnowSize[j], specificSnowSize[j]);
+        snowX[j] -= snowSpeed*0.1*specificSnowSize[j]-(-snowAngle*specificSnowSize[j]);
+        snowY[j] += snowSpeed*0.1*specificSnowSize[j]-snowAngle*specificSnowSize[j];
+    
+        if (snowX[j] < 1) {
+            snowX[j] = 399;
+        }
+    
+        if (snowY[j] > 399) {
+            snowX[j] = round(random(1,399));
+            snowY[j] = 1;
+        }
+    }
+};

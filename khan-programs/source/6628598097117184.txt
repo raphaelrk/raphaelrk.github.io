@@ -1,0 +1,183 @@
+// click to add new lines!
+
+var bgColor = color(255, 247, 247);
+var lineColor = color(255, 0, 0);
+var intersectColor = color(125, 87, 201, 150);
+var intersectDiam = 10;
+var randomTriangleCount = 2;
+var e = 0.1; // epsilon - ensures that vertices get counted as intersections
+
+var Line = function(x1, y1, x2, y2) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    
+    this.gX1 = function() { return x1; };
+    this.gX2 = function() { return x2; };
+    this.gY1 = function() { return y1; };
+    this.gY2 = function() { return y2; };
+    this.sX1 = function(val) { x1 = val; };
+    this.sX2 = function(val) { x2 = val; };
+    this.sY1 = function(val) { y1 = val; };
+    this.sY2 = function(val) { y2 = val; };
+
+    // determine if point is in line 'bounds'
+    // simply makes sure the point isn't out of the outer x or y of the line
+    this.pointInBounds = function(px, py) {
+        if(((px < x1-e && px < x2-e) || (px > x1+e && px > x2+e)) && // line1x
+           ((py < y1-e && py < y2-e) || (py > y1+e && py > y2+e))){ // line1y
+            return false;
+        }
+        return true;
+    };
+    
+    // line equations
+    // y - l1[1] = (l1[1]-l1[3])/(l1[0]-l1[2])*(x-l1[0]) first line eq
+    // y - l2[1] = (l2[1]-l2[3])/(l2[0]-l2[2])*(x-l2[0]) second line eq
+    //
+    // x1 = l1[0], y1 = l1[1], x2 = l2[0], y2 = l2[1]
+    // (lN[1]-lN[3])/(lN[0]-lN[2]) = mN
+    // y - y1 = m1*(x-x1) first line eq
+    // y - y2 = m2*(x-x2) second line eq
+    //
+    // intersection
+    // y1 + m1*(x-x1) = y2 + m2*(x-x2)
+    // y1 + m1*x-m1*x1 = y2 + m2*x-m2*x2
+    // x(m1-m2) = y2 - y1 + m1*x1 - m2*x2
+    // x = (y2 - y1 + m1*x1 - m2*x2)/(m1-m2)
+    // y = y1 + m1*(intX-x1)
+    this.getIntersectionWith = function(l) {
+        var x3 = l.gX1(), y3 = l.gY1(); // second line first coordinate
+        
+        var m1 = (y1-y2)/(x1-x2); // first line slope
+        var m2 = (y3-l.gY2())/(x3-l.gX2()); // second line slope
+        
+        // parallels
+        if(m1 === m2) {
+            //println("parallel line detected. m: " + m1);
+            return [null, null];
+        }
+        
+        var intX = (y3 - y1 + m1*x1 - m2*x3)/(m1-m2);
+        var intY = y1 + m1*(intX-x1);
+        
+        return [intX, intY];
+    };
+};
+
+var lines = [];
+
+// line that moves
+var dynamicLine = new Line(-10, -10, -5, -5);
+var dynamicLine2 = new Line(-20, -20, -55, -45); // for final side
+
+// add a bunch of randome lines
+for(var i = 0; i < randomTriangleCount * 3; i++) {
+    if(lines.length % 3 === 0) {
+        lines.push(new Line(random(0, 400), random(0, 400), 
+                        random(0, 400), random(0, 400)));
+    } else if(lines.length % 3 === 1) {
+        lines.push(new Line(lines[lines.length-1].gX2(), lines[lines.length-1].gY2(), 
+                        random(0, 400), random(0, 400)));
+    } else if(lines.length % 3 === 2) {
+        lines.push(new Line(lines[lines.length-1].gX2(), lines[lines.length-1].gY2(), 
+                        lines[lines.length-2].gX1(), lines[lines.length-2].gY1()));
+    } 
+}
+
+var newLineCoords = [];
+
+var draw = function() {
+    noStroke();
+    fill(bgColor);
+    rect(0, 0, 400, 400);
+    
+    // set dynamic line coords
+    if(lines.length % 3 === 0) {
+        if(newLineCoords.length === 0) {
+            dynamicLine.sX1(pmouseX);
+            dynamicLine.sY1(pmouseY);
+        } else {
+            dynamicLine.sX1(newLineCoords[0]);
+            dynamicLine.sY1(newLineCoords[1]);
+        }
+    } else {
+        dynamicLine.sX1(lines[lines.length-1].gX2());
+        dynamicLine.sY1(lines[lines.length-1].gY2());
+    }
+    dynamicLine.sX2(mouseX);
+    dynamicLine.sY2(mouseY);
+    lines.push(dynamicLine);
+    
+    // dynamic line2 for third side
+    if(lines.length % 3 === 2) { // '2' since accounting for dynamicLine
+        dynamicLine2.sX1(mouseX);
+        dynamicLine2.sY1(mouseY);
+        dynamicLine2.sX2(lines[lines.length - 2].gX1());
+        dynamicLine2.sY2(lines[lines.length - 2].gY1());
+        lines.push(dynamicLine2);
+    }
+    
+    for(var i = 0; i < lines.length; i++) {
+        var l = lines[i];
+        
+        // draw line
+        stroke(lineColor);
+        line(l.gX1(), l.gY1(), l.gX2(), l.gY2());
+        
+        // find and draw intersections
+        for(var j = i + 1; j < lines.length; j++) {
+            var lj = lines[j];
+            
+            // calculate intersection
+            var intrsect = l.getIntersectionWith(lj);
+            var intX = intrsect[0];
+            var intY = intrsect[1];
+            
+            var intersectInBound = false;
+            if(intX === null || intY === null) {
+                intersectInBound = false;
+            } else {
+                intersectInBound = (l.pointInBounds(intX, intY) &&
+                                    lj.pointInBounds(intX, intY));
+            }
+            
+            // draw intersection
+            if(intersectInBound) {
+                noStroke();
+                fill(intersectColor);
+                ellipse(intX, intY, intersectDiam, intersectDiam);
+            }
+        }
+    }
+    lines.pop();
+    if(lines.length % 3 === 2) { 
+        lines.pop();
+    }
+};
+
+var mouseClicked = function() {
+    if(lines.length % 3 === 0) {
+        if(newLineCoords.length === 2) {
+             lines.push(new Line(newLineCoords[0], newLineCoords[1], 
+                                    mouseX, mouseY));
+            newLineCoords = [];
+        } else {
+            newLineCoords = [];
+            newLineCoords[0] = mouseX;
+            newLineCoords[1] = mouseY;
+        }
+    } else {
+        if(lines.length % 3 === 1) {
+            lines.push(new Line(lines[lines.length-1].gX2(), 
+                                lines[lines.length-1].gY2(), 
+                                mouseX, mouseY));
+        }
+        
+        lines.push(new Line(lines[lines.length-1].gX2(), 
+                                lines[lines.length-1].gY2(),
+                        lines[lines.length-2].gX1(), lines[lines.length-2].gY1()));
+        newLineCoords = [];
+    }
+};

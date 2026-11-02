@@ -1,0 +1,25 @@
+noStroke();
+frameRate(0);
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data; // canvas pixels
+    
+    var block = 4; // block-size
+    
+    for (var x = 0; x < 400; x+= block) {
+        for (var y = 0; y < 400; y+=block) {
+            var p = noise(x/100, y/100, frameCount/10)*255;
+            
+            for(var xx = x; xx < x + block; xx++) {
+                for(var yy = y; yy < y + block; yy++) {
+                    pix[yy*1600+xx*4] = p; // assign noise to red part of pixel
+                    pix[yy*1600+xx*4+1] = p; // assign noise to g part of pixel
+                    pix[yy*1600+xx*4+2] = p; // assign noise to b part of pixel
+                }
+            }
+        }
+    } 
+    
+    this.updatePixels(); // assign new pixels to canvas
+};

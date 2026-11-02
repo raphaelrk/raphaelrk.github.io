@@ -1,0 +1,114 @@
+/**
+ * Bernstein polynomials
+ * By Raphael Rouvinov-Kats
+ * 
+ * Create curves using bernstein polynomials
+ * https://en.wikipedia.org/wiki/Bernstein_polynomial
+ * E.g. if you have 3 points P1 P2 P3 and you're calculating a curve
+ * C(t) where 0 <= t <= 1
+ * 
+ * C(t) = (1-x)^2 P1 + 2x(1-x) P2 + x^2 P3
+ * */
+
+var num_vertices = 4;
+var vertex_diam = 10;
+var t_step = 0.05;
+
+var vertices = [];
+for (var i = 0; i < num_vertices; i++) {
+    vertices.push([random(0, 400), random(0, 400)]);
+}
+
+var selected_vertex = -1;
+
+// return n choose k using dynamic programming
+var binom_coeff_memo = {};
+var binom_coeff = function(n, k) {
+    binom_coeff_memo[n] = binom_coeff_memo[n] || {};
+    if (n in binom_coeff_memo && k in binom_coeff_memo[n]) {
+        return binom_coeff_memo[n][k];
+    }
+    
+    if (k === 0) {
+        binom_coeff_memo[n][k] = 1;
+    }
+    else if (k === 1 || n === 1) {
+        binom_coeff_memo[n][k] = n;
+    }
+    else if (k > n) {
+        println("ahh @ line 31");
+        return undefined;
+    }
+    else if (k > n/2) {
+        binom_coeff_memo[n][k] = binom_coeff(n, n-k);
+    } 
+    else {
+        binom_coeff_memo[n][k] = n/k * binom_coeff(n-1, k-1);
+    }
+    
+    return binom_coeff_memo[n][k];
+};
+
+// returns whether mouse is over vertex i
+var over_vertex = function(i) {
+    return dist(mouseX, mouseY, vertices[i][0], vertices[i][1]) < vertex_diam/2;
+};
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    // draw line
+    var old_x = vertices[0][0], old_y = vertices[0][1];
+    for (var t = 0; t <= 1.0001; t += t_step) {
+        
+        // calculate coordinates at step t
+        var new_x = 0, new_y = 0;
+        for (var i = 0; i < vertices.length; i++) {
+            new_x += binom_coeff(vertices.length-1, i) * 
+                     pow(t, i) *
+                     pow(1-t, vertices.length-i-1) * vertices[i][0];
+            new_y += binom_coeff(vertices.length-1, i) * 
+                     pow(t, i) *
+                     pow(1-t, vertices.length-i-1) * vertices[i][1];
+        }
+        
+        stroke(map(t,0,1,0,255), 0, 0);
+        line(old_x, old_y, new_x, new_y);
+        old_x = new_x;
+        old_y = new_y;
+    }
+    
+    // draw points, stroke if hovered over or selected
+    for (var i = 0; i < vertices.length; i++) {
+        fill(map(i, 0, vertices.length-1, 0, 255), 0, 0);
+        noStroke();
+        
+        if (selected_vertex === i) {
+            stroke(0, 255, 89);
+        }
+        else if (selected_vertex === -1 && over_vertex(i)) {
+            stroke(60, 0, 255);
+        }
+        
+        ellipse(vertices[i][0], vertices[i][1], vertex_diam, vertex_diam);
+    }
+    
+    // move selected vertex
+    if (selected_vertex !== -1) {
+        vertices[selected_vertex][0] = mouseX;
+        vertices[selected_vertex][1] = mouseY;
+    }
+    
+};
+
+var mousePressed = function() {
+    for (var i = 0; i < vertices.length; i++) {
+        if (over_vertex(i)) {
+            selected_vertex = i;
+        }
+    }
+};
+
+var mouseReleased = function() {
+    selected_vertex = -1;
+};

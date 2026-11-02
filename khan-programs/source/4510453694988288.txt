@@ -1,0 +1,70 @@
+/**
+ * snoranges
+ * by Raphael Rouvinov-Kats
+ * 
+ * draws snoranges
+ * round, seven sided objects with 4 corners
+ * that look like oranges
+ * and have a large range of snoring
+ * */
+
+var Snorange = function() {
+    this.r = random(5, 30);
+    this.d = this.r*2;
+    this.x = random(this.r, width - this.r);
+    this.y = random(this.r, height - this.r);
+    this.dx = random(-10, 10);
+    this.dy = random(-10, 10);
+};
+
+Snorange.prototype.draw = function() {
+    stroke(255, 102, 0);
+    fill(255, 170, 0);
+    ellipse(this.x, this.y, this.d, this.d);
+    
+    var rectR = this.r / sqrt(2);
+    var rectD = rectR*2;
+    rect(this.x - rectR, this.y - rectR, rectD, rectD);
+    
+    line(this.x-rectR/2, this.y-1, this.x+rectR/2, this.y-1);
+    line(this.x-rectR/2, this.y+1, this.x+rectR/2, this.y+1);
+    
+    fill(255, 255, 255);
+    textFont(createFont("Tahoma"), 18);
+    text('z', this.x - 4, this.y + 4);
+};
+
+Snorange.prototype.move = function() {
+    this.x += this.dx;
+    this.y += this.dy;
+    
+    if(this.x < this.r) {
+        this.dx = abs(this.dx);
+        this.x = this.r;
+    }
+    if(this.x >= width - this.r) {
+        this.dx = -abs(this.dx);
+        this.x = width - this.r;
+    }
+    if(this.y < this.r) {
+        this.dy = abs(this.dy);
+        this.y = this.r;
+    }
+    if(this.y >= height - this.r) {
+        this.dy = -abs(this.dy);
+        this.y = height - this.r;
+    }
+};
+
+var snoranges = [];
+
+for(var i = 0; i < 100; i++) {
+    snoranges[i] = new Snorange();
+}
+
+var draw = function() {
+    for(var i = 0; i < snoranges.length; i++) {
+        snoranges[i].move();
+        snoranges[i].draw();
+    }
+};

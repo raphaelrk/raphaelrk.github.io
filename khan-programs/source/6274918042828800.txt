@@ -1,0 +1,138 @@
+colorMode(HSB);
+
+var message = ["Happy", "Mother's", "Day!", "You", "bring", "us", "so", "much", "joy,", "you", "care", "for", "us,", "and", "you", "love", "us", "and", "we", "want", "you", "to", "know", "we're", "grateful", "for a", "mom", "like", "you.", "Love,", "Claire,", "Rafi,", "and", "Papa"];
+var mIndex = 0;
+
+var lastFrameTime = millis();
+var timeSinceLastFrame = 0;
+
+var grav = 100;
+
+var bgVal = 30;
+
+var textFirework = function(destX, destY, message) {
+    this.message = message;
+    var msgCol = color(random(20, 40), 255, 255, 100);
+    var x1 = destX;
+    var y1 = destY;
+    var x0 = random(0, 400);
+    var y0 = 400;
+    var grav = 2*(y0 - y1);
+    
+    var x = x0;
+    var y = y0;
+    
+    var eta = 1000;
+    var start = millis();
+    var end = start + eta;
+    
+    var splits = [];
+    
+    for(var i = 0; i < 100; i++) {
+        splits.push([random(x1-10, x1+10),random(y1-10,y1+10)]); // Pos-0
+        
+        var xLessThanX1 = (splits[i][0]<x1)?true:false;
+        if(xLessThanX1) {
+            splits[i].push(random(-50, 0)); // Vxo
+        } else {
+            splits[i].push(random(0, 50)); // Vxo
+        }
+        
+        var yLessThanY1 = (splits[i][1]<y1)?true:false;
+        if(yLessThanY1) {
+            splits[i].push(random(-200, 0)); // Vyo
+        } else {
+            splits[i].push(random(0, 10)); // Vyo
+        }
+    }
+    
+    this.update = function() {
+        var t = (millis() - start) / eta;
+        x = x0 + t*(x1 - x0);
+        y = y0 + t*(y1 - y0 - 0.5*grav) + 0.5*grav*t*t;
+        
+        if(t > 1) {
+            for(var i = 0; i < splits.length; i++) {
+                splits[i][0] += splits[i][2]/1000*timeSinceLastFrame;
+                splits[i][1] += splits[i][3]/1000*timeSinceLastFrame;
+                splits[i][3] += grav/1000*timeSinceLastFrame;
+            }
+        }
+    };
+    
+    this.draw = function() {
+        var t = (millis() - start) / eta;
+        if(t < 1) {
+            var dy = (y1 - y0 - 0.5*grav + grav*t)/1000*timeSinceLastFrame;
+            var dx = (x1 - x0)/1000*timeSinceLastFrame;
+            
+            strokeWeight(min(y/y1*2, 30));
+            stroke(y1/y*40, 255, 255, 100);
+            line(x, y, x+dx, y+dy);
+        } else if(t < 10) {
+            stroke(0, 0, 0, 50);
+            fill(msgCol);
+            
+            var textS = -50 + floor(t * 50);
+            textFont(createFont("Tahoma"), textS);
+            text(message, x - textS/2, y1 - (y1 - y)/10);
+            
+            for(var i = 0; i < splits.length; i++) {
+                stroke(random(0, 255), 255, 255, 50);
+                strokeWeight(random(0.1, 2));
+                line(splits[i][0], splits[i][1], 
+                    splits[i][0]+splits[i][2]/1000*timeSinceLastFrame, 
+                    splits[i][1]+splits[i][3]/1000*timeSinceLastFrame);
+            }
+        }
+    };
+    
+    this.remove = function() {
+        var t = (millis() - start) / eta;
+        return (t > 10);
+    };
+};
+
+var tfws = [];
+
+tfws.push(new textFirework(200, 200, "MAMA!"));
+
+background(65, 200, bgVal);
+
+var draw = function() {
+    noStroke();
+    fill(65, 200, bgVal, 10);
+    rect(0, 0, 400, 400);
+    for(var i = 0; i < 100; i++) {
+        fill(65 + random(-20, 20), 
+            200 + random(-20, 20), 
+            bgVal + random(-20, 20), 10);
+        ellipse(random(0, 400), random(0, 400),
+                random(10, 200), random(10, 200));
+    }
+    
+    timeSinceLastFrame = millis() - lastFrameTime;
+    lastFrameTime = millis();
+    
+    var fwIndex = 0;
+    while(fwIndex < tfws.length) {
+        var fw = tfws[fwIndex];
+        fw.update();
+        fw.draw();
+        
+        if(fw.remove()) {
+            tfws.splice(fwIndex, 1);
+        } else {
+            fwIndex++;
+        }
+    }
+};
+
+var mouseClicked = function() {
+    tfws.push(new textFirework(mouseX, mouseY, message[mIndex]));
+    mIndex++;
+    if(mIndex === message.length) {
+        mIndex = 0;
+    }
+    bgVal = min(200, bgVal + 7);
+};

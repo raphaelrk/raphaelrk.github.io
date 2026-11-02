@@ -1,0 +1,72 @@
+// I (Raphael) wrote this but forgot to sign in...
+// thank you copy-paste,
+// no thank you KhanAcademy for not letting me sign in to
+// save my program under my name when I forget to log in
+
+// this spinoff uses sines, cosines, and variables
+// instead of hard-coding in values
+// and reorganizes the program
+
+// values that are adjustable
+var lineAmount = 8;
+var amountAtOnce = 3;
+var originx = 200;
+var originy = 200;
+var lineLength = 100;
+var ellipseXDiameter = 60; // middle circle size
+var ellipseYDiameter= 60;
+frameRate(10); //speed
+strokeWeight(7); // line thickness
+var bgR = 255; // background color
+var bgG = 250;
+var bgB = 250;
+var lineMinR = 0; // this number is always added to the
+                  // line's R stroke value
+var lineMinG = 0;
+var lineMinB = 20;
+var lineMaxR = 250; // this is the maximum value for the
+                    // line's R stroke value before counting
+                    // the addition of lineMinR
+var lineMaxG = 225;
+var lineMaxB = 225;
+
+
+
+// original credit:
+// "V.1.0 loading animation. Please give credit to me
+// (AGuyWhoSkis) if you are going to use it."
+
+var rev = 360; // "revolution"
+var counter = 1;
+
+var draw = function() {
+    background(bgR, bgG, bgB);
+
+    for(var i = 0; i < amountAtOnce; i++) {
+      stroke(lineMaxR/amountAtOnce*i + lineMinR, 
+             lineMaxG/amountAtOnce*i + lineMinG, 
+             lineMaxB/amountAtOnce*i + lineMinB);
+      line(originx,originy,
+        originx-cos(counter*rev/lineAmount - 
+                    rev/lineAmount*i)*lineLength,
+        originy-sin(counter*rev/lineAmount - 
+                    rev/lineAmount * i)*lineLength);
+    }
+    
+    // ellipse that hides the middle
+    fill(bgR, bgG, bgB);
+    noStroke();
+    ellipse(originx,originy,
+            ellipseXDiameter,ellipseYDiameter);
+    
+    // counter increment
+    counter += 1; 
+    if (counter > lineAmount) {
+        counter = 1;
+    }
+    
+    // upper-left counter text
+    fill(255, 0, 0);
+    textSize(10);
+    text(counter, 0, 7);
+};

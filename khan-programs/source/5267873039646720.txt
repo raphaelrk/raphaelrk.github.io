@@ -1,0 +1,14 @@
+colorMode(HSB);
+background(0, 0, 0);
+translate(200, 200);
+
+for(var a = 0; a < 720; a++) {
+    fill(abs(a-360)/360*255, 255, 363, 40);
+    pushMatrix();
+    rotate(a);
+    noStroke();
+    
+    ellipse(0, 150, 20, 400-150*2);
+    
+    popMatrix();
+}

@@ -1,0 +1,57 @@
+/**
+ * Father's Day 2k16
+ * 
+ * Inspired by https://beesandbombs.tumblr.com/post/110813152664/dot-line-wave#notes
+ * */
+
+var rowAmount = 30;
+var colAmount = 30;
+
+var pointFromColAndRow = function(row, col) {
+    var widthBeyond = 800;
+    var heightBeyond = 800;
+    var x = col * widthBeyond / colAmount - (widthBeyond - width)/2;
+    var y = row * heightBeyond / rowAmount - (heightBeyond - height)/2;
+    
+    var xFromCenter = x - width/2;
+    var yFromCenter = y - height/2;
+    var distFromCenter = dist(0, 0, xFromCenter, yFromCenter);
+    
+    x = 200 + xFromCenter * (1.0 + 0.2*sin(frameCount*4 + distFromCenter));
+    y = 200 + yFromCenter * (1.0 + 0.2*sin(frameCount*4 + distFromCenter));
+    
+    return [x, y];
+};
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    for(var r = 0; r < rowAmount; r++) {
+        for(var c = 0; c < colAmount; c++) {
+            strokeWeight(2);
+            var centerPoint = pointFromColAndRow(c, r);
+            point(centerPoint[0], centerPoint[1]);
+            
+            strokeWeight(0.1);
+            var leftPoint = pointFromColAndRow(c - 1, r + 2);
+            var topPoint = pointFromColAndRow(c - 2, r - 1);
+            line(centerPoint[0], centerPoint[1], leftPoint[0], leftPoint[1]);
+            line(centerPoint[0], centerPoint[1], topPoint[0], topPoint[1]);
+        }
+    }
+    
+    textAlign(CENTER);
+    textFont(createFont("Tahoma"), 32);
+    
+    fill(255, 0, 0, frameCount);
+    text("Happy Father's Day!", width/2, height/2 - 84);
+    
+    fill(17, 0, 255, frameCount - 127);
+    text("Love you papa :)", width/2, height/2 - 36);
+    
+    fill(0, 143, 5, frameCount - 255);
+    text("Thank you\nFor being a great dad", width/2, height/2 + 24);
+    
+    fill(255, 183, 0, frameCount - 382);
+    text("♥", width/2, height/2 + 120);
+};

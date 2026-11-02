@@ -1,0 +1,138 @@
+/**
+ * Stardust Waypoints
+ * By Raphael Rouvinov-Kats
+ * Based on http://wonderfl.net/c/6Z8A
+ * */
+ 
+var wayR = 20;
+var waypointsAmount = 7;
+
+colorMode(HSB, 1000);
+var waypoints = [];
+var stars = []; // [x, y, lastWaypoint]
+
+var Star = function(x, y) {
+    this.x = x;
+    this.y = y;
+    var lastWaypoint = 0;
+    var nextWaypoint = waypoints[lastWaypoint + 1];
+    var dx = (nextWaypoint.getX() - x) * random(0.05, 0.06);
+    var dy = (nextWaypoint.getY() - y) * random(0.05, 0.06);
+    var speed = random(1, 10);
+    
+    this.update = function() {
+        dx = (nextWaypoint.getX() - x);
+        dy = (nextWaypoint.getY() - y);
+        dx = dx/abs(dx) * speed;
+        dy = dy/abs(dy) * speed;
+        x += dx;
+        y += dy;
+        
+        if(dist(x, y, nextWaypoint.getX(), nextWaypoint.getY()) < wayR) {
+            lastWaypoint++;
+            if(lastWaypoint === waypoints.length - 1) { // hit last waypoint
+                return true; // remove
+            }
+            nextWaypoint = waypoints[lastWaypoint + 1];
+            dx = (nextWaypoint.getX() - x) * random(0.05, 0.06);
+            dy = (nextWaypoint.getY() - y) * random(0.05, 0.06);
+        }
+        if(dist(x, y, 200, 200) > 200*sqrt(2)) {
+            return true;
+        }
+        return false;
+    };
+    
+    this.draw = function(num) {
+        stroke((frameCount + num) % 1000, 1000, 1000);
+        point(x, y);
+    };
+    
+    this.getX = function() { return x; };
+    this.getY = function() { return y; };
+};
+
+var Waypoint = function(x, y) {
+    this.x = x;
+    this.y = y;
+    var dx = random(-1, 1);
+    var dy = random(-1, 1);
+    var r = wayR;
+    
+    this.draw = function(num) {
+        fill(1000, 1000, 1000, 0);
+        stroke(num * 1000 / waypointsAmount, 1000, 1000);
+        ellipse(x, y, r, r);
+    };
+    
+    this.update = function() {
+        x += dx;
+        y += dy;
+        
+        if(x >= 400 - wayR || x < wayR) {
+            dx = -dx;
+        }
+        if(y >= 400 - wayR || y < wayR) {
+            dy = -dy;
+        }
+        
+        if(mouseIsPressed) {
+            if(dist(x, y, mouseX, mouseY) < r) {
+                x = mouseX;
+                y = mouseY;
+            }
+        }
+    };
+    
+    this.getX = function() { return x; };
+    this.getY = function() { return y; };
+};
+
+for(var i = 0; i < waypointsAmount; i++) {
+    waypoints.push(new Waypoint(random(wayR, 400 - wayR), random(wayR, 400 - wayR)));
+}
+
+var draw = function() {
+    // update waypoints
+    for(var i = 0; i < waypoints.length; i++) {
+        waypoints[i].update();
+    }
+    
+    // add stars
+    for(var i = random(0, 10); i >= 0; i--) {
+        var x = waypoints[0].getX() + random(-10, 10);
+        var y = waypoints[0].getY() + random(-10, 10);
+        stars.push(new Star(x, y));
+    }
+    
+    // update/delete stars
+    for(var i = 0; i < stars.length; i++) {
+        var remove = stars[i].update();
+        if(remove) {
+            stars.splice(i, 1);
+            i--;
+        }
+    }
+    
+    // draw background
+    noStroke();
+    fill(0, 0, 0, 200);
+    rect(0, 0, 400, 400);
+    
+    // draw stars
+    for(var i = 0; i < stars.length; i++) {
+        stars[i].draw(i);
+    }
+    
+    filter(BLUR);
+    
+    // draw waypoints
+    for(var i = 0; i < waypoints.length; i++) {
+        waypoints[i].draw(i);
+    }
+    
+    // text
+    fill(0, 0, 1000);
+    text(stars.length, 10, 10);
+    
+};

@@ -1,0 +1,38 @@
+/* Unicode
+ * By Raphael Rouvinov-Kats
+ * 
+ * DRAG TO VIEW MORE!
+ * */
+
+// feel free to change these variables
+var textS = 20; // text size
+var font = "tahoma";
+var textSpacing = 1.2;
+var startY = 0;
+var scrollSpeed = 10.0;
+//////////////////
+
+textFont(createFont(font), textS);
+var charsPerLine = 400 / textS / textSpacing;
+var yScroll = startY;
+
+var draw = function() {
+    background(252, 252, 252);
+    
+    fill(0, 0, 0);
+    
+    var rStart = floor(yScroll/textS/textSpacing);
+    for(var r = rStart; r < rStart+charsPerLine+1; r++) {
+        for(var c = 0; c < charsPerLine; c++) {
+            var x = c * textS * textSpacing;
+            var y = r * textS * textSpacing - yScroll;
+            var i = c + r*charsPerLine;
+            text(String.fromCharCode(i), x, y);
+        }
+    }
+};
+
+var mouseDragged = function() {
+    var dy = mouseY - pmouseY;
+    yScroll -= dy*scrollSpeed;
+};

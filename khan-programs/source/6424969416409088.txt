@@ -1,0 +1,93 @@
+var lineList = [[49, 298, 70, 132], [70, 132, 100, 200], [100, 200, 130, 132], [130, 132, 151, 298],
+                [170, 200, 200, 130], [200, 130, 230, 200], [200, 270, 230, 200], [170, 200, 200, 270],
+                [249, 298, 270, 132], [270, 132, 300, 200], [300, 200, 330, 132], [330, 132, 351, 298]];
+
+var bubbles = [];
+
+for(var i = 0; i < 2000; i++) {
+    bubbles[i] = [random(0, width), random(0, height)];
+}
+
+var moveCloserToPoint = function(b, x, y) {
+    var strength = 0.1;
+    var d = 1;
+    
+    if(x > b[0] && x - b[0] <  d) { x = b[0] + d; }
+    if(x < b[0] && x - b[0] > -d) { x = b[0] - d; }
+    if(y > b[1] && y - b[1] <  d) { y = b[1] + d; }
+    if(y < b[1] && y - b[1] > -d) { y = b[1] - d; }
+    
+    b[0] += strength * (x - b[0]); //d / (x - b[0]);
+    b[1] += strength * (y - b[1]); //d / (y - b[1]);
+    
+    b[0] += random(-2, 2);
+    b[1] += random(-2, 2);
+};
+
+var draw = function() {
+    background(frameCount % 255, 44, 255);
+    for(var i = 0; i < lineList.length; i++) {
+        var l = lineList[i];
+        stroke(0, 0, 0);
+        line(l[0], l[1], l[2], l[3]);
+    }
+    
+    for(var i = 0; i < bubbles.length; i++) {
+        colorMode(HSB);
+        noStroke();
+        fill(i/bubbles.length * 255, 255, 255, 100);
+        ellipse(bubbles[i][0], bubbles[i][1], 20, 20);
+    }
+    
+    textFont(createFont("Tahoma"), 64);
+    fill(frameCount % 255, 255, 255);
+    textAlign(CENTER);
+    text("LOVE YOU", width/2, 76);
+    
+    for(var i = 0; i < bubbles.length; i++) {
+        var b = bubbles[i];
+        
+        var closestX = lineList[0][0];
+        var closestY = lineList[0][1];
+        for(var j = 0; j < lineList.length; j++) {
+            var l = lineList[j];
+            //var xAttr = random(l[0], l[2]);
+            //var yAttr = map(xAttr, l[0], l[2], l[1], l[3]);
+            
+            // http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+            // m = y2 - y1  /  x2 - x1
+            // y - y1 = m(x - x1)
+            // y - y1 = mx - mx1
+            // -mx + y = -mx1 + y1
+            // mx - y = mx1 - y1
+            // mx - y + (y1 - mx1) = 0
+            
+            var m = (l[3] - l[1]) / (l[2] - l[0]);
+            var a_const = m;
+            var b_const = -1;
+            var c_const = l[1] - m * l[0];
+            
+            var closeX =(b_const * (b_const * b[0] - a_const * b[1]) - a_const*c_const) /
+                        (a_const*a_const + b_const*b_const);
+            
+            var closeY =(a_const * (-b_const* b[0] + a_const * b[1]) - b_const*c_const) /
+                        (a_const*a_const + b_const*b_const);
+                        
+            if(closeX < l[0]) {closeX = l[0]; closeY = l[1];}
+            if(closeX > l[2]) {closeX = l[2]; closeY = l[3];}
+            //if(closeY < l[0]) {closeX = l[0]; closeY = l[1];}
+            //if(closeY > l[2]) {closeX = l[2]; closeY - l[3];}
+            
+            if(dist(b[0], b[1], closeX, closeY) < dist(b[0], b[1], closestX, closestY)) {
+                closestX = closeX;
+                closestY = closeY;
+            }
+        }
+        if(dist(b[0], b[1], mouseX, mouseY) < dist(b[0], b[1], closestX, closestY) + 20) {
+            closestX = mouseX;
+            closestY = mouseY;
+        }
+        
+        moveCloserToPoint(b, closestX, closestY);
+    }
+};

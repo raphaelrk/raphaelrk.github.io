@@ -1,0 +1,150 @@
+/**
+ * Ball bouncer
+ * By Raphael Rouvinov-Kats
+ * 
+ * In this program I demonstrate rudimentary ball-to-line collision
+ * detection and response
+ * */
+
+var Ball = function(x, y, dx, dy, radius) {
+    this.pos = new PVector(x, y);
+    this.vel = new PVector(dx, dy);
+    this.radius = radius;
+};
+
+// thanks to chmike's answer to this StackOverflow question
+// http://stackoverflow.com/questions/1073336/circle-line-collision-detection
+Ball.prototype.collidesWith = function(lineObj) {
+    // point A is the first position on the line
+    // point B is the second position on the line
+    // point C is the center of the circle
+    // AB is the vector from A to B
+    // AC is the vector from A to C
+    var AB = lineObj.AB;
+    var AC = new PVector();
+        AC.add(lineObj.A);
+        AC.sub(this.pos);
+    
+    // compute the triangle area times 2 (area = area2/2)
+    var area2 = abs(AB.x*AC.y - AC.x*AB.y);
+    //
+    // compute the AB segment length
+    var LAB = AB.mag();
+    
+    // compute the triangle height
+    var h = area2/LAB;
+    
+    // if the line intersects the circle
+    if( h < this.radius ) {
+        // if the ray intersects the circle (not in the stackoverflow answer)
+        if((this.pos.x > lineObj.A.x && this.pos.x < lineObj.B.x) ||
+           (this.pos.y > min(lineObj.A.y, lineObj.B.y) && 
+            this.pos.y < max(lineObj.A.y, lineObj.B.y))) {
+            return true;
+        }
+    }
+    
+    // else
+    return false;
+};
+
+// following a 'true' result from collision detection, this method is run to find
+// what angle the ball will go following the collision
+// thanks to Tommy's answer on this StackOverflow question
+// http://stackoverflow.com/questions/4523434/calculate-angle-of-moving-ball-after-collision-with-angled-or-sloped-wall-that-i
+Ball.prototype.calculateResultantAngle = function(lineObj) {
+    // point A is the first position on the line
+    // point B is the second position on the line
+    // AB is the vector from A to B\
+    var AB = lineObj.AB;
+    
+    // ABnormal is the normal to AB, normalized
+    var ABnormal = new PVector();
+        ABnormal.add(lineObj.ABnormal);
+        ABnormal.normalize();
+        
+    var distanceAlongNormal = this.vel.dot(ABnormal);
+    
+    this.vel.x -= 2.0 * distanceAlongNormal * ABnormal.x;
+    this.vel.y -= 2.0 * distanceAlongNormal * ABnormal.y;
+};
+
+Ball.prototype.move = function() {
+    // switch x speed if past left or right canvas bounds
+    if(this.pos.x >= width - this.radius || this.pos.x < this.radius) {
+        this.pos.x = constrain(this.pos.x, 0, 400);
+        this.vel.x = -this.vel.x;
+    }
+    
+    // switchy speed if past top or bottom canvas bounds
+    if(this.pos.y >= height - this.radius || this.pos.y < this.radius) {
+        this.pos.y = constrain(this.pos.y, 0, 400);
+        this.vel.y = -this.vel.y;
+    }
+    
+    this.pos.add(this.vel);
+};
+
+Ball.prototype.draw = function() {
+    var diameter = this.radius * 2;
+    ellipse(this.pos.x, this.pos.y, diameter, diameter);
+};
+
+var Line = function(x1, y1, x2, y2) {
+    if(x1 > x2) {
+        var t = x1; x1 = x2; x2 = t;
+            t = y1; y1 = y2; y2 = t;
+    }
+    
+    // line points A (x1, y1) and B (x2, y2)
+    this.A = new PVector(x1, x2);
+    this.B = new PVector(x2, y2);
+    
+    var AB = new PVector();
+        AB.add(this.A);
+        AB.sub(this.B);
+    
+    // vector between points A and B
+    this.AB = AB;
+    
+    // the normal of vector AB
+    this.ABnormal = new PVector(-AB.y, AB.x);
+};
+
+Line.prototype.draw = function() {
+    line(this.A.x, this.A.y, this.B.x, this.B.y);
+};
+
+var ballObj = new Ball(200, 100, 5, 5, 10);
+
+var lines = [];
+for(var i = 0; i < 10; i++) {
+    lines.push(new Line(random(0,400), random(0,400), 
+                        random(0,400), random(0,400)));
+}
+
+var draw = function() {
+    background(245, 245, 245);
+    
+    // move the ball
+    ballObj.move();
+    
+    // detect, calculate and respond to collision
+    for(var i = 0; i < lines.length; i++) {
+        var lineObj = lines[i];
+        if(ballObj.collidesWith(lineObj)) {
+            ballObj.calculateResultantAngle(lineObj);
+        }
+    }
+    
+    // draw the ball
+    noStroke();
+    fill(78, 113, 173);
+    ballObj.draw();
+    
+    // draw the lines
+    for(var i = 0; i < lines.length; i++) {
+        stroke(random(127), random(127), random(255));
+        lines[i].draw();
+    }
+};

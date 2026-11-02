@@ -1,0 +1,35 @@
+var drawTiles = function(tileW, tileH) {
+    tileW = floor(tileW);
+    tileH = floor(tileH);
+    noStroke();
+    for(var x = 0; x <= 400; x+= tileW) {
+        var c = x / tileW;
+        for(var y = 0; y <= 400; y+= tileH) {
+            var r = y / tileH;
+            var colour = ((r+c)%2 === 0) ? 255 : 0;
+            fill(colour, colour, colour, 100);
+            rect(x, y, tileW, tileH, dist(x, y, 200, 200) / 10);
+        }
+    }
+};
+
+var speed=0.01;
+
+var draw = function() {
+    background(0, 66, 13);
+    
+    // getting random numbers for tile width and height
+    // initial noiseVal var is between 0 and 1, usually around 0.5
+    var noiseVal = noise(frameCount*speed, 200*speed);
+    
+    // takes noiseVal's dist from .5 (between 0 and 0.5) and multiplies and shifts it
+    // range from 5 to 405
+    noiseVal = abs(0.5 - noiseVal)*800 + 5;
+    
+    // drawing the tiles
+    drawTiles(noiseVal, noiseVal);
+    
+    // covering tiles with green overlay
+    // fill(136, 238, 7, 100);
+    // rect(0, 0, 400, 400);
+};

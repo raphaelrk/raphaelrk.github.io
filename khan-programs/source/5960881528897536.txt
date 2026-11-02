@@ -1,0 +1,153 @@
+/**
+ * Advanced Scene Architecture
+ * By Raphael Rouvinov-Kats
+ * 
+ * This program shows a clean, clear way of creating scenes for program
+ * 
+ * Every scene is it's own program, with everything being as if it was a regular program
+ * 
+ * draw, mouse  functions, and keyboard functions have to be written like "this.draw" instead
+ * of "var draw"
+ * 
+ * to change scenes, one simply calls setScene(SceneDesired);
+ * 
+ * Hope this is handy <3
+ * 
+ * based off a similar system I used at
+ * https://www.khanacademy.org/cs/BYTE%20ME%20SUBMISSIONS/6114950898778112
+ * to put together lots of peoples' various programs
+ * without having to look through all their code -
+ * I just wanted the ability for the programs to work just by my pasting them in
+ * */
+
+// scene variables must be declared at the top, filled later
+// since they might refer to each other in scene changes
+var scene;
+var MainMenuScene, SettingsScene, PlayScene;
+
+var orangeColor = color(201, 103, 32);
+var blueColor = color(139, 174, 199);
+
+/** 
+ * sets/resets scene to be the sceneObject
+ * 
+ * resets coloring, text, angle, framerate, and transformation changes
+ * doesn't reset changes to random or noise
+ * */
+var setScene = function(sceneObject) {
+    // reset colors
+    colorMode(RGB, 255);
+    background(255, 255, 255);
+    fill(255, 255, 255);
+    stroke(0, 0, 0);
+    strokeWeight(1);
+    
+    // reset text
+    textFont(createFont("sans-serif"), 12);
+    textAlign(LEFT, BOTTOM);
+    
+    // reset angle mode
+    angleMode = "degrees";
+    
+    // reset framerate and transformation
+    frameRate(30);
+    resetMatrix();
+    
+    // reset to loop mode
+    loop();
+    
+    // set the scene to be one of sceneObject
+    scene = new sceneObject();
+};
+
+MainMenuScene = function() {
+    // just like in a normal program, the below lines are called as soon as you make the scene a
+    // MainMenuScene
+    noStroke();
+    textAlign(CENTER);
+    textFont(createFont("Tahoma"), 48);
+    
+    var drawLeft = function() {
+        fill(blueColor);
+        rect(0, 0, width/2, height);
+        
+        fill(orangeColor);
+        text("settings", width/4, height/4);
+    };
+    
+    var drawRight = function() {
+        fill(orangeColor);
+        rect(width/2, 0, width/2, height);
+        
+        fill(blueColor);
+        text("play", width*3/4, height/4);
+    };
+    
+    this.draw = function() {
+        drawLeft();
+        drawRight();
+    };
+    
+    this.mouseClicked = function() {
+        if(mouseX < width/2) {
+            setScene(SettingsScene);
+        } else {
+            setScene(PlayScene);
+        }
+    };
+};
+
+SettingsScene = function() {
+    noStroke();
+    textAlign(CENTER);
+    textFont(createFont("Tahoma"), 48);
+    
+    this.draw = function() {
+        background(blueColor);
+        
+        fill(orangeColor);
+        text("click to go back", width/2, height/2);
+    };
+    
+    this.mouseClicked = function() {
+        setScene(MainMenuScene);
+    };
+};
+
+PlayScene = function() {
+    noStroke();
+    textAlign(CENTER);
+    textFont(createFont("Tahoma"), 48);
+    
+    this.draw = function() {
+        background(orangeColor);
+        
+        fill(blueColor);
+        text("click to go back", width/2, height/2);
+    };
+    
+    this.mouseClicked = function() {
+        setScene(MainMenuScene);
+    };
+};
+
+/** set the inital scene to MainMenuScene **/
+setScene(MainMenuScene);
+
+/** draw function just calls the scene's draw function **/
+draw = function() {
+    scene.draw();
+};
+
+/** Mouse and keyboard interactions will call the scene's respective mouse/keyboard function **/
+var mouseClicked = function(){ scene.mouseClicked(); };
+var mousePressed = function(){ scene.mousePressed(); };
+var mouseReleased = function(){ scene.mouseReleased(); };
+var mouseMoved = function(){ scene.mouseMoved(); };
+var mouseDragged = function(){ scene.mouseDragged(); };
+var mouseOver = function(){ scene.mouseOver(); };
+var mouseOut = function(){ scene.mouseOut(); };
+var keyPressed = function(){ scene.keyPressed(); };
+var keyReleased = function(){ scene.keyReleased(); };
+var keyTyped = function(){ scene.keyTyped(); };
+var keyPressed = function(){ scene.keyPressed(); };

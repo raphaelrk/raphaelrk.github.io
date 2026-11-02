@@ -1,0 +1,21 @@
+var lastMouseX = 0;
+var lastMouseY = 0;
+var count = 0;
+
+var draw = function() {
+    fill(sin(count)*20, sin(count)*20, cos(count)*50+50, 50);
+    strokeWeight(10);
+    rect(0, 0, 400, 400);
+    if(mouseIsPressed) {
+        strokeWeight(dist(mouseX, mouseY, lastMouseX, lastMouseY)/10);
+        stroke(random(100, sin(count)*50+200), 150, 0);
+        line(lastMouseX, lastMouseY, mouseX, mouseY);
+        line(-lastMouseX+400,lastMouseY,-mouseX+400, mouseY);
+        line(lastMouseX,-lastMouseY+400,mouseX,-mouseY+400);
+        line(-lastMouseX + 400, -lastMouseY + 400, 
+             -mouseX + 400, -mouseY + 400);
+    }
+    lastMouseX = mouseX;
+    lastMouseY = mouseY;
+    count++;
+};

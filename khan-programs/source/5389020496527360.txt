@@ -1,0 +1,28 @@
+/**
+ * squiggly line
+ * By Raphael Rouvinov-Kats
+ * */
+
+var res = 8;
+var amp = 20;
+var offset = 0;
+var period = 4;
+
+var f = function(x) {
+    return 200 +  sin(period*x + offset)*amp;
+};
+
+var draw = function() {
+    background(255, 255, 255);
+    offset = frameCount;
+    
+    for(var x = 0; x < 400; x+=res) {
+        var x1 = x;
+        var x2 = x + res;
+        
+        var y1 = f(x1);
+        var y2 = f(x2);
+        
+        line(x1, y1, x2, y2);
+    }
+};

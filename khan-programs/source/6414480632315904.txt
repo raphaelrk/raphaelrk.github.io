@@ -1,0 +1,21 @@
+/**
+ * Never Let Me Go Cottages
+ * By Raphael Rouvinov-Kats
+ * 
+ * Created for my english class art project
+ * on Never Let Me Go by Kazuo Ishiguro
+ * 
+ * Quotes:
+ * "The Cottages were the remains of a farm that had gone out of business years before. There was an old farmhouse, and around it, barns, outhouses, stables all converted for us to live in. There were other buildings, usually the outlying ones, that were virtually falling down, which we couldn’t use for much, but for which we felt in some vague way responsible" (116)
+ * 
+ * "The old farmhouse-the heart of the Cottages-had a number of fireplaces where we could burn the split logs stacked in the outer barns. Otherwise we had to make do with big boxy heaters." (117)
+ * 
+ * "surrounding countryside... nearby village" (118)
+ * "that sunny day the minibus dropped us in front of the farmhouse, circled round the little pond and disappeared up the slope. We could see hills in the distance that reminded us of the ones in the distance at Hailsham, but they seemed to us oddly crooked." (118)
+ * 
+ * "beatiful and cosy, with overgrown grass everywhere" (119)
+ * 
+ * "my room at... the Black Barn" (126)
+ * 
+ * "he put the mags down on top of some bricks stacked outside the boiler hut–some veterans had tried to build a barbecue there a few months earlier" (133)
+ * */

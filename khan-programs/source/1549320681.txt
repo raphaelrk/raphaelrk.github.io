@@ -1,0 +1,21 @@
+background(26, 28, 18);
+stroke(0, 0, 0, 40);
+var lastX = mouseX;
+var lastY = mouseY;
+
+var draw = function() {
+    var speedX = abs(mouseX - lastX);
+    var speedY = abs(mouseY - lastY);
+    var speedAve = (speedX + speedY) / 2;
+    if (mouseIsPressed) {
+        fill(lastX, lastY, 0);
+    } else {
+        fill(lastX, lastY, 0, 40);
+    }
+    ellipse(mouseX, mouseY, speedAve, speedAve);
+    lastX = mouseX;
+    lastY = mouseY;
+    
+    fill(26, 28, 18, 1);
+    rect(0,0,500,500);
+};

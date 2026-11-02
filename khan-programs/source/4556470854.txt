@@ -1,0 +1,27 @@
+var x = 0;
+var y = 40;
+var diameter = 68;
+var speed = 10;
+
+// loop forever
+var draw = function() {
+    // get rid of streaks/draw background
+    background(98, 181, 245);
+    
+    // move the car
+    x = x + speed;
+    y = y - 0;
+    
+    // if the car is off the screen,
+    // then put it back on the screen
+    if(x > 300) {
+        x = -400;
+    }
+    
+    // car body
+    rect(119 + x, 148 + y, 209, 100);
+    
+    // wheels
+    ellipse(165 + x, 259 + y, diameter, diameter);
+    ellipse(286 + x, 259 + y, diameter, diameter);
+};

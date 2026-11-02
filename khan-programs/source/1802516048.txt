@@ -1,0 +1,25 @@
+// Here is an empty program
+
+
+
+
+
+
+
+// Each of these lines are originally one space between
+
+
+
+
+
+
+
+// When I copy this program and repaste it in three times, 
+
+
+
+
+
+
+
+// each line will have seven spaces between it

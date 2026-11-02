@@ -1,0 +1,44 @@
+// number of points on the spiral
+var N = 240;
+var maxRadius = 290;
+background(0, 0, 0);
+// determines the inital spiral configuration
+var angleChange = 90;
+var opacity = 400;
+var draw = function() {
+
+    //stroke(redValue, greenValue, blueValue);
+    
+    // coordinates of the current point
+    var x = 200;
+    var y = 200;
+
+    // coordinates of the previous point
+    var lastX = 200;
+    var lastY = 200;
+
+    for (var i = 0; i < N; i += 1) {
+        opacity -= random(0, 0.001);
+        // calculate position of current point
+        var theta = angleChange * i;
+        var radius = maxRadius * (i / N);
+        x = 200 + radius * sin(theta);
+        y = 200 + radius * cos(theta);
+        
+     
+        // draw a line from the last point to the current point
+        line(lastX, lastY, x, y);
+        
+        // update the previous point to be the current point
+        lastX = x;
+        lastY = y;
+        var redx = 250 * sin(theta) + 200;
+        var greenx = 100 * cos(theta) + 112;
+        var bluex = 1 + 150 * sin(theta);
+        stroke(redx, greenx, bluex, opacity);
+        strokeWeight(2);
+    }
+    
+    // increment angleChange to rotate the spiral
+    angleChange += 0.01;
+};

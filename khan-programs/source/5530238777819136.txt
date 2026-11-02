@@ -1,0 +1,38 @@
+/**
+ * "Perfect Lines"
+ * By Raphael Rouvinov-Kats
+ * 
+ * Creates alternating black and white dots
+ * With their radii depending on the time
+ * 
+ * The effect it seems to have is to create so-called perfect lines,
+ * Known in pixel art for having slopes with 1 on the top or bottom and an integer
+ * on the alternate part. E.g. 1 up : 1 over, 2 up: 1 over.
+ * */
+
+var drawTiles = function(tileW, tileH) {
+    tileW = floor(tileW);
+    tileH = floor(tileH);
+    noStroke();
+    
+    for(var x = 0; x <= 400; x+= tileW) {
+        var c = x / tileW;
+        for(var y = 0; y <= 400; y+= tileH) {
+            var r = y / tileH;
+            var colour = ((r+c)%2 === 0) ? 255 : 0;
+            
+            fill(colour, colour, colour, dist(x, y, 0, 0) / 10);
+            fill(colour, colour, colour, 3);
+            rect(x, y, tileW, tileH);
+            //ellipse(x, y, tileW, tileH);
+        }
+    }
+};
+
+background(0, 0, 0);
+var draw = function() {
+    var s = 100 - frameCount;
+    if(s > 10) {
+        drawTiles(s, s);
+    }
+};

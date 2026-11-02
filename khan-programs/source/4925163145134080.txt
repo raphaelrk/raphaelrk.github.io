@@ -1,0 +1,115 @@
+/**
+ * c-sections
+ * by Raphael Rouvinov-Kats
+ * 
+ * Click and drag circles. See the points at which they intersect
+ * */
+
+var Circle = function(x, y, r) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.selected = false;
+    
+    this.draw = function() {
+        noFill();
+        if(this.hoveredOver()) { fill(255, 163, 19, 60); }
+        if(this.selected) { fill(0, 163, 19, 60); }
+        ellipse(this.x, this.y, 2*r, 2*r);
+    };
+    
+    // returns whether the mouse is over the circle
+    this.hoveredOver = function() {
+        return dist(pmouseX, pmouseY, this.x, this.y) <= r;
+    };
+    
+    // if circle selected, moves it according to mouse movement
+    this.move = function() {
+        if(this.selected) {
+            this.x += mouseX - pmouseX;
+            this.y += mouseY - pmouseY;
+        }
+    };
+    
+    this.drawIntersectionPoints = function(other) {
+        var x1 = this.x, x2 = other.x, 
+            y1 = this.y, y2 = other.y, 
+            r1 = this.r, r2 = other.r;
+        var d = dist(x1, y1, x2, y2);
+        var intersecting = true;
+        
+        /** determine if borders not intersecting **/
+        if(r1 + r2 < d || d === 0 || // too far apart || same origin
+           r1 > d + r2 || r2 > d + r1) { // this envelopes other || other envelopes this
+            intersecting = false;
+        }
+        
+        // http://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect
+        if(intersecting) {
+            //line(x1, y1, x2, y2); // for testing
+            
+            var l = (r1*r1 - r2*r2 + d*d)/(2*d);
+            var h = sqrt(r1*r1-l*l);
+            var dx = x2-x1;
+            var dy = y2-y1;
+            var px1 = l/d*dx+h/d*dy+x1;
+            var px2 = l/d*dx-h/d*dy+x1;
+            var py1 = l/d*dy-h/d*dx+y1;
+            var py2 = l/d*dy+h/d*dx+y1;
+            
+            point(px1, py1);
+            point(px2, py2);
+        }
+    };
+};
+
+// used in "objArray.forEach(applyDraw)"
+var applyDraw = function(obj) {
+    obj.draw();
+};
+
+var circles = [];
+
+for(var i = 0; i < 10; i++) {
+    circles.push(new Circle(random(0, 400), random(0, 400), random(10, 100)));
+}
+
+var draw = function() {
+    background(255, 255, 255);
+    
+    // draw circles
+    strokeWeight(1);
+    circles.forEach(applyDraw);
+    
+    // draw intersection points
+    strokeWeight(5);
+    for(var i = 0; i < circles.length; i++) {
+        for(var j = i+1; j < circles.length; j++) {
+            circles[i].drawIntersectionPoints(circles[j]);
+        }
+    }
+};
+
+// if circle pressed, set it as selected
+var mousePressed = function() {
+    circles.forEach(function(cir){
+        if(cir.hoveredOver()) { 
+            cir.selected = true; 
+        }
+    });
+};
+var mouseClicked = mousePressed;
+
+// if mouse is released, set all circles unselected
+var mouseReleased = function() {
+    circles.forEach(function(cir){
+        cir.selected = false;
+    });
+};
+
+// move selected circles when mouse is dragged
+var mouseDragged = function() {
+    circles.forEach(function(cir){
+        cir.move();
+    });
+};

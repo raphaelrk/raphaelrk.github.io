@@ -1,0 +1,51 @@
+var col1 = color(255, 255, 255);
+var col2 = color(56, 56, 56);
+var d = 80;
+
+frameRate(0);
+
+var drawCross = function(c) {
+    fill(c);
+    stroke(c);
+    
+    var t = d/2.5; // size of one block
+    rect(-t/2, -t/2, t, t); // center
+    rect(-t/2, -t/2 - t, t, t); // top
+    rect(-t/2, -t/2 + t, t, t); // bottom
+    rect(-t/2 - t, -t/2, t, t); // left
+    rect(-t/2 + t, -t/2, t, t); // right
+};
+
+var switchColors = function() {
+    var t = col1;
+    col1 = col2;
+    col2 = t;
+};
+
+var angle = 0;
+var dir = 1;
+var draw = function() {
+    if((angle - 10) % 180 === 0){
+        dir = -dir;
+        switchColors();
+    }
+    angle += dir;
+    
+    fill(col1);
+    rect(-5, -5, 405, 405);
+    
+    for(var x = -d; x < 400 + d; x += d) {
+        for(var y = -d; y < 400 + d; y += d) {
+            pushMatrix();
+                translate(x, y);
+                if(dir === 1) {
+                    translate(d/2, d/2);
+                }
+                rotate(angle);
+                drawCross(col2);
+            popMatrix();
+        }
+    }
+    fill(255, 0, 0);
+    text(frameCount%360, 10, 10);
+};

@@ -1,0 +1,34 @@
+var boxW = width/8;
+var boxH = height/8;
+
+var fillFromRC = function(r,c) {
+    var rowR = (r>>0)%2===0;
+    var rowG = (r>>1)%2===0;
+    var rowB = (r>>2)%2===0;
+    var colR = (c>>0)%2===0;
+    var colG = (c>>1)%2===0;
+    var colB = (c>>2)%2===0;
+    fill(
+        rowR^colR ? 255 : 0, 
+        rowG^colG ? 255 : 0, 
+        rowB^colB ? 255 : 0
+    );
+};
+
+var draw = function() {
+    background(240, 240, 240);
+    stroke(0, 0, 0);
+    noStroke();
+    for (var i=0;i<8;i++) {
+        fillFromRC(i,0);
+        rect(i*boxW,0,boxW,boxH);
+        rect(0,i*boxH,boxW,boxH);
+    }
+    
+    for (var r=1;r<8;r++) {
+        for (var c=1; c<8; c++) {
+            fillFromRC(r,c);
+            rect(c*boxW,r*boxH,boxW,boxH);
+        }
+    }
+};

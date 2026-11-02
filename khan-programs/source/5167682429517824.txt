@@ -1,0 +1,87 @@
+/**
+ * Positioning
+ * By Raphael Rouvinov-Kats
+ * 
+ * what I want to do: make emitter follow mouse, show lagged plot of past locations based on what detectors saw
+ * 
+ * plot of what I'm talking about
+ * https://www.desmos.com/calculator/5g0rb178iu
+ * 
+ * copy of desmos equations:
+ * x1 = 2 // emitter
+ * y1 = 2
+ * x2 = 0 // detector 1
+ * y2 = 0
+ * x3 = 3 // detector 2
+ * y3 = 0
+ * x4 = 3 // detector 3
+ * y4 = 2.5
+ * (x1, y1) // plot emitter
+ * (x2, y2), (x3, y3), (x4, y4) // plot detectors
+ * (x-x1)2 + (y-y1)2 = (sqrt((x2-x1)2 + (y2-y1)2))2 // circle centered at emitter with detector 1 on border
+ * (x-x1)2 + (y-y1)2 = (sqrt((x3-x1)2 + (y3-y1)2))2 // same with detector 2
+ * (x-x1)2 + (y-y1)2 = (sqrt((x4-x1)2 + (y4-y1)2))2 // dsmr with detector 3
+ * t1 = sqrt((x2-x1)2 + (y2-y1)2) - sqrt((x3-x1)2 + (y3-y1)2) // difference in time between signal hitting detectors 1 and 2
+ *                                                            // dist(emitter, detector1) - dist(emitter, detector2)
+ * t2 = sqrt((x3-x1)2 + (y3-y1)2) - sqrt((x4-x1)2 + (y4-y1)2) // same with detecros 2 and 3
+ * t3 = sqrt((x4-x1)2 + (y4-y1)2) - sqrt((x2-x1)2 + (y2-y1)2) // same with detecros 3 and 1
+ * sqrt((x-x2)2 + (y-y2)2) - sqrt((x-x3)2 + (y-y3)2) = t1 // hyperbola with foci at detectors 1 and 2 and point on emitter
+ *                                                        // locus/equation is all points where emitter could be
+ *                                                        // that would cause t1 difference in time between
+ *                                                        // signal coming to both detectors
+ * sqrt((x-x3)2 + (y-y3)2) - sqrt((x-x4)2 + (y-y4)2) = t2 // same detectors 2 and 3
+ * sqrt((x-x4)2 + (y-y4)2) - sqrt((x-x2)2 + (y-y2)2) = t3 //same detectors 3 and 4
+ * 
+ * apparently this is called https://en.wikipedia.org/wiki/Multilateration
+ * */
+
+var emitter = {
+    x: 100,
+    y: 100,
+    interval: 100,
+    draw : function() {
+        pushMatrix();
+            stroke(0, 0, 0);
+            strokeWeight(5);
+            point(emitter.x, emitter.y);
+        popMatrix();
+    },
+    drawEmissions : function() {
+        pushMatrix();
+            noFill();
+            stroke(0, 0, 0);
+            strokeWeight(1);
+            for(var r = frameCount % emitter.interval; r < width*1.5; r+= emitter.interval) {
+                ellipse(emitter.x, emitter.y, r*2, r*2);
+            }
+        popMatrix();
+    }
+};
+
+var Detector = function(x, y) {
+    this.x = x;
+    this.y = y;
+    
+    this.draw = function() {
+        pushMatrix();
+            stroke(255, 255, 255);
+            strokeWeight(5);
+            point(this.x, this.y);
+        popMatrix();
+    };
+};
+
+var detectors = [new Detector(300, 100), new Detector(150, 350)];
+
+var draw = function() {
+    background(180, 211, 237);
+    
+    // draw detectors
+    for(var i = 0; i < detectors.length; i++) {
+        detectors[i].draw();
+    }
+     
+    // draw emitter/emissions
+    emitter.draw();
+    emitter.drawEmissions();
+};

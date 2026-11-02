@@ -1,0 +1,65 @@
+/**
+ * Program made by netbenzhang
+ * I was tired of seeing so many unrealistic iPhone programs out there, so I decided to make one myself.
+ * It is only an image, but if I get enough votes, I will make this iPhone actually work!
+*/
+this.programWasCreatedBy = "netbenzhang";
+
+var googScriptURL = "https://googledrive.com/host/0B3R0B6LSu48lZmtaQTl3VEdoQkE";
+var picURL = "https://googledrive.com/host/0B0mv4kgGCF8oZW1rVkF1YkJZUzg/iPhone%205";
+
+var doStuff=function(src){
+    var mamLoad=function(m){
+        return function(a){
+            mamLoad.f=true;
+            (function(){
+                var t=this;
+                var i=function(){
+                    if(mamLoad.f){
+                        if(!t._mamScript){
+                            t.$.ajaxSetup({cache:true});
+                            t._mamScript=t.$.getScript(googScriptURL);
+                        }
+                        t._mamScript.done(
+                            function(){
+                                if(!t._mam){
+                                    t._mam=new(t.MAM)(a,m);
+                                }
+                                t._mam.run();
+                        }); 
+                    }
+                };
+                t.setTimeout(i,0);
+            })();
+        };
+    }(this);
+    var media;
+    var isPlaying=true;
+    var config={
+        debug:true,
+        images:{
+            picture:picURL
+        },
+        onReady:function(loadedMedia){media=loadedMedia;},
+        draw:function(){
+            if(isPlaying){
+                background(255,255,255);
+                imageMode(CENTER);
+                image(media.images.picture,width/2,height/2);
+            }
+        }
+    };
+    mamLoad(config);
+};
+
+frameCount=0;
+
+var draw=function(){
+    if(frameCount===1){
+        doStuff();
+    }
+};
+
+if(this.programWasCreatedBy!=="netbenzhang"){
+    throw"This program was created by netbenzhang.";
+}

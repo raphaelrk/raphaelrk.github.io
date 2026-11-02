@@ -1,0 +1,31 @@
+/**
+ * Starship
+ * by Raphael Rouvinov-Kats
+ * */
+frameRate(0);
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var l = 400 * 400;
+    while(l--) {
+        // coords
+        var x = l % 400;
+        var y = (l-x)/400;
+        
+        var xt = x + frameCount;
+        var yt = y + frameCount;
+        var t = (xt^mouseY + yt^mouseX)%360;
+        
+        // http://jsperf.com/native-sin-vs-approx-fast-sin
+        var c = 255 * (0.02222222*t - 0.00012345679*t*t);
+        
+        pix[(25*y<<6)+(x<<2)] = c|t^yt&xt;
+        pix[(25*y<<6)+(x<<2)+1] = c;
+        pix[(25*y<<6)+(x<<2)+2] = c;
+    }
+    
+    debug(this.__frameRate);
+    this.updatePixels();
+};

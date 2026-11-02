@@ -1,0 +1,207 @@
+/**
+ * Light bounce
+ * By Raphael Rouvinov-Kats
+ * 
+ * First step towards making a ray tracer:
+ * Having light bounce off of things
+ * */
+
+frameRate(0);
+
+/** constants **/
+var max_render_steps = 2000;
+var light_beam_starting_x = 200;
+var light_beam_starting_y = 200;
+var light_beam_starting_dx = 1;
+var light_beam_starting_dy = -1;
+var wall_count = 10;
+var post_collision_buffer = 1; // don't want to bounce against same wall right after collision
+
+/** vars **/
+var line_eps = 0.1;
+var Line = function(x1, y1, x2, y2) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+
+    // checks if the point isn't outside the line's bounding box
+    this.pointInBounds = function(px, py) {
+        var out_of_left_x_bound  = (px < x1-line_eps && px < x2-line_eps);
+        var out_of_right_x_bound = (px > x1+line_eps && px > x2+line_eps);
+        var out_of_upper_y_bound = (py < y1-line_eps && py < y2-line_eps);
+        var out_of_lower_y_bound = (py > y1+line_eps && py > y2+line_eps);
+        
+        if(out_of_left_x_bound || out_of_right_x_bound ||
+           out_of_upper_y_bound || out_of_lower_y_bound) {
+            return false;
+        }
+        return true;
+    };
+    
+    // returns [intersection_x, intersection_y] if intersection exists else null
+    this.getIntersectionWith = function(otherLine) {
+        var x3 = otherLine.x1, y3 = otherLine.y1; // second line first coordinate
+        
+        var m1 = (y1-y2) / (x1-x2);
+        var m2 = (y3-otherLine.y2) / (x3-otherLine.x2);
+        
+        // parallel
+        if(m1 === m2) {
+            return null;
+        }
+        
+        var intX = (y3 - y1 + m1*x1 - m2*x3)/(m1-m2);
+        var intY = y1 + m1*(intX-x1);
+        
+        if(this.pointInBounds(intX, intY) && otherLine.pointInBounds(intX, intY)) {
+            return [intX, intY];
+        } else {
+            return null;
+        }
+    };
+    
+    this.asPVector = function() {
+        return new PVector(this.x2 - this.x1, this.y2 - this.y1);
+    };
+    
+    this.draw = function() {
+        line(this.x1, this.y1, this.x2, this.y2);
+        
+        // arrow
+        var backwards_vec = new PVector(this.x2 - this.x1, this.y2 - this.y1);
+            backwards_vec.normalize();
+            backwards_vec.mult(-5);
+        var left_vec = backwards_vec.get();
+            left_vec.rotate(45);
+        var right_vec = backwards_vec.get();
+            right_vec.rotate(-45);
+        
+        line(this.x2, this.y2, this.x2 + left_vec.x, this.y2 + left_vec.y);
+        line(this.x2, this.y2, this.x2 + right_vec.x, this.y2 + right_vec.y);
+    };
+};
+
+// todo
+// var Light = function(x, y, theta) {
+//     this.x = x;
+//     this.y = y;
+//     this.theta = theta;
+// };
+
+var amt_steps_rendered = 0;
+var light_beam_x  = light_beam_starting_x;
+var light_beam_y  = light_beam_starting_y;
+var light_beam_dx = light_beam_starting_dx;
+var light_beam_dy = light_beam_starting_dy;
+
+var walls = [];
+for(var i = 0; i < wall_count; i++) {
+    var wall_line = new Line(random(0, width), random(0, height), 
+                             random(0, width), random(0, height));
+    walls.push(wall_line);
+}
+
+// draw light starting point
+stroke(255, 127, 0);
+fill(255, 255, 0);
+ellipse(light_beam_starting_x, light_beam_starting_y, 10, 10);
+
+// draw walls
+stroke(0, 0, 0);
+for(var i = 0; i < walls.length; i++) {
+    walls[i].draw();
+}
+
+var update_and_draw_light_beam = function(x, y, dx, dy) {
+    if(dist(0, 0, dx, dy) < 1) {
+        return;
+    }
+    
+    var light_line = new Line(light_beam_x, light_beam_y,
+                                  light_beam_x + light_beam_dx,
+                                  light_beam_y + light_beam_dy);
+    
+    // find all collisions
+    // care only about the closest one
+    var collision = null;
+    var wall_collided_with = null;
+    var dist_to_collision = 9999999;
+    for(var i = 0; i < walls.length; i++) {
+        var wall_line = walls[i];
+        var curr_collision = light_line.getIntersectionWith(wall_line);
+        if(curr_collision !== null) {
+            var dist_to_curr_collision = dist(light_beam_x, light_beam_y, 
+                                              curr_collision[0], curr_collision[1]);
+            
+            if(collision === null || dist_to_curr_collision < dist_to_collision) {
+                collision = curr_collision;
+                wall_collided_with = wall_line;
+                dist_to_collision = dist_to_curr_collision;
+            }
+        }
+    }
+    
+    strokeWeight(5);
+    
+    if(collision !== null) {
+        // draw collision
+        //stroke(255, 127, 0);
+        //fill(255, 255, 0);
+        //ellipse(collision[0], collision[1], 5, 5);
+        
+        // draw line to collision 
+        stroke(255, 127, 0, 10);
+        line(light_beam_x, light_beam_y, collision[0], collision[1]);
+        
+        // calculate new x, y, dx, dy
+        var travel_dist = dist(0, 0, light_beam_dx, light_beam_dy);
+        var dist_from_collision = travel_dist - dist_to_collision + post_collision_buffer;
+
+        var light_vector = light_line.asPVector();
+        var wall_vector = wall_collided_with.asPVector();
+        
+        var projection = wall_vector.get();
+            projection.normalize();
+            projection.mult(light_vector.dot(wall_vector)/wall_vector.mag());
+        
+        var reflection = projection.get();
+            reflection.mult(2);
+            reflection.sub(light_vector);
+        
+        var reflection_from_wall = reflection.get();
+            reflection_from_wall.normalize();
+            reflection_from_wall.mult(dist_from_collision);
+        
+        light_beam_dx = reflection.x;
+        light_beam_dy = reflection.y;
+        light_beam_x  = collision[0] + reflection_from_wall.x;
+        light_beam_y  = collision[1] + reflection_from_wall.y;
+        
+        //stroke(0, 255, 30);
+        //fill(0, 255, 60);
+        //ellipse(light_beam_x, light_beam_y, 1, 1);
+        
+        // draw line from collision
+        // but actually (TODO) need to check if there are more collisions
+        stroke(255, 127, 0, 10);
+        line(collision[0], collision[1], light_beam_x, light_beam_y);
+    }
+    else {
+        stroke(255, 127, 0, 10);
+        line(light_beam_x, light_beam_y, 
+             light_beam_x + light_beam_dx,
+             light_beam_y + light_beam_dy);
+        
+        light_beam_x += light_beam_dx;
+        light_beam_y += light_beam_dy;
+    }
+};
+
+var draw = function() {
+    if(amt_steps_rendered < max_render_steps) {
+        update_and_draw_light_beam(light_beam_x, light_beam_y, 
+                                   light_beam_dx, light_beam_dy);
+        amt_steps_rendered += 1;
+    }
+};

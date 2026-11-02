@@ -1,0 +1,33 @@
+/**
+ * Sun Slices
+ * 
+ * From http://www.openprocessing.org/sketch/149960
+ * By Jerome Harr
+ * 
+ * Adapted to KhanAcademy processing.js by Raphael Rouvinov-Kats
+ * */
+
+var step, i=0, num=26; // int
+var theta = 0; // float
+ 
+step = floor(height/num);
+angleMode = "radians";
+
+var draw = function() {
+  background(20);
+  fill(255, 183, 0);
+  noStroke();
+  ellipse(width/2, height/2, width*0.6, height*0.6);
+  
+  i = 0;
+  for (var y = 2*step; y < height - 2*step + 1; y += step) {
+    var sw = map(sin(theta+(TWO_PI/num*i)), -1, 1, 1.5, 12);
+    var edge = 2*step;
+    stroke(20);
+    strokeWeight(sw);
+    line(edge, y, width-edge, y);
+    i++;
+  }
+  
+  theta += 0.0523;
+};

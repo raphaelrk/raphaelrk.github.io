@@ -1,0 +1,19 @@
+angleMode="degrees";
+var x=-20;
+var y=39;
+
+translate(288,248);
+draw= function() {
+    for(var a=12;a<90;a++){
+        stroke(ceil(sin(20*a))*55 + 200, 
+                floor(cos(20*a))*127+127, 
+                sin(20*a)*127 + 127);
+        strokeWeight(3);
+        fill(0, 0, 0);
+        rotate(x+y);
+        bezier(x,y,x*26,y^8,x^-13,y*x+56,x^12,x^8);    
+        x+=cos(y)/105;
+        y+=sin(x)/-55;
+    }
+};
+

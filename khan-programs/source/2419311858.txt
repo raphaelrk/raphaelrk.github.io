@@ -1,0 +1,317 @@
+/** Coming soon: (in probable order of appearance)
+ * Actual buttons on the toolbar, tools, tool options
+ * Draggable, toggleable context minibar (change options of selected tool without opening the toolbar)
+ * Copy Paste Undo Redo capabilites
+ * */
+ //Press enter to spit out the data of the bitmap,
+ //press space to spit out an example function to draw it
+ //Press t to toggle the toolbar
+ //Press g to toggle gridlines
+ //Press p to toggle preview
+var sizeX = 20;
+var sizeY = 20;
+var primary, secondary;
+var bitmap = [color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(78,128,56),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(130,210,115),color(138,198,186),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(138,198,186),color(138,198,186),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(134,209,113),color(138,198,186),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(134,209,113),color(138,198,186),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(138,198,186),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(134,209,113),color(134,209,113),color(134,209,113),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(247,249,247),color(247,249,247),color(247,249,247),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(247,249,247),color(247,249,247),color(247,249,247),color(247,249,247),color(247,249,247),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(255,255,216),color(255,255,216),color(255,255,216),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(247,249,247),color(247,249,247),color(247,249,247),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(247,249,247),color(247,249,247),color(247,249,247),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(247,249,247),color(247,249,247),color(247,249,247),color(247,249,247),color(247,249,247),color(203,238,255),color(203,238,255),color(203,238,255),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(247,249,247),color(247,249,247),color(247,249,247),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(255,255,216),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(203,238,255),color(0,0,0)];
+
+var active;
+var toolbar = 1;
+var preview = 1;
+var tile = 10;
+var xOff = 100;
+var yOff = 100;
+var gridlines = 1;
+var tX, tY;
+    var pen = 0;
+    var lin = 1;
+    var rec = 2;
+    var squ = 3;
+    var sel = 4;
+    var ell = 5;
+    var cir = 6;
+    var eye = 7;
+var tool = pen;
+var toolatt = [color(0,0,0), color(255,255,255), 1];
+    var pri = 0;
+    var sec = 1;
+    var wid = 2;
+    var fil = 3;
+var selatt = pri;
+//primary colour, secondary, stroke width, fill
+
+var drawTbar = function() {
+    noStroke();
+    fill(160, 160, 160, 140);
+    rect(0,0,75,400);
+    rect(75,0,325,75);
+    if (tool === pen) {
+        strokeWeight(1);
+        stroke(0, 0, 0);
+        if (selatt === pri) {
+            fill(toolatt[1]);
+            rect(30,30,35,35);
+            fill(toolatt[0]);
+            rect(5,5,45,45);
+        }
+        else if (selatt === sec) {
+            fill(toolatt[0]);
+            rect(5,5,45,45);
+            fill(toolatt[1]);
+            rect(30,30,35,35);
+        }
+        strokeWeight(2);
+        fill(0, 0, 0);
+        line(75,10,330,10);
+        text("Red", 350, 15);
+        line(75,30,330,30);
+        text("Green", 350, 35);
+        line(75,50,330,50);
+        text("Blue", 350, 55);
+        strokeWeight(1.5);
+        fill(160, 160, 160);
+        rect(red(toolatt[selatt]) + 72, 4, 6, 12, 3);
+        rect(green(toolatt[selatt]) + 72, 24, 6, 12, 3);
+        rect(blue(toolatt[selatt]) + 72, 44, 6, 12, 3);
+        strokeWeight(1);
+        line(red(toolatt[selatt]) + 75, 7, red(toolatt[selatt]) + 75, 13);
+        line(green(toolatt[selatt]) + 75, 27, green(toolatt[selatt]) + 75, 33);
+        line(blue(toolatt[selatt]) + 75, 47, blue(toolatt[selatt]) + 75, 53);
+    }
+    if (gridlines) {
+        strokeWeight(1);
+        stroke(0, 0, 0);
+    }
+    
+};
+
+var output = function() {
+    var text = "var bitmap = [";
+    for (var i = 0; i < sizeX * sizeY - 1; i++) {
+        text += "color(";
+        text += red(bitmap[i]).toString() + ",";
+        text += green(bitmap[i]).toString() + ",";
+        text += blue(bitmap[i]).toString() + "),";
+    }
+    text += "color(";
+    text += red(bitmap[i + 1]).toString() + ",";
+    text += green(bitmap[i + 1]).toString() + ",";
+    text += blue(bitmap[i + 1]).toString() + ")";
+    text += "];\n ";
+    println(text);
+};
+    
+var printfun = function() {
+    println("    var drawbmp = function(bitmap, x, y, xOff, yOff, size) {\n        noStroke();\n        for (var i = 0; i < x * y; i++) {\n            var temp = i - (i % x);\n            var yval = temp / x;\n            var xval = i % x;\n            fill(bitmap[i]);\n            rect(xval * size + xOff, (y - yval - 1) * size + yOff, size, size);\n        }\n    };\n ");
+};
+
+var drawpreview = function() {
+    stroke(0, 0, 0);
+    fill(255, 255, 255);
+    rect(398 - sizeX, 398 - sizeY, sizeX + 3, sizeY + 3);
+    noStroke();
+    for (var i = 0; i < sizeX * sizeY; i++) {
+        var tmp = i - i % sizeX;
+        tmp /= sizeX;
+        fill(bitmap[i]);
+        rect(400 - sizeX + (i % sizeX), 400 - tmp - 1, 1, 1);
+    }
+    if (gridlines) {
+        stroke(0, 0, 0);
+    }
+};
+
+var drawgrid = function(x, y) {
+    stroke(0, 0, 0);
+    if (!gridlines) {
+        rect(x - 1, y - 1, tile * sizeX + 1, tile * sizeY + 1);
+        noStroke();
+    }
+    for (var i = 0; i < bitmap.length; i++) {
+        var temp = i - (i % sizeX);
+        var yval = temp / sizeX;
+        var xval = i % sizeX;
+        fill(bitmap[i]);
+        rect(xval * tile + x, (sizeY - yval - 1) * tile + y, tile, tile);
+    }
+};
+
+var chkBounds = function(x1, x2, y1, y2) {
+    if (mouseX <= x2 && mouseX >= x1 && mouseY <= y2 && mouseY >= y1) {
+        return 1;
+    }
+    return 0;
+};
+
+var mouseOver = function() {
+    active = 1;
+};
+
+var mouseOut = function() {
+    active = 0;
+};
+
+var handleMouse = function() {
+    
+};
+
+var keyPressed = function() {
+    if (keyCode === 90) { //'Z'
+        tile += 1;
+    }
+    
+    if (keyCode === 88) { //'X'
+        tile -= 1;
+    }
+    
+    if (keyCode === 87) { //'W'
+        yOff-= tile;
+    }
+    
+    if (keyCode === 83) { //'S'
+        yOff += tile;
+    }
+    
+    if (keyCode === 65) { //'A'
+        xOff -= tile;
+    }
+    
+    if (keyCode === 68) { //'D'
+        xOff += tile;
+    }
+    
+    if (keyCode === 84) { //'T'
+        toolbar = toolbar ? 0 : 1;
+    }
+    
+    if (keyCode === 80) { //'P'
+        preview = preview ? 0 : 1;
+    }
+    
+    if (keyCode === 71) { //'G'
+        gridlines = gridlines ? 0 : 1;
+    }
+    
+    if (keyCode === 10) { //Return
+        output();
+    }
+    
+    if (keyCode === 32) { //Space
+        printfun();
+    }
+};
+
+var mousePressed = function() {
+    tX = [mouseX, xOff];
+    tY = [mouseY, yOff];
+    if (toolbar && tool === pen && chkBounds(0,400,0,75)) {
+        if (selatt === pri && (chkBounds(50,65,30,65) || chkBounds(30,65,50,65))) {
+            selatt = sec;
+        }
+        else if (selatt === sec && (chkBounds(5,50,5,30) || chkBounds(5,30,30,50))) {
+            selatt = pri;
+        }
+    }
+    if (tool === pen && chkBounds(xOff + toolbar * (75 - xOff), xOff + sizeX * tile - 1, yOff + toolbar * (75 - yOff), yOff + sizeY * tile - 1) && !keyIsPressed) {
+        if (mouseButton === LEFT) {
+            var tmpX = mouseX - xOff;
+            tmpX -= tmpX % tile;
+            tmpX /= tile;
+            var tmpY = mouseY - yOff;
+            tmpY -= tmpY % tile;
+            tmpY /= tile;
+            tmpY = sizeY - tmpY - 1;
+            bitmap[tmpY * sizeX + tmpX] = toolatt[0];
+        }
+        if (mouseButton === RIGHT) {
+            var tmpX = mouseX - xOff;
+            tmpX -= tmpX % tile;
+            tmpX /= tile;
+            var tmpY = mouseY - yOff;
+            tmpY -= tmpY % tile;
+            tmpY /= tile;
+            tmpY = sizeY - tmpY - 1;
+            bitmap[tmpY * sizeX + tmpX] = toolatt[1];
+        }
+    }
+};
+
+var mouseDragged = function() {
+    if (keyIsPressed && keyCode === 18 && chkBounds(xOff, xOff + sizeX * tile, yOff, yOff + sizeY * tile)) { 
+        xOff = (mouseX - tX[0]) + tX[1];
+        yOff = (mouseY - tY[0]) + tY[1];  
+    }
+    else if (toolbar && chkBounds(red(toolatt[selatt]) + 55, red(toolatt[selatt]) + 95, 4, 16)) {
+        if (mouseX < 75) {
+            toolatt[selatt] = color(0,green(toolatt[selatt]),blue(toolatt[selatt]));
+        }
+        else if (mouseX > 330) {
+            toolatt[selatt] = color(255,green(toolatt[selatt]),blue(toolatt[selatt]));
+        }
+        else {
+            toolatt[selatt] = color(mouseX - 75,green(toolatt[selatt]),blue(toolatt[selatt]));
+        }
+    }
+    else if (toolbar && chkBounds(green(toolatt[selatt]) + 55, green(toolatt[selatt]) + 95, 24, 36)) {
+        if (mouseX < 75) {
+            toolatt[selatt] = color(red(toolatt[selatt]),0,blue(toolatt[selatt]));
+        }
+        else if (mouseX > 330) {
+            toolatt[selatt] = color(red(toolatt[selatt]),255,blue(toolatt[selatt]));
+        }
+        else {
+            toolatt[selatt] = color(red(toolatt[selatt]),mouseX - 75,blue(toolatt[selatt]));
+        }
+    }
+    else if (toolbar && chkBounds(blue(toolatt[selatt]) + 55, blue(toolatt[selatt]) + 95, 44, 56)) {
+        if (mouseX < 75) {
+            toolatt[selatt] = color(red(toolatt[selatt]),green(toolatt[selatt]),0);
+        }
+        else if (mouseX > 330) {
+            toolatt[selatt] = color(red(toolatt[selatt]),green(toolatt[selatt]),255);
+        }
+        else {
+            toolatt[selatt] = color(red(toolatt[selatt]),green(toolatt[selatt]),mouseX - 75);
+        }
+    }
+    else if (tool === pen && chkBounds(xOff + toolbar * (75 - xOff), xOff + sizeX * tile - 1, yOff + toolbar * (75 - yOff), yOff + sizeY * tile - 1)) {
+        if (mouseButton === LEFT) {
+            var tmpX = mouseX - xOff;
+            tmpX -= tmpX % tile;
+            tmpX /= tile;
+            var tmpY = mouseY - yOff;
+            tmpY -= tmpY % tile;
+            tmpY /= tile;
+            tmpY = sizeY - tmpY - 1;
+            bitmap[tmpY * sizeX + tmpX] = toolatt[0];
+        }
+        if (mouseButton === RIGHT) {
+            var tmpX = mouseX - xOff;
+            tmpX -= tmpX % tile;
+            tmpX /= tile;
+            var tmpY = mouseY - yOff;
+            tmpY -= tmpY % tile;
+            tmpY /= tile;
+            tmpY = sizeY - tmpY - 1;
+            bitmap[tmpY * sizeX + tmpX] = toolatt[1];
+        }
+    }
+    else {
+        
+    }
+};
+
+var draw = function() {
+    background(255, 255, 255);
+    drawgrid(xOff,yOff);
+    if (preview) {
+        drawpreview();
+    }
+    if (toolbar) {
+        drawTbar();
+    }
+    else {
+        //drawminibar();
+    }
+    if (active) {
+        handleMouse();
+    }
+};

@@ -1,0 +1,31 @@
+/**
+ * Triangles
+ * By Raphael Rouvinov-Kats
+ * Based on the famous commodore 64 one-liner "10 PRINT CHR$(205.5+RND(1)); : GOTO 10"
+ * */
+
+background(141, 187, 240);
+
+noStroke();
+fill(255, 255, 255, 255);
+
+var s = 20;
+
+for(var y = 0; y < 400; y += s) {
+    for(var x = 0; x < 400; x+= s) {
+        var r = random(0, 1);
+        if(r < 0.25) {
+            triangle(x, y, x + s, y, x + s, y + s); // top right
+        } else if(r < 0.5) {
+            triangle(x, y, x, y + s, x + s, y + s); // bottom left
+        } else if(r < 0.75) {
+            triangle(x, y, x, y + s, x + s, y); // top left
+        } else {
+            triangle(x + s, y + s, x, y + s, x + s, y); // bottom right
+        }
+    }
+}
+
+// for a reset button
+frameRate(1);
+var draw = function() {};

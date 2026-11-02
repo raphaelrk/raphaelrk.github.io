@@ -1,0 +1,36 @@
+noStroke();
+colorMode(RGB, 400);
+
+frameRate(0);
+var draw = function() {
+    var f = frameCount % 200;
+    
+    // top left
+    for(var i = f; i < f + 10; i++) {
+      for(var j = 0; j < 200; j++) {
+        stroke(i*2, j*2, 400);
+        point(i, j);
+      }
+    }
+    // top right
+    for(var i = f + 200; i < f + 210; i++) {
+      for(var j = 0; j < 200; j++) {
+        stroke((i-200)*2, j*2, 300);
+        point(i, j);
+      }
+    }
+    // bottom left
+    for(var i = f; i < f + 10; i++) {
+      for(var j = 200; j < 400; j++) {
+        stroke(i*2, (j-200)*2, 200);
+        point(i, j);
+      }
+    }
+    // bottom right
+    for(var i = f + 200; i < f + 210; i++) {
+      for(var j = 200; j < 400; j++) {
+        stroke((i-200)*2, (j-200)*2, 100);
+        point(i, j);
+      }
+    }
+};

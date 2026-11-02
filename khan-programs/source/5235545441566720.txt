@@ -1,0 +1,136 @@
+/**
+ * YOGOO
+ * By Raphael Rouvinov-Kats
+ * Written in ~9001 hours for Ludum Dare 28
+ * Theme: "You Only Get One"
+ * 
+ * The second rule of YOGOO is don't talk about YOGOO
+ * The third law of robotics is "A robot must protect its own
+ *      existence as long as such protection does not 
+ *      conflict with the First or Second Law."
+ * The fourth plague of Egypt was of animals capable of 
+ *      harming people and livestock
+ * The fifth planet in the Solar System is Jupiter
+ * The sixth circle of hell is heresy
+ * The seventh amendment codifies the right to a jury trial
+ *      in certain civil cases, and inhibits courts from 
+ *      overturning a jury's findings of fact.
+ * The eighth day, according to the old nundinal cycle, is
+ *      what Sunday was known as in patristic writings
+ * */
+
+/**
+ * These are the variables for the background
+ * The first one is for the red
+ * The second one is for the green
+ * The third one is for the blue
+ * */
+var bg_r = 199; // red
+var bg_g = 213; // green
+var bg_b = 255; // blue
+
+/**
+ * These are the variables for the text "1"
+ * The first one is for the red
+ * The second one is for the green
+ * The third one is for the blue
+ * The fourth one is for its size
+ * The mousex offset tells how to adjust the x position of 
+ *      the one so it lines up with where the mouse is
+ * The mousey offset does exactly what you think it does
+ *      (nothing)
+ * The font is the font for our gorgeous one
+ * */
+var one_r = 11; // red
+var one_g = 0; // green
+var one_b = 163; // blue
+var one_size = 48; // size
+var one_mousex_offset = -6; // this adjusts the one's x pos
+var one_mousey_offset = 0; // You don't know what this does
+var one_font = createFont("Courier New", 18); // font
+
+/**
+ * These control spline reticulation
+ * spline reticulation is the process of combining sets of
+ * points or curves, creating a network of them. This is
+ * often useful in art programs for smoothings curves or 
+ * connecting points.
+ * */
+var reticulator = [];
+var splines = [];
+
+/**
+ * This changes the background
+ * The r is for red
+ * The g is for green
+ * The b is for blue
+ * */
+var drawBG = function(r, g, b) {
+    
+    /**
+     * These are the speed of the change in color for
+     * the background.
+     * rcspeed is how quickly the red changes
+     * gcspeed is how quickly the green changes
+     * bcspeed is how quickly the blue changes
+     * */
+    var rcspeed = 0.5;
+    var gcspeed = 0.1;
+    var bcspeed = 0.1;
+    
+    /**
+     * These are the magnitude of the change in color for
+     * the background.
+     * rmagnitude is how much the red changes
+     * gmagnitude is how much the green changes
+     * bmagnitude is how much the blue changes
+     * */
+    var rmagnitude = 50;
+    var gmagnitude = 50;
+    var bmagnitude = 50;
+    
+    /**
+     * These values are here so that what would normally be
+     * a bland background really brightens up with some 
+     * change (that's what the c is for)
+     * */
+    var rc = -rmagnitude*sin(millis()*rcspeed);
+    var gc = gmagnitude*cos(millis()*gcspeed);
+    var bc = bmagnitude*sin(millis()*bcspeed);
+    
+    background(r + rc, g + gc, b + bc);
+};
+
+/**
+ * This changes the fill for things like text and shapes
+ * The r is for red
+ * The g is for green
+ * The b is for blue
+ * */
+var changeFill = function(r, g, b) {
+    fill(r, g, b);
+};
+
+/**
+ * That's right. This is it. This is where that majesty
+ * of a one gets drawn
+ * */
+var drawOne = function() {
+    changeFill(one_r, one_g, one_b); // make sure its color
+                                    // is right
+    
+    textFont(one_font, one_size); // the font!
+    text("1", mouseX + one_mousex_offset, 
+                mouseY + one_mousey_offset);
+};
+
+/**
+ * This is the central hub of this program
+ * This function is repeatedly called following 
+ * initialization.
+ * If you want to know how the program works, you look here
+ * */
+var draw = function() {
+    drawBG(bg_r, bg_g, bg_b);
+    drawOne();
+};

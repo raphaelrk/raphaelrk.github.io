@@ -1,0 +1,144 @@
+/**
+ * Julia interactive
+ * By Raphael Rouvinov-Kats
+ * 
+ * Whipped this one out in a cool five minutes ;)
+ * https://en.wikipedia.org/wiki/Julia_set#Quadratic_polynomials
+ * */
+
+frameRate(0);
+
+var max_iters = 20;
+
+// function prototypes
+var complexFromPolar;
+
+var Complex = function(a,b) {
+    this.a = a;
+    this.b = b;
+    
+    this.conj = function() {
+        return new Complex(this.a, -this.b);
+    };
+    
+    this.re = function() {
+        return this.a;
+    };
+    
+    this.im = function() {
+        return this.b;
+    };
+    
+    this.add = function(c2) {
+        return new Complex(this.a+c2.a, this.b+c2.b);
+    };
+    
+    this.sub = function(c2) {
+        return new Complex(this.a-c2.a, this.b-c2.b);
+    };
+    
+    this.prod = function(c2) {
+        return new Complex(this.a * c2.a - this.b * c2.b, this.b*c2.a + this.a*c2.b);
+    };
+    
+    this.div = function(c2) {
+        return new Complex((this.a*c2.a+this.b*c2.b)/(c2.a*c2.a+c2.b*c2.b), (this.b*c2.a-this.a*c2.b)/(c2.a*c2.a+c2.b*c2.b));
+    };
+    
+    this.inv = function() {
+        return new Complex(this.a/(this.a*this.a+this.b*this.b), -this.b/(this.a*this.a+this.b*this.b));
+    };
+    
+    this.r = function() {
+        return sqrt(this.a*this.a+this.b*this.b);
+    };
+    
+    this.r2 = function() {
+        return this.a*this.a+this.b*this.b;
+    };
+    
+    this.angleTo = function(c2) {
+        return acos((this.a*c2.a+this.b*c2.b)/(this.r()*c2.r()));
+    };
+    
+    this.phi = function() {
+        return atan2(this.b, this.a);
+    };
+    
+    // assuming p integer
+    this.pow = function(p) {
+        return new complexFromPolar(p*this.phi(), pow(this.r(),p));
+    };
+};
+
+var complexFromPolar = function(t,r) {
+    return new Complex(r*cos(t), r*sin(t));
+};
+
+var julia_of_point = function(x, y, c, d) {
+    var a = map(x, 0, width, -2, 2);
+    var b = map(y, 0, height, -2, 2);
+    
+    for (var i = 0; i < max_iters; i++) {
+        // z**2+c == (a+bi)(a+bi)+(c+di) == (a*a-b*b+c) + i(2ab+d)
+        // var new_a = a*a-b*b+c;
+        // var new_b = 2*a*b+d;
+        // if (sqrt(new_a*new_a + new_b*new_b) > 2) {
+        //     return i;
+        // }
+        // a = new_a;
+        // b = new_b;
+        
+        if (sqrt(a*a*a - b*b*b - b*d-a*c) > 0) {
+            return i;
+        }
+    }
+    
+    return -1;
+    
+    // return -1;
+};
+
+var julia = function(posX, posY) {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var c = map(posX, 0, width, -2, 2);
+    var d = map(posY, 0, height, -2, 2);
+    
+    var l = 401 * 401;
+    while(l--) {
+        var x = l % 401;
+        var y = (l-x)/401;
+        
+        // var dx = posX - x;
+        // var dy = posY - y;
+        // var d = sqrt(dx*dx + dy*dy);
+        // d = map(d, 0, sqrt(width*width+height*height), 0, 255);
+        
+        var v = julia_of_point(x, y, c, d);
+        
+        
+        var ind = (x + y * 400) << 2;
+        if (v === -1) {
+            pix[ind]   = 0;
+            pix[ind+1] = 0;
+            pix[ind+2] = 0;
+            continue;
+        }
+        
+        v = map(v, 0, max_iters, 0, 255);
+        pix[ind]   = 128 + v/2;
+        pix[ind+1] = 192 + v/4;
+        pix[ind+2] = v;
+    }
+    
+    this.updatePixels();
+};
+
+var mouseDragged = function() {
+    julia(mouseX, mouseY);
+};
+
+julia(100, 200);

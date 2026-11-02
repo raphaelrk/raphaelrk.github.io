@@ -1,0 +1,55 @@
+/**
+ * Rotate the cube with your mouse
+ * 
+ * This program was created by netbenzhang.
+ * Please do not copy code! :) Thanks.
+*/
+
+var externals;
+
+var g3D = {
+    img: createGraphics(width, height, P3D)
+};
+
+var g = g3D.img;
+
+var drawCubes = function() {
+    g.pushMatrix();
+    
+    g.translate(200, 200);
+    
+    g.rotateX(norm(mouseY, 0, height) * TWO_PI);
+    g.rotateY(norm(mouseX, 0, width) * TWO_PI);
+    
+    g.translate(-100, -100, -100);
+    
+    for (var i = 0; i < 20; i++) {
+        for (var j = 0; j < 20; j++) {
+            for (var k = 0; k < 20; k++) {
+                if (i === 0 || i === 19 || j === 0 || j === 19 || k === 0) {
+                    var v = 0.1;
+                    var f = frameCount / 30;
+                    g.noStroke();
+                    g.lights();
+                    g.fill(noise(i * v + f, j * v + f, k * v + f) * 255, 255, 255);
+                    
+                    g.sphere(5*sqrt(2));
+                    g.noLights();
+                }
+                g.translate(10, 0, 0);
+            }
+            g.translate(-200, 10, 0);
+        }
+        g.translate(0, -200, 10);
+    }
+    g.popMatrix();
+};
+
+var draw = function() {
+    g.colorMode(HSB);
+    g.background(0);
+    
+    drawCubes();
+    
+    image(g, 0, 0);
+};

@@ -1,0 +1,58 @@
+var pointOn = function(x, y, pix) {
+    var stroke = map(noise(frameCount/10), 0, 1, 0.1, 5);
+    
+    for(var y1 = y - stroke/2; y1 < y + stroke/2; y1 += 0.5) {
+        for(var x1 = x - stroke / 2; x1 < x + stroke/2; x1 += 0.5) {
+            var y2 = round(y1), x2 = round(x1);
+            pix[y2*1600 + x2*4] = 0;
+            pix[y2*1600 + x2*4 + 1] = 0;
+            pix[y2*1600 + x2*4 + 2] = 0;
+        }
+    }
+};
+
+var drawLine = function(x1, y1, x2, y2, pix) {
+    if(x1 > x2) {
+        var t = x1; x1 = x2; x2 = t;
+            t = y1; y1 = y2; y2 = t;
+    }
+    
+    var dx = x2 - x1;
+    
+    if(dx > 0) {
+        var dy = y2 - y1;
+        var slope = dy/dx;
+        var change = abs(dx/dy);
+            change = constrain(change, 0.01, 0.5);
+        
+        for(var x = max(0, x1); x <= min(400, x2); x += change) {
+            var y = y1 + (x - x1) * slope;
+            pointOn(round(x), round(y), pix);
+        }
+    } else {
+        if(y1 > y2) {
+            var t = y1; y1 = y2; y2 = y1;
+        }
+        
+        for(var y = max(0, y1); y <= min(400, y2); y += 0.5) {
+            pointOn(round(x1), round(y), pix);
+        }
+    }
+};
+
+frameRate(0);
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    if(mouseIsPressed) {
+        drawLine(pmouseX, pmouseY, mouseX, mouseY, pix);
+    }
+    
+    
+    this.updatePixels();
+    
+    // compare to: (I think custom one's smoother!)
+    // line(pmouseX, pmouseY, mouseX, mouseY);
+};

@@ -1,0 +1,70 @@
+var BigInt = function(num) {
+    this.int = "";
+    
+    if(num) {
+        this.int = "" + num;
+    }
+};
+
+BigInt.prototype.toString = function() {
+    while(this.int[0] === "0") {
+        this.int = this.int.substring(1);
+    }
+    
+    return this.int;
+};
+
+BigInt.prototype.add = function(num) {
+    if(typeof num === "object") {
+        num = num.int;
+    }
+    
+    // make sure numbers are equally padded
+    for(var i = this.int.length; i < max(this.int.length, num.length); i++) {
+        this.int = "0" + this.int;
+    }
+    for(var i = num.length; i < max(this.int.length, num.length); i++) {
+        num = "0" + num;
+    }
+    
+    // make sure numbers have one extra 0 of padding
+    if(num[num.length - 1] !== "0" && this.int[this.int.length-1] !== "0") {
+        num = "0" + num;
+        this.int = "0" + this.int;
+    }
+    
+    var sum = "";
+    var carry = "0";
+    for(var i = this.int.length - 1; i >= 0; i--) {
+        var addend1 = this.int[i];
+        var addend2 = num[i];
+        
+        var digitSum = parseInt(addend1, 10) + parseInt(addend2, 10) + parseInt(carry, 10);
+        var digitSumString = digitSum.toString();
+        
+        if(digitSum >= 10) {
+            sum = digitSumString[1] + sum;
+            carry = digitSumString[0];
+        } else {
+            carry = "0";
+            sum = digitSumString + sum;
+        }
+    }
+    
+    if(carry !== "0") {
+        sum = carry + sum;
+    }
+    
+    while(sum[0] === "0") {
+        sum = sum.substring(1);
+    }
+    
+    return sum;
+};
+
+println("123456890987654321234 * 2");
+var bi1 = new BigInt("123456890987654321234");
+var bi2 = new BigInt("123456890987654321234");
+println("big int: " + bi1.add(bi2));
+
+println("js:      " + 123456890987654321234*2);

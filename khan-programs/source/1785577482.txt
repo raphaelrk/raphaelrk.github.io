@@ -1,0 +1,36 @@
+// the images that will be tinted
+var image1 = getImage("avatars/leaf-green");
+var image2 = getImage("cute/Rock");
+
+// this turns the images into something that can be tinted
+var imageToGraphics = function(img) {
+    
+    // creates a box you'll put the image in
+    var grphx = createGraphics(img.width, img.height, JAVA2D); 
+    
+    // change the boxes background
+    // set the last value to zero for a box
+    // without a background!
+    grphx.background(184, 134, 184, 10);
+    
+    // this puts the image in the box
+    grphx.image(img, 0, 0);
+    
+    return grphx;
+};
+
+// image 1
+// get a tintable var
+var image1graphics = imageToGraphics(image1);
+// tint it
+tint(255, 0, 0, 255);
+// put it on the screen
+image(image1graphics, 28, 91, 247, 190);
+
+//text
+text("Some text",207,145);
+
+// image 2
+var image2graphics = imageToGraphics(image2);
+tint(0, 255, 0, 255);
+image(image2graphics, 68, 128, 269, 254);

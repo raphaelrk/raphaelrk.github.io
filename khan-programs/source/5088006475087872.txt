@@ -1,0 +1,33 @@
+/**
+ * 10 PRINT Animated
+ * By Raphael Rouvinov-Kats
+ * Based on the famous commodore 64 one-liner "10 PRINT CHR$(205.5+RND(1)); : GOTO 10"
+ * */
+
+stroke(255, 255, 255);
+strokeWeight(5);
+
+var s = 20;
+
+frameRate(10);
+var draw = function() {
+    background(141, 187, 240);
+    
+    for(var y = 0; y < 400; y += s) {
+        // animation
+        if(y < 400 - frameCount * s) {
+            continue;
+        }
+        
+        for(var x = 0; x < 400; x+= s) {
+            var noiseVal = 0.049; // how rough changes between diagonals are
+            var n = noise(x * noiseVal, (y + s*frameCount) * noiseVal);
+            
+            if(n < 0.5) {
+                line(x, y, x + s, y + s);
+            } else {
+                line(x + s, y, x, y + s);
+            }
+        }
+    }
+};

@@ -1,0 +1,99 @@
+/**
+ * Explosion
+ * By Raphael Rouvinov-Kats
+ * */
+var speed = 0.01;
+var deacceleration= 0.99;
+var minChange = 0.1;
+var maxChange = 100;
+var minExplosionAccel = 2;
+var maxExplosionAccel = 5;
+var pointAmount = 1000;
+var lineStrokeWeight = 0.1;
+var Point = function(x, y) {
+    this.x = x;
+    this.y = y;
+    var lastx = x;
+    var lasty = y;
+    var dx = 0.1;
+    var dy = 0.1;
+    
+    this.move = function() {
+        lastx = x;
+        lasty = y;
+        dx = (dx + (mouseX - x) * speed) * deacceleration;
+        dy = (dy + (mouseY - y) * speed) * deacceleration;
+        if(dx > 0) {
+            dx = max(dx, minChange);
+            dx = min(dx, maxChange);
+        } else {
+            dx = min(dx, -minChange);
+            dx = max(dx, -maxChange);
+        }
+        if(dy > 0) {
+            dy = max(dy, minChange);
+            dy = min(dy, maxChange);
+        } else {
+            dy = min(dy, -minChange);
+            dy = max(dy, -maxChange);
+        }
+        if(abs(dx) < minChange) {
+            dx = random(-4, 4);
+        }
+        if(abs(dy) < minChange) {
+            dy = random(-4, 4);
+        }
+        x += dx;
+        y += dy;
+        if(x >= 400) {
+            dx = -dx;
+            x = 399;
+        } else if(x < 0) {
+            dx = -dx;
+            x = 0;
+        }
+        if(y >= 400) {
+            y = 399;
+            dy = -dy;
+        } else if(y < 0) {
+            dy = -dy;
+            y = 0;
+        }
+    };
+    
+    this.draw = function() {
+        stroke(255, 270-dist(x, y, mouseX, mouseY), sin(frameCount)*100 + 100);
+        strokeWeight(lineStrokeWeight);
+        line(lastx, lasty, x, y);
+    };
+    
+    this.explode = function() {
+        dx = -dx * random(minExplosionAccel, maxExplosionAccel);
+        dy = -dy * random(minExplosionAccel, maxExplosionAccel);
+    };
+};
+
+var points = [];
+
+for(var i = 0; i < pointAmount; i++) {
+    points.push(new Point(random(0, 400), random(0, 400)));
+    points[i].explode();
+}
+
+var draw = function() {
+    fill(0, 0, 0, 10);
+    noStroke();
+    rect(0, 0, 400, 400);
+    for(var i = 0; i < points.length; i++) {
+        var p = points[i];
+        p.move();
+        p.draw();
+    }
+};
+
+var mousePressed = function() {
+    for(var i = 0; i < points.length; i++) {
+        var p = points[i];
+        p.explode();
+    }
+};

@@ -1,0 +1,16 @@
+// bezier vertices from https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
+// even easier? use text() with ♥
+
+noStroke();
+fill(255, 105, 105);
+
+// Quadratric curves example
+beginShape();
+vertex(75,40);
+bezierVertex(75,37,70,25,50,25);
+bezierVertex(20,25,20,62.5,20,62.5);
+bezierVertex(20,80,40,102,75,120);
+bezierVertex(110,102,130,80,130,62.5);
+bezierVertex(130,62.5,130,25,100,25);
+bezierVertex(85,25,75,37,75,40);
+endShape();

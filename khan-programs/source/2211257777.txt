@@ -1,0 +1,82 @@
+// work in progress
+// to do: ability to read equation from a string
+//        ability to move graph around, zoom, etc
+//        polar r= graphing, parametric
+//        slope fields and derivatives
+
+var equation ="sin(90*(x + t)), sin(90 + 90*t)*x + sin(90*t)";
+  // if you actually want to change the equation(s),
+  //go to the equation function at the bottom
+var x_step = 0.02;
+var x_min = -10;
+var x_max = 10;
+var y_min = -10;
+var y_max = 10;
+var time_speed = 1000; // higher is slower
+var line_mode = true;
+
+
+var screenlen = 400;
+var hscreenlen = screenlen/2;
+
+var draw = function() {
+    
+     // erase screen
+     noStroke();
+     color(255, 255, 255);
+     rect(0,0,screenlen,screenlen);
+     
+     color(0, 0, 0);
+     stroke(0, 0, 0);
+     
+     line(0,hscreenlen,screenlen,hscreenlen); // x axis
+     line(hscreenlen,0,hscreenlen,screenlen); // y axis
+     
+     // x axis ticks
+     for(var i = 20; i < screenlen; i+= 20) {
+         line(i, 195, i, 205);
+     }
+     
+     // y axis ticks
+     for(var i = 20; i < 400; i+= 20) {
+         line(195, i, 205, i);
+     }
+     
+     
+     for(var i = x_min; i < x_max; i += x_step) {
+         // the pre multiplied/shifted values
+         var i2 = i + x_step;
+         var ax = i;
+         var ax2 = i2;
+         var ay = equation(ax);
+         var ay2 = equation(ax2);
+         
+         // the actual 0-400 pixel positions
+         var xMultiplier = screenlen/(x_max-x_min);
+         var yMultiplier = screenlen/(y_max-y_min);
+         var x  = ax * xMultiplier  + hscreenlen;
+         var x2 = ax2* xMultiplier  + hscreenlen;
+         var y  = ay;  // f(x)
+             y *= yMultiplier;  // fit screen
+             y *= -1;  // flip it
+             y += 200; // move to middle
+         var y2 = -ay2 * yMultiplier + hscreenlen;
+         
+         point(x, y);
+         if(line_mode) {
+             line(x,y,x2,y2);
+         }
+     }
+};
+
+var equation = function(x, str) {
+    var t = millis()/time_speed;
+    
+    if(random(0,1) > 0.5) {
+        var slope = sin(90 + 90*t);
+        var b = sin(90*t);
+        return slope*x + b;
+    }
+    
+    return sin(90*(x + t));
+};

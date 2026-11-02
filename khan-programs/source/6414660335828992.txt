@@ -1,0 +1,40 @@
+/**
+ * PACMAN PELLETS ARE FOR DINNER!
+ * NOMNOMNOMNOMNOMNOM
+ * 
+ * By Raphael Rouvinov-Kats
+ * 
+ * What really are pacman pellets?
+ * Pixels? Couscous? Crumbs? Hopes and dreams?
+ * This program is there to make the answer that much harder.
+ * Exhibited at the New York Art Museum, 1980
+ * 
+ * Thank you to all my supporter- my family and friends
+ * Thank you Kenny from across the street
+ * Thank you Sally from across the valley
+ * Shout out to Farmer for packing the heat
+ * And the rest of the Byte Club for being so neat
+ * 
+ * */
+
+background(0, 0, 0); // black background (table)
+
+// outer blue circle (plate)
+fill(0, 0, 0);
+stroke(0, 51, 255);
+strokeWeight(2);
+ellipse(200, 200, 390, 390);
+ellipse(200, 200, 380, 380);
+
+
+/**
+ * SQUARE TO CIRCLE
+(x, y) to (r, theta)
+
+
+Take point P (x, y) from square
+
+C = center point of square
+D = dist(P, C)
+R = D/circle radius
+same theta*/

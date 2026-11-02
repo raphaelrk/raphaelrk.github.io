@@ -1,0 +1,38 @@
+
+var p1x = 159, p1y = 143;
+var p2x = 279, p2y = 246;
+
+var pnorm = function(p, x1, y1, x2, y2) {
+    return pow(pow(abs(x2-x1), p) + pow(abs(y2-y1),p), 1.0/p);
+};
+
+var draw = function() {
+    // bg clearing
+    noStroke();
+    fill(255, 255, 255, 100);
+    rect(0,0,width,height);
+    
+    // points
+    strokeWeight(5);
+    stroke(0, 0, 0);
+    point(p1x, p1y);
+    point(p2x, p2y);
+    strokeWeight(1);
+    
+    // rgb bg
+    for (var x = 0; x < width; x += random(1,5)) {
+        for (var y = 0; y < height; y += random(1,5)) {
+            var d1 = pnorm(1, x,y,p1x,p1y);
+            var d2 = pnorm(1, x,y,p2x,p2y);
+            var d3 = pnorm(1, p1x,p1y,p2x,p2y);
+            
+            if (d1 < d3 && d2 < d3) {
+                stroke(255, 0, 0);
+                point(x, y);
+            }
+            
+            stroke(d1, d2, 0, 100);
+            point(x,y);
+        }
+    }
+};

@@ -1,0 +1,8 @@
+var draw = function() {
+    if(frameCount === 7) {
+        for(var p in this) {
+            println(p);
+        }
+        noLoop();
+    }
+};

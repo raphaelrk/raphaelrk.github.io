@@ -1,0 +1,84 @@
+var Platform = function(x, y) {
+    this.width = 40;
+    this.height = 10;
+    
+    if(x && y) {
+        this.x = x;
+        this.y = y;
+    } else {
+        this.x = random(0, width - this.width);
+        this.y = -random(10, 80);
+    }
+    
+    this.draw = function() {
+        rect(this.x, this.y, this.width, this.height);
+    };
+};
+
+var Player = function() {
+    this.x = width/2;
+    this.y = height/2;
+    this.dx = 0;
+    this.dy = 0;
+    this.gravity = 0.5;
+    this.maxdx = 40;
+    
+    this.player_width = 20;
+    this.player_height = 20;
+    
+    this.move = function() {
+        this.dx = constrain((mouseX - this.x)/5, -this.maxdx, this.maxdx);
+        this.dy += this.gravity;
+        
+        this.x += this.dx;
+        this.y += this.dy;
+        
+        // if all of player left or right of edge, flip sides
+        var leftEdge = -this.player_width/2;
+        var rightEdge = width + this.player_width/2;
+        if(this.x < leftEdge) {
+            this.x = rightEdge - (leftEdge - this.x);
+        }
+        else if(this.x > rightEdge) {
+            this.x = leftEdge + (this.x - rightEdge);
+        }
+    };
+    
+    this.draw = function() {
+        ellipse(this.x, this.y, this.player_width, this.player_height);
+    };
+};
+
+var Game = function() {
+    this.scroll = 0;
+    this.platforms = [];
+    this.mobs = [];
+    this.projectiles = [];
+    this.player = new Player();
+    
+    platforms.push(new Platform(width/2, 300
+    
+    this.update = function() {
+        this.player.move();
+        
+        for(var i = this.platforms.length-1; i >= 0; i--) {
+            
+        }
+    };
+    
+    this.draw = function() {
+        this.player.draw();
+        
+        for(var i = 0; i < this.platforms.length; i++) {
+            this.platforms[i].draw();
+        }
+    };
+};
+
+var game = new Game();
+
+var draw = function() {
+    game.update();
+    
+    game.draw();
+};

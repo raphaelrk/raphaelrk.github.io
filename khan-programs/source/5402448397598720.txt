@@ -1,0 +1,85 @@
+/**
+ * Pandora's box
+ * By Raphael Rouvinov-Kats
+ * */
+frameRate(0);
+mouseX = 200;
+mouseY = 200;
+var draw = function() {
+    if (!this.loadPixels) { return; }
+    this.loadPixels();
+    var pix=this.imageData.data;
+    
+    var l = 201 * 201;
+    while(l--) {
+        // coords
+        var x = l % 201;
+        var y = (l-x)/201;
+        
+        // dist from center
+        var x2 = mouseX/x;
+        var y2 = mouseY/y;
+        var d = sqrt(x2*x2+y2*y2);
+        
+        // 'time'
+        var t = (d * frameCount)%360;
+        
+        // http://jsperf.com/native-sin-vs-approx-fast-sin
+        // this is var s = 255 * sin(t)
+        var s = 255* (0.02222222*t - 0.00012345679 * t * t);
+        
+        var xr = 400 - x; // x-right
+        var yb = 400 - y; // y-bottom
+        
+        var willShowR = frameCount % 3 === 0;
+        var willShowG = true;
+        var willShowB = true;
+        
+        // top-left
+        if(willShowR) {
+            pix[(25*y<<6)+(x<<2)] = s;
+            pix[(25*y<<6)+(xr<<2)] = s;
+            pix[(25*yb<<6)+(x<<2)] = s;
+            pix[(25*yb<<6)+(xr<<2)] = s;
+        }
+        if(willShowG) {
+            pix[(25*y<<6)+(x<<2)+1] = s;
+            pix[(25*y<<6)+(xr<<2)+1] = s;
+            pix[(25*yb<<6)+(x<<2)+1] = s;
+            pix[(25*yb<<6)+(xr<<2)+1] = s;
+        }
+        if(willShowB) {
+            pix[(25*y<<6)+(x<<2)+2] = s;
+            pix[(25*y<<6)+(xr<<2)+2] = s;
+            pix[(25*yb<<6)+(x<<2)+2] = s;
+            pix[(25*yb<<6)+(xr<<2)+2] = s;
+        }
+    }
+    
+    this.updatePixels();
+    
+    if(random(0, 1) < 0.125) {
+        filter(THRESHOLD);
+    }
+    else if(random(0, 1) < 0.25) {
+        filter(GRAY);
+    }
+    else if(random(0, 1) < 0.375) {
+        
+    }
+    else if(random(0, 1) < 0.5) {
+        filter(POSTERIZE, 5);
+    }
+    else if(random(0, 1) < 0.675) {
+        filter(BLUR);
+    }
+    else if(random(0, 1) < 0.75) {
+        filter(OPAQUE);
+    }
+    else if(random(0, 1) < 0.875) {
+        filter(ERODE);
+    }
+    else {
+        filter(DILATE);
+    }
+};
